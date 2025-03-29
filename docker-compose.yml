@@ -1,0 +1,43 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: learn_quest
+      MYSQL_USER: nando
+      MYSQL_PASSWORD: nj060902
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build: ./learn-quest-backend
+    container_name: lq-backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: mysql://symfony:symfony@db:3306/symfony
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./learn-quest-backend:/app
+    command: ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+
+  app:
+    build: ./learn-quest-app
+    container_name: lq-app
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./learn-quest-app:/app
+    command: ["ng", "serve", "--host", "0.0.0.0"]
+
+volumes:
+  db_data:
