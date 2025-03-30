@@ -1,0 +1,14 @@
+.btn {
+  border-radius: 1000px;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, var(--color-3), var(--color-3-light));
+  border-color: var(--color-3-dark);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-3-light);
+  border-color: var(--color-3);
+  box-shadow: 5px 5px 10px var(--color-3), -5px -5px 10px var(--color-3-light);
+}
