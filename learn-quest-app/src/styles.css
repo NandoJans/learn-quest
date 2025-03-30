@@ -1,1 +1,50 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+  --background-color: #f4f4f4;
+  --text-color: #333;
+
+  --color-1: #ed7d7d;
+  --color-2: #63cb63;
+  --color-3: #70c1d5;
+  --color-4: #fcef76;
+  --color-5: #f1b471;
+  --color-6: #c385fb;
+}
+
+.card-header {
+  border: none;
+  background-color: unset;
+}
+
+.border-color-1 {
+  border-color: var(--color-1);
+}
+
+.border-color-2 {
+  border-color: var(--color-2);
+}
+
+.border-color-3 {
+  border-color: var(--color-3);
+}
+
+.border-color-4 {
+  border-color: var(--color-4);
+}
+
+.border-color-5 {
+  border-color: var(--color-5);
+}
+
+.border-color-6 {
+  border-color: var(--color-6);
+}
+
+.border-dotted {
+  border-radius: 10px;
+  border-style: dotted;
+}
+
+.shadow-blocked {
+  box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
+}
