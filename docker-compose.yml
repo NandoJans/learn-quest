@@ -2,6 +2,7 @@ services:
   db:
     image: mysql:8.0
     container_name: mysql
+    command: --default-authentication-plugin=caching_sha2_password
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin
@@ -20,7 +21,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: mysql://symfony:symfony@db:3306/symfony
+      DATABASE_URL: mysql://root:admin@db:3306/learn_quest
     ports:
       - "8000:8000"
     volumes:
