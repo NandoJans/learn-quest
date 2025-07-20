@@ -1,0 +1,4 @@
+admin_area:
+    resource: ../../src/Controller/Admin/
+    type: attribute
+    prefix: /admin

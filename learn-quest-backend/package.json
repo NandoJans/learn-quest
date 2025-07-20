@@ -1,0 +1,24 @@
+{
+  "name": "learn-quest-backend",
+  "private": true,
+  "scripts": {
+    "dev": "encore dev",
+    "dev-server": "encore dev-server",
+    "watch": "encore dev --watch",
+    "build": "encore production"
+  },
+  "dependencies": {
+    "@symfony/webpack-encore": "^4.5.0",
+    "core-js": "^3.0.0",
+    "webpack-notifier": "^1.6.0"
+  },
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.0.0",
+    "@hotwired/turbo": "^7.1.1 || ^8.0",
+    "@symfony/stimulus-bridge": "^3.2.0 || ^4.0.0",
+    "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets",
+    "bootstrap": "^5.3.3",
+    "sass": "^1.89.2",
+    "sass-loader": "^14.2.1"
+  }
+}
