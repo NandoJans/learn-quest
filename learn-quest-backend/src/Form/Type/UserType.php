@@ -36,7 +36,7 @@ class UserType extends AbstractType
                     'User' => 'ROLE_USER',
                     'Admin' => 'ROLE_ADMIN',
                 ],
-                'expanded' => false, // Render as checkboxes
+                'expanded' => false, // Render as a dropdown select element
                 'multiple' => true, // Allow multiple selections
                 'attr' => [
                     'class' => 'form-control',
