@@ -25,9 +25,7 @@ final class EntityListController extends AbstractController
 
         $type = $this->entityService->getEntityTypeClass($entity);
 
-        if (!class_exists($type)) {
-            throw new NotFoundHttpException(sprintf('Form type "%s" does not exist.', $type));
-        }
+        // The existence of the form type class is already validated by EntityService::getEntityTypeClass().
 
         $fields = $this->entityService->getFormFieldNames($type);
 
