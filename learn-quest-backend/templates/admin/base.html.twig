@@ -1,0 +1,46 @@
+{# templates/admin/base.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin – {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{#    {{ encore_entry_link_tags('admin') }}#}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{#    {{ encore_entry_script_tags('admin') }}#}
+{% endblock %}
+
+{% block template %}
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <a class="navbar-brand" href="#">🔧 Admin Panel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="btn btn-link nav-item" href="{{ path('admin_dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-link nav-item" href="{{ path('app_entity_list', {entity: 'User'}) }}">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-link nav-item" href="{{ path('app_logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pt-3 mx-auto w-75">
+        {% for label, messages in app.flashes %}
+            <div class="flash-{{ label }}">{{ messages|join(' ') }}</div>
+        {% endfor %}
+        {# this `body` block will be filled by your admin pages #}
+        {% block body %}{% endblock %}
+    </main>
+{% endblock %}
