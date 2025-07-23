@@ -23,9 +23,6 @@ final class EntityListController extends AbstractController
     {
         $class = $this->entityService->getEntityClass($entity);
 
-        if (!class_exists($class)) {
-            throw new NotFoundHttpException(sprintf('Entity "%s" does not exist.', $entity));
-        }
         $type = $this->entityService->getEntityTypeClass($entity);
 
         if (!class_exists($type)) {
