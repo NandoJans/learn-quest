@@ -10,8 +10,8 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  post(path: string , body: object): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(this.API_URL+this.parsePath(path), body);
+  post<T>(path: string , body: object): Observable<T> {
+    return this.http.post<T>(this.API_URL+this.parsePath(path), body);
   }
 
   private parsePath(path: string): string {
