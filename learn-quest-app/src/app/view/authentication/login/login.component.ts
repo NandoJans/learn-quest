@@ -41,6 +41,9 @@ export class LoginComponent {
   submit() {
     if (this.loginForm.invalid) return;
 
+    const username = this.usernameControl.value;
+    const password = this.passwordControl.value;
+
     console.log('username:', this.usernameControl.value);
     console.log('password:', this.passwordControl.value)
   }
