@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {PrimaryButtonComponent} from '../../../components/buttons/primary-button/primary-button.component';
+import {SecurityService} from '../../../services/security.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +15,7 @@ import {PrimaryButtonComponent} from '../../../components/buttons/primary-button
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   usernameControl: FormControl = new FormControl('', Validators.required);
   passwordControl: FormControl = new FormControl('', Validators.required);
 
@@ -21,6 +23,12 @@ export class LoginComponent {
     username: this.usernameControl,
     password: this.passwordControl
   });
+
+  constructor(
+    private securityService: SecurityService,
+    private router: Router
+  ) {
+  }
 
   getInnerBorderColor() {
     if (this.loginForm.invalid) {
@@ -44,7 +52,23 @@ export class LoginComponent {
     const username = this.usernameControl.value;
     const password = this.passwordControl.value;
 
-    console.log('username:', this.usernameControl.value);
-    console.log('password:', this.passwordControl.value)
+    this.securityService.login(username, password)
+      .subscribe({
+        next: (response) => {
+          this.router.navigateByUrl('/user/dashboard');
+        },
+        error: (error) => {
+          console.error('Login failed', error);
+          // Handle login failure, e.g., show an error message
+        }
+      });
+  }
+
+  ngOnInit(): void {
+    // Optionally, you can check if the user is already logged in and redirect them
+    const token = this.securityService.getToken();
+    if (token) {
+      this.router.navigateByUrl('/user/dashboard');
+    }
   }
 }
