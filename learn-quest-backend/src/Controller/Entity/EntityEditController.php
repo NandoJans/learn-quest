@@ -38,7 +38,7 @@ final class EntityEditController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
 
-            return $this->redirectToRoute('admin_entity_list', ['entity' => $entity]);
+            return $this->redirectToRoute('app_entity_list', ['entity' => $entity]);
         }
 
         return $this->render('entity/form.html.twig', [
