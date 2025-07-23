@@ -56,6 +56,6 @@ class UserType extends AbstractType
 
     public function getBlockPrefix(): string
     {
-        return 'multi_select_widget';
+        return 'user';
     }
 }
