@@ -13,6 +13,14 @@ export class StorageService {
 
   get<T>(key: string): T | null {
     const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : null;
+    if (value) {
+      try {
+        return JSON.parse(value);
+      } catch (error) {
+        console.error('Error parsing JSON from localStorage:', error);
+        return null;
+      }
+    }
+    return null;
   }
 }
