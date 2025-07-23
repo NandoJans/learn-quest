@@ -1,0 +1,12 @@
+{# form/custom_widgets.html.twig #}
+{% block multi_select_widget %}
+    <label>
+        <select {{ block('widget_attributes') }} multiple class="multi-select-widget">
+            {% for choice in choices %}
+                <option value="{{ choice.value }}" {% if choice is selected %}selected{% endif %}>
+                    {{ choice.label }}
+                </option>
+            {% endfor %}
+        </select>
+    </label>
+{% endblock %}
