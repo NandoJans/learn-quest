@@ -1,0 +1,53 @@
+import { Injectable } from '@angular/core';
+import {ApiService} from './api.service';
+import {Observable} from 'rxjs';
+import {StorageService} from './storage.service';
+import {jwtDecode, JwtPayload} from 'jwt-decode';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SecurityService {
+
+  constructor(
+    private apiService: ApiService,
+    private storageService: StorageService,
+  ) { }
+
+  login(username: string, password: string): Observable<{ token: string }> {
+    const observable: Observable<{ token: string }> = this.apiService.post('/login', {
+      username, password
+    })
+
+    observable.subscribe({
+      next: (response: { token: string }) => {
+        // Store the token in local storage
+        this.setToken(response.token);
+      },
+    })
+
+    return observable;
+  }
+
+  setToken(token: string): void {
+    this.storageService.set('token', token);
+  }
+
+  getToken(): string | null {
+    return this.storageService.get<string>('token');
+  }
+
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+
+    try {
+      const decoded: JwtPayload = jwtDecode<JwtPayload>(token);
+      const now: number = Math.floor(Date.now() / 1000); // current time in seconds
+      if (!decoded.exp) return true; // no expiration in token
+      return decoded.exp < now;
+    } catch (e) {
+      return true; // invalid token = expired for safety
+    }
+  }
+}
