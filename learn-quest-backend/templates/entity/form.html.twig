@@ -1,0 +1,23 @@
+{% extends 'admin/base.html.twig' %}
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block title %}
+    {{ is_edit ? 'Edit' : 'Create' }} {{ entity_name|capitalize }}
+{% endblock %}
+
+{% block body %}
+    <h2>{{ is_edit ? 'Edit' : 'Create' }} {{ entity_name|capitalize }}</h2>
+
+    <form method="post">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+
+        <button class="btn btn-primary">
+            {{ is_edit ? 'Save Changes' : 'Create' }}
+        </button>
+        {{ form_end(form) }}
+    </form>
+
+    <a href="{{ path(list_route, list_route_params) }}" class="btn btn-secondary mt-3">Back to list</a>
+{% endblock %}
