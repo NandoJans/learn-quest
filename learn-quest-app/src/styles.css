@@ -1,1 +1,77 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+  --background-color: #f4f4f4;
+  --text-color: #333;
+
+  --color-1: #ed7d7d;
+  --color-1-light: #f5baba;
+  --color-1-dark: #e25353;
+
+  --color-2: #63cb63;
+  --color-2-light: #8ae98a;
+  --color-2-dark: #4aa94a;
+
+  --color-3: #70c1d5;
+  --color-3-light: #8ed9e5;
+  --color-3-dark: #4e9aae;
+
+  --color-4: #fcef76;
+  --color-4-light: #fffdaa;
+  --color-4-dark: #cece3e;
+
+  --color-5: #f1b471;
+  --color-5-light: #f8d3a1;
+  --color-5-dark: #c2823b;
+
+  --color-6: #c385fb;
+  --color-6-light: #d8aefc;
+  --color-6-dark: #9e54e3;
+}
+
+body, html {
+  height: 100%;
+}
+
+.card-header {
+  border: none;
+  background-color: unset;
+}
+
+.border-color-1 {
+  border-color: var(--color-1);
+}
+
+.border-color-2 {
+  border-color: var(--color-2);
+}
+
+.border-color-3 {
+  border-color: var(--color-3);
+}
+
+.border-color-4 {
+  border-color: var(--color-4);
+}
+
+.border-color-5 {
+  border-color: var(--color-5);
+}
+
+.border-color-6 {
+  border-color: var(--color-6);
+}
+
+.border-dotted {
+  border-radius: 10px;
+  border-style: dotted;
+}
+
+.shadow-blocked {
+  box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
+}
+
+.alert-danger {
+  background-color: var(--color-1-light);
+  border-color: var(--color-1);
+  color: var(--color-1-dark);
+}

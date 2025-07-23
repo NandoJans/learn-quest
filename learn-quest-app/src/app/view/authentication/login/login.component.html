@@ -1,0 +1,26 @@
+<div class="container d-flex h-100 align-items-center justify-content-center">
+  <div [class]="'card border-3 shadow-blocked ' + getOuterBorderColor()">
+    <div class="card-header">
+      <h1>Login</h1>
+    </div>
+    <div [class]="'card-body border-dotted ' + getInnerBorderColor() + ' m-2'">
+      <form [formGroup]="loginForm">
+        <div class="form-group mb-3">
+          <label for="username" class="fw-bold">Username</label>
+          <input type="text" class="form-control" id="username" name="username" formControlName="username">
+          <div *ngIf="usernameControl.invalid" class="alert alert-danger mt-2">
+            <div *ngIf="usernameControl.getError('required')">Username is required</div>
+          </div>
+        </div>
+        <div class="form-group mb-3">
+          <label for="password" class="fw-bold">Password</label>
+          <input type="password" class="form-control" id="password" name="password" formControlName="password">
+          <div *ngIf="passwordControl.invalid" class="alert alert-danger mt-2">
+            <div *ngIf="passwordControl.getError('required')">Password is required</div>
+          </div>
+        </div>
+        <app-primary-button [text]="'Login'" (click)="submit()"></app-primary-button>
+      </form>
+    </div>
+  </div>
+</div>
