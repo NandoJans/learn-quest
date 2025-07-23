@@ -18,7 +18,7 @@ final class EntityCreateController extends AbstractController
     {
     }
 
-    #[Route('admin/{entity}/create', name: 'app_entity_create')]
+    #[Route('/admin/{entity}/create', name: 'app_entity_create')]
     public function index(Request $request, EntityManagerInterface $em, string $entity): Response
     {
         $class = $this->entityService->getEntityClass($entity);
