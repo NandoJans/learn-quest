@@ -34,7 +34,8 @@ class UserType extends AbstractType
                 'label' => 'Roles',
                 'choices' => [
                     'User' => 'ROLE_USER',
-                    'Admin' => 'ROLE_ADMIN',
+                    'Teacher' => 'ROLE_TEACHER',
+                    'Admin' => 'ROLE_ADMIN'
                 ],
                 'expanded' => false, // Render as a dropdown select element
                 'multiple' => true, // Allow multiple selections
@@ -51,6 +52,9 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id' => 'course_item',
         ]);
     }
 
