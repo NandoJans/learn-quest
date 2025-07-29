@@ -13,3 +13,10 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+
+mercure:
+    hubs:
+        default:
+            url: '%env(MERCURE_URL)%'
+            public_url: '%env(MERCURE_PUBLIC_URL)%'
+            jwt: '%env(MERCURE_JWT_SECRET)%'

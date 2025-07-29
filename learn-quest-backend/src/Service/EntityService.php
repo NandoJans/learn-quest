@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormFactoryInterface;
 
 class EntityService
@@ -35,6 +36,16 @@ class EntityService
         return $class;
     }
 
+    public function getEntityDtoClass(string $entity): string
+    {
+        $dto = ucfirst(strtolower($entity)) . 'Dto';
+        $class = 'App\\Dto\\' . $dto;
+        if (!class_exists($class)) {
+            throw new \InvalidArgumentException(sprintf('DTO class "%s" does not exist.', $dto));
+        }
+        return $class;
+    }
+
     public function getFormFieldNames(string $formTypeClass): array
     {
         $form = $this->formFactory->create($formTypeClass);
@@ -43,6 +54,10 @@ class EntityService
         foreach ($form->all() as $childName => $child) {
             // Skip fields like 'submit', 'password', 'csrf_token'
             if (in_array($childName, self::FIELD_SKIP, true)) {
+                continue;
+            }
+            // Skip collection fields
+            if ($child->getConfig()->getType()->getInnerType() instanceof CollectionType) {
                 continue;
             }
             $fieldNames[] = $childName;
