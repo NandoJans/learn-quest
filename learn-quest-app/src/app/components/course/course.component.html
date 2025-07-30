@@ -1,0 +1,10 @@
+<div class="card mx-auto my-2">
+  <div class="card-header" [style]="'--primary-color: ' + getColor() + ';'">
+    <fa-icon [icon]="getIcon()"></fa-icon>
+  </div>
+  <div class="card-body text-center">
+    <h3>{{ getName() }}</h3>
+    <p>{{ getDescription() }}</p>
+  </div>
+  <app-footer-button [text]="'View Lessons'"></app-footer-button>
+</div>

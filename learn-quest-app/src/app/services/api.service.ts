@@ -14,6 +14,10 @@ export class ApiService {
     return this.http.post<T>(this.API_URL+this.parsePath(path), body);
   }
 
+  get<T>(path: string): Observable<T> {
+    return this.http.get<T>(this.API_URL + this.parsePath(path));
+  }
+
   private parsePath(path: string): string {
     if (path.startsWith('/')) {
       return path;

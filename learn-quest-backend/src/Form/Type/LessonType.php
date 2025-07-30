@@ -27,11 +27,11 @@ class LessonType extends AbstractType
                 'required' => true,
             ])
             ->add('name', TextType::class, [
-                'label' => 'Course Name',
+                'label' => 'Lesson Name',
                 'required' => true,
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Course Description',
+                'label' => 'Lesson Description',
                 'required' => false,
                 'attr' => [
                     'rows' => 5,

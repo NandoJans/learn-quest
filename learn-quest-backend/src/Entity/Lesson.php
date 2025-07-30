@@ -30,6 +30,12 @@ class Lesson
     #[ORM\ManyToOne(targetEntity: Course::class, inversedBy: 'lessons')]
     private ?Course $course = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $primaryColor = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $faIcon = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -91,6 +97,30 @@ class Lesson
     public function setCourse(?Course $course): static
     {
         $this->course = $course;
+
+        return $this;
+    }
+
+    public function getPrimaryColor(): ?string
+    {
+        return $this->primaryColor;
+    }
+
+    public function setPrimaryColor(string $primaryColor): static
+    {
+        $this->primaryColor = $primaryColor;
+
+        return $this;
+    }
+
+    public function getFaIcon(): ?string
+    {
+        return $this->faIcon;
+    }
+
+    public function setFaIcon(string $faIcon): static
+    {
+        $this->faIcon = $faIcon;
 
         return $this;
     }
