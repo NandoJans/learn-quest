@@ -8,7 +8,9 @@ class CourseDto
         public ?int $id = null,
         public ?string $code = null,
         public ?string $name = null,
-        public ?string $description = null
+        public ?string $description = null,
+        public ?string $faIcon = null,
+        public ?string $primaryColor = null,
     )
     {
     }

@@ -1,0 +1,16 @@
+div.card {
+  --primary-color: #ffc8c8;
+  width: 20rem;
+}
+
+div.card-header {
+  background: linear-gradient(
+    225deg,
+    color-mix(in srgb, var(--primary-color) 80%, white) 0%,
+    color-mix(in srgb, var(--primary-color) 80%, black) 100%
+  );
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  min-height: 5rem;
+}

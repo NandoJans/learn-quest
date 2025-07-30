@@ -6,6 +6,7 @@ use App\Entity\Course;
 use App\Subscriber\HashPasswordSubscriber;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -36,6 +37,21 @@ class CourseType extends AbstractType
                 'attr' => [
                     'rows' => 5,
                     'placeholder' => 'Enter a brief description of the course',
+                ],
+            ])
+            ->add('faIcon', TextType::class, [
+                'label' => 'Font Awesome Icon',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'e.g., fa-book',
+                ],
+            ])
+            ->add('primaryColor', ColorType::class, [
+                'label' => 'Primary Color',
+                'required' => false,
+                'attr' => [
+                    'class' => 'color-picker',
+                    'placeholder' => '#ffffff',
                 ],
             ])
             ->add('lessons', CollectionType::class, [

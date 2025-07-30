@@ -35,6 +35,12 @@ class Course
     #[ORM\OneToMany(targetEntity: CourseRegistration::class, mappedBy: 'CourseId', orphanRemoval: true)]
     private Collection $courseRegistrations;
 
+    #[ORM\Column(length: 255)]
+    private ?string $primaryColor = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $faIcon = null;
+
     public function __construct()
     {
         $this->lessons = new ArrayCollection();
@@ -135,6 +141,30 @@ class Course
                 $courseRegistration->setCourseId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPrimaryColor(): ?string
+    {
+        return $this->primaryColor;
+    }
+
+    public function setPrimaryColor(string $primaryColor): static
+    {
+        $this->primaryColor = $primaryColor;
+
+        return $this;
+    }
+
+    public function getFaIcon(): ?string
+    {
+        return $this->faIcon;
+    }
+
+    public function setFaIcon(string $faIcon): static
+    {
+        $this->faIcon = $faIcon;
 
         return $this;
     }

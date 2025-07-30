@@ -28,6 +28,15 @@ services:
       - ./learn-quest-backend:/app
     command: ["php", "-S", "0.0.0.0:8000", "-t", "public"]
 
+  mercure:
+    image: dunglas/mercure
+    environment:
+      MERCURE_PUBLISHER_JWT_KEY: '77c74b193dead3e85dde5e899e54090cacf3d3b89a8adf95bc7b897fed4422c6'
+      MERCURE_SUBSCRIBER_JWT_KEY: '77c74b193dead3e85dde5e899e54090cacf3d3b89a8adf95bc7b897fed4422c6'
+    ports:
+      - "3000:80"
+
+
   app:
     build: ./learn-quest-app
     container_name: lq-app
