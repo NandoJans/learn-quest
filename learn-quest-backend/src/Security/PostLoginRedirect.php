@@ -10,11 +10,9 @@ use function in_array;
 class PostLoginRedirect
 {
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator,
         private array $roleRouteMap = [
             'ROLE_ADMIN'   => 'admin_dashboard',
-            'ROLE_MANAGER' => 'manager_overview',
-            'ROLE_USER'    => 'app_home',
+            'ROLE_TEACHER'   => 'teacher_dashboard',
         ]
     ) {}
 
