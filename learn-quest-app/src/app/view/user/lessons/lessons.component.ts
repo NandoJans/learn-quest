@@ -28,7 +28,7 @@ export class LessonsComponent implements OnInit {
   ) {}
 
   getCourse(): Course {
-    const courses = this.courseService.getCourses();
+    const courses = this.courseService.getCourses({id: this.courseId});
     if (courses.length > 0) {
       return courses[0];
     }
@@ -36,7 +36,7 @@ export class LessonsComponent implements OnInit {
   }
 
   getLessons() {
-    return this.lessonService.getLessons();
+    return this.lessonService.getLessons({courseId: this.courseId});
   }
 
   navigate(lesson: Lesson) {
