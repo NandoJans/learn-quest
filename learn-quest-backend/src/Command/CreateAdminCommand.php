@@ -10,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(
@@ -39,9 +40,29 @@ class CreateAdminCommand extends Command
         $username = $input->getArgument('username');
         $plain = $input->getArgument('password');
 
-        $user = new User();
-        $user->setUsername($username);
-        $user->setRoles(['ROLE_ADMIN']);
+        // Check if the user already exists
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        if ($user) {
+            $output->writeln("<warning>User with username '$username' already exists.</warning>");
+            // Ask if the user wants to overwrite
+            $io = $this->getHelper('question');
+            $question = new ConfirmationQuestion(
+                "<question>Do you want to overwrite the existing user? (yes/no)</question> ",
+                false
+            );
+            if (!$io->ask($input, $output, $question)) {
+                $output->writeln("<info>Operation cancelled.</info>");
+                return Command::SUCCESS;
+            } else {
+                $output->writeln("<info>Overwriting user '$username'.</info>");
+            }
+        } else {
+            $user = new User();
+            $user->setUsername($username);
+            $user->setRoles(['ROLE_ADMIN']);
+        }
+
         $user->setPassword($this->hasher->hashPassword($user, $plain));
 
         $this->em->persist($user);

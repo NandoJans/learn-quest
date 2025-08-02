@@ -9,6 +9,7 @@ export class EntityService {
 
   matchDataToEntity<T>(data: any[], entityClass: { new (): T }): T[] {
     if (!Array.isArray(data)) return [];
+    // @ts-ignore
     return data.map(item => Object.assign(new entityClass() as T, item));
   }
 }

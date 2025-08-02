@@ -41,14 +41,14 @@ class CourseType extends AbstractType
             ])
             ->add('faIcon', TextType::class, [
                 'label' => 'Font Awesome Icon',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'e.g., fa-book',
                 ],
             ])
             ->add('primaryColor', ColorType::class, [
                 'label' => 'Primary Color',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'class' => 'color-picker',
                     'placeholder' => '#ffffff',
