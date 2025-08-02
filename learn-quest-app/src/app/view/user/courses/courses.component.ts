@@ -14,14 +14,18 @@ import {Course} from '../../../entities/course';
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.css'
 })
-export class CoursesComponent {
+export class CoursesComponent implements OnInit {
 
   constructor(
     private router: Router,
     private courseService: CourseService,
-  ) { }
+  ) {}
 
   getCourses(): Course[] {
     return this.courseService.getCourses();
+  }
+
+  ngOnInit() {
+    this.courseService.loadCourses();
   }
 }

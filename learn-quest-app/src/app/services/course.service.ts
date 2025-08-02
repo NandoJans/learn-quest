@@ -12,16 +12,14 @@ export class CourseService {
   constructor(
     private apiService: ApiService,
     private entityService: EntityService
-  ) {
-    this.loadCourses();
-  }
+  ) {}
 
   getCourses() {
     return this.courses;
   }
 
-  private loadCourses() {
-    this.apiService.get<object>('course/index').subscribe({
+  loadCourses(params: object = {}) {
+    this.apiService.get<Course>('course/index', params).subscribe({
       next: (data: any) => {
         this.courses = this.entityService.matchDataToEntity<Course>(data, Course);
       },

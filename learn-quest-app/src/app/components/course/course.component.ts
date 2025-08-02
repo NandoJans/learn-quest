@@ -1,16 +1,14 @@
 import {Component, Input} from '@angular/core';
 import {Course} from '../../entities/course';
-import {FaIconComponent, FaIconLibrary, IconDefinition} from '@fortawesome/angular-fontawesome';
-import {faQuestion} from '@fortawesome/free-solid-svg-icons/faQuestion';
-import {PrimaryButtonComponent} from '../buttons/primary-button/primary-button.component';
 import {FooterButtonComponent} from '../buttons/footer-button/footer-button.component';
+import {Router} from '@angular/router';
+import {IconComponent} from '../icon/icon.component';
 
 @Component({
   selector: 'app-course',
   imports: [
-    FaIconComponent,
-    PrimaryButtonComponent,
-    FooterButtonComponent
+    FooterButtonComponent,
+    IconComponent
   ],
   templateUrl: './course.component.html',
   styleUrl: './course.component.css'
@@ -18,15 +16,13 @@ import {FooterButtonComponent} from '../buttons/footer-button/footer-button.comp
 export class CourseComponent {
   @Input() course: Course = new Course();
 
-  constructor(public iconLibrary: FaIconLibrary) {
+  constructor(
+    public router: Router,
+  ) {
   }
 
   getName(): string {
     return this.course.name || 'No Name';
-  }
-
-  getIcon(): IconDefinition {
-    return this.iconLibrary.getIconDefinition('fas', this.course.faIcon) || faQuestion
   }
 
   getColor(): string {
@@ -35,5 +31,9 @@ export class CourseComponent {
 
   getDescription() {
     return this.course.description || 'No description available.';
+  }
+
+  navigate() {
+    this.router.navigate(['user', 'course', {courseId: this.course.id}]);
   }
 }
