@@ -29,7 +29,6 @@ export class ApiService {
 
       path += '?' + equals.join('&');
     }
-    console.log(path);
     if (path.startsWith('/')) {
       return path;
     }
