@@ -108,6 +108,10 @@ class Lesson
 
     public function setPrimaryColor(string $primaryColor): static
     {
+        // Validate hex color code format
+        if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $primaryColor)) {
+            throw new \InvalidArgumentException('Invalid primary color format. Expected a hex color code (e.g., #FFFFFF).');
+        }
         $this->primaryColor = $primaryColor;
 
         return $this;
