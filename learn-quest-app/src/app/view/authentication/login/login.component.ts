@@ -18,6 +18,7 @@ import {Router} from '@angular/router';
 export class LoginComponent implements OnInit {
   usernameControl: FormControl = new FormControl('', Validators.required);
   passwordControl: FormControl = new FormControl('', Validators.required);
+  errorMessage: string | null = null;
 
   loginForm: FormGroup = new FormGroup({
     username: this.usernameControl,
@@ -31,7 +32,7 @@ export class LoginComponent implements OnInit {
   }
 
   getInnerBorderColor() {
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid && (this.loginForm.dirty || this.loginForm.touched)) {
       return 'border-color-1'
     } else {
       return 'border-color-2'
@@ -39,7 +40,7 @@ export class LoginComponent implements OnInit {
   }
 
   getOuterBorderColor() {
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid && (this.loginForm.dirty || this.loginForm.touched)) {
       return 'border-color-5'
     } else {
       return 'border-color-3'
@@ -47,7 +48,10 @@ export class LoginComponent implements OnInit {
   }
 
   submit() {
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     const username = this.usernameControl.value;
     const password = this.passwordControl.value;
@@ -59,9 +63,20 @@ export class LoginComponent implements OnInit {
         },
         error: (error) => {
           console.error('Login failed', error);
-          // Handle login failure, e.g., show an error message
+          this.updateErrorMessage(error);
+          this.loginForm.markAllAsTouched();
         }
       });
+  }
+
+  private updateErrorMessage(error: any) {
+    if (error.status === 401) {
+      this.errorMessage = 'Invalid username or password.';
+    } else if (error.status === 0) {
+      this.errorMessage = 'Server is not reachable. Please try again later.';
+    } else {
+      this.errorMessage = 'An unexpected error occurred. Please try again.';
+    }
   }
 
   ngOnInit(): void {

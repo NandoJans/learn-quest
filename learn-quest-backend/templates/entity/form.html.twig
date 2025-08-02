@@ -12,9 +12,10 @@
                     const container = document.getElementById(targetId);
                     const prototype = container.dataset.prototype;
                     const index = container.querySelectorAll('.collection-item').length;
-                    const newItem = document.createElement('div');
-                    newItem.classList.add('collection-item', 'border', 'p-3', 'mb-2', 'rounded');
-                    newItem.innerHTML = prototype.replace(/__name__/g, index);
+                    const html = prototype.replace(/__name__/g, index);
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    const newItem = temp.firstElementChild;
                     container.appendChild(newItem);
                 });
             });
