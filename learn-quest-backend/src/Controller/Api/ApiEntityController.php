@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Service\EntityService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -18,11 +19,15 @@ final class ApiEntityController extends AbstractController
     }
 
     #[Route('/api/{entity}/index', name: 'api_course_index', methods: ['GET'])]
-    public function index(string $entity): Response
+    public function index(string $entity, Request $request): Response
     {
         $class = $this->entityService->getEntityClass($entity);
         $repo = $this->doctrine->getRepository($class);
-        $items = $repo->findAll();
+        $filters = $request->query->all(); // e.g. ['course' => 1]
+        $items = $filters
+            ? $repo->findBy($filters)
+            : $repo->findAll();
+
         $dtoClass = $this->entityService->getEntityDtoClass($entity);
         if (!class_exists($dtoClass)) {
             throw new \RuntimeException(sprintf('DTO class "%s" does not exist.', $dtoClass));
