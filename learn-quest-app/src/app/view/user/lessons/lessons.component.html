@@ -1,0 +1,15 @@
+<div class="header" [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+  <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
+  <h1>{{ getCourse().name }}</h1>
+</div>
+<table class="table table-striped">
+  <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + lesson.primaryColor">
+    <td [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+      <app-icon [faIcon]="lesson.faIcon" [color]="'white'"></app-icon>
+    </td>
+    <td>
+      <h3>{{ lesson.name }}</h3>
+    </td>
+  </tr>
+</table>
+<app-footer-button [text]="'Enroll'" (click)="enroll()"></app-footer-button>

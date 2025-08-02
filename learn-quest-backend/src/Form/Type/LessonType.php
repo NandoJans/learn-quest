@@ -6,6 +6,7 @@ use App\Entity\Course;
 use App\Entity\Lesson;
 use App\Subscriber\HashPasswordSubscriber;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -37,7 +38,23 @@ class LessonType extends AbstractType
                     'rows' => 5,
                     'placeholder' => 'Enter a brief description of the course',
                 ],
-            ]);
+            ])
+            ->add('primaryColor', ColorType::class, [
+                'label' => 'Primary Color',
+                'required' => true,
+                'attr' => [
+                    'class' => 'color-picker',
+                    'placeholder' => '#ffffff',
+                ],
+            ])
+            ->add('faIcon', TextType::class, [
+                'label' => 'Font Awesome Icon',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'e.g., fa-solid fa-book',
+                ],
+            ])
+        ;
 
         $builder->addEventSubscriber($this->subscriber);
     }

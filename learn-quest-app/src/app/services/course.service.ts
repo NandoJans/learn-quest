@@ -1,33 +1,23 @@
 import {Injectable} from '@angular/core';
-import {ApiService} from './api.service';
 import {Course} from '../entities/course';
-import {EntityService} from './entity.service';
+import {EntityCacheService} from './entity-cache.service';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CourseService {
-  courses: Course[] = [];
+  constructor(private cacheService: EntityCacheService<Course>) {}
 
-  constructor(
-    private apiService: ApiService,
-    private entityService: EntityService
-  ) {
-    this.loadCourses();
+  loadCourses(params: {[key: string]: any} = {}, forceReload = false): void {
+    this.cacheService.loadEntities('course/index', Course, params, forceReload);
   }
 
-  getCourses() {
-    return this.courses;
+  getCourses(params: {[key: string]: any} = {}): Course[] {
+    return this.cacheService.filterCachedEntities(Course, params);
   }
 
-  private loadCourses() {
-    this.apiService.get<object>('course/index').subscribe({
-      next: (data: any) => {
-        this.courses = this.entityService.matchDataToEntity<Course>(data, Course);
-      },
-      error: (error: any) => {
-        console.error('Error loading courses:', error);
-      }
-    });
+  clearCache() {
+    this.cacheService.clearCache();
   }
 }

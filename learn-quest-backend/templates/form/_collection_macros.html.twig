@@ -5,7 +5,7 @@
         {% endif %}
 
         <div id="{{ field.vars.id }}_container"
-             data-prototype="{{ form_widget(field.vars.prototype)|e('html_attr') }}"
+             data-prototype="{{ form_widget(field.vars.prototype)|escape('html_attr') }}"
              class="collection-container">
             {% for subForm in field %}
                 <div class="collection-item border p-3 mb-2 rounded">

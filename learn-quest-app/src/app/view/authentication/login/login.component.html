@@ -5,17 +5,20 @@
     </div>
     <div [class]="'card-body border-dotted ' + getInnerBorderColor() + ' m-2'">
       <form [formGroup]="loginForm">
+        <div *ngIf="errorMessage" class="alert alert-danger mt-2">
+          <div>{{ errorMessage }}</div>
+        </div>
         <div class="form-group mb-3">
           <label for="username" class="fw-bold">Username</label>
           <input type="text" class="form-control" id="username" name="username" formControlName="username">
-          <div *ngIf="usernameControl.invalid" class="alert alert-danger mt-2">
+          <div *ngIf="usernameControl.invalid && (usernameControl.dirty || usernameControl.touched)" class="alert alert-danger mt-2">
             <div *ngIf="usernameControl.getError('required')">Username is required</div>
           </div>
         </div>
         <div class="form-group mb-3">
           <label for="password" class="fw-bold">Password</label>
           <input type="password" class="form-control" id="password" name="password" formControlName="password">
-          <div *ngIf="passwordControl.invalid" class="alert alert-danger mt-2">
+          <div *ngIf="passwordControl.invalid && (passwordControl.dirty || passwordControl.touched)" class="alert alert-danger mt-2">
             <div *ngIf="passwordControl.getError('required')">Password is required</div>
           </div>
         </div>
