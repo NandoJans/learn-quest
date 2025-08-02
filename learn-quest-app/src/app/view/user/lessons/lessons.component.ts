@@ -40,7 +40,8 @@ export class LessonsComponent implements OnInit {
   }
 
   navigate(lesson: Lesson) {
-
+    // Navigate to the lesson detail page
+    this.router.navigate(['/courses', this.courseId, 'lessons', lesson.id]);
   }
 
   enroll() {
