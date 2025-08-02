@@ -44,9 +44,6 @@ export class LessonsComponent implements OnInit {
     this.router.navigate(['/courses', this.courseId, 'lessons', lesson.id]);
   }
 
-  enroll() {
-
-  }
 
   ngOnInit() {
     // Load the course and lessons when the component initializes
