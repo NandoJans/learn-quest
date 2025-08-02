@@ -152,6 +152,10 @@ class Course
 
     public function setPrimaryColor(string $primaryColor): static
     {
+        // Validate the input to ensure it is a valid hex color code
+        if (!preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $primaryColor)) {
+            throw new \InvalidArgumentException('Invalid primary color format. Expected a hex color code (e.g., #RRGGBB or #RGB).');
+        }
         $this->primaryColor = $primaryColor;
 
         return $this;
