@@ -11,7 +11,7 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   post<T>(path: string , body: object): Observable<T> {
-    return this.http.post<T>(this.API_URL+this.parsePath(path), body);
+    return this.http.post<T>(this.API_URL + this.parsePath(path), body);
   }
 
   get<T>(path: string, args: object = {}): Observable<T> {
@@ -29,7 +29,7 @@ export class ApiService {
 
       path += '?' + equals.join('&');
     }
-    console.log(path, args);
+    console.log(path);
     if (path.startsWith('/')) {
       return path;
     }
