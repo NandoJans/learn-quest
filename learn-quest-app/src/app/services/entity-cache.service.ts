@@ -56,7 +56,6 @@ export class EntityCacheService<T extends Entity> {
     entityClass: new () => T,
     params: { [key: string]: any }
   ): T[] {
-    console.log(this.cache)
     const entityName = this.getEntityName(entityClass);
     const key = this.generateKey(params);
 
