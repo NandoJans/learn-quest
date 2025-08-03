@@ -50,4 +50,8 @@ export class LessonsComponent implements OnInit {
     this.courseService.loadCourses({id: this.courseId});
     this.lessonService.loadLessons({courseId: this.courseId});
   }
+
+  enroll() {
+    this.courseService.enrollInCourse(this.courseId);
+  }
 }
