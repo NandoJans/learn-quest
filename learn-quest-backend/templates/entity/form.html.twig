@@ -37,7 +37,10 @@
         {% endfor %}
 
         {# Render collection fields #}
-        {{ macros.render_collection(form.lessons, 'Lessons', 'Add Lesson') }}
+        {% if form.lessons is defined %}
+            {{ macros.render_collection(form.lessons, 'Lessons', 'Add Lesson') }}
+        {% endif %}
+
 
         <button class="btn btn-primary mt-3">{{ is_edit ? 'Save Changes' : 'Create' }}</button>
         {{ form_end(form) }}
