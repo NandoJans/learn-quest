@@ -56,7 +56,7 @@
 
       try {
         const decoded = jwtDecode<UserJwtPayload>(token);
-        console.log(decoded);
+
         if (!decoded.id || !decoded.username) {
           this.user = null;
           return;
@@ -67,7 +67,6 @@
         this.user.username = decoded.username;
         this.user.roles = decoded.roles || [];
 
-        console.log(this.user);
       } catch (e) {
         console.error('Invalid token:', e);
         this.user = null;

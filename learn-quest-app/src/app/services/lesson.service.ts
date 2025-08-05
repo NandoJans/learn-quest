@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import {Course} from '../entities/course';
 import { EntityCacheService } from './entity-cache.service';
 import {Lesson} from '../entities/lesson';
 
