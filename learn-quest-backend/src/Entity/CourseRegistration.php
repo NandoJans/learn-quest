@@ -17,35 +17,65 @@ class CourseRegistration
 
     #[ORM\ManyToOne(inversedBy: 'courseRegistrations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Course $CourseId = null;
+    private ?Course $course = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $courseId = null;
 
     #[ORM\ManyToOne(inversedBy: 'courseRegistrations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $userId = null;
+    private ?User $user = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $userId = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCourseId(): ?Course
+    public function getCourse(): ?Course
     {
-        return $this->CourseId;
+        return $this->course;
     }
 
-    public function setCourseId(?Course $CourseId): static
+    public function setCourse(?Course $course): static
     {
-        $this->CourseId = $CourseId;
+        $this->course = $course;
 
         return $this;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCourseId(): ?int
+    {
+        return $this->courseId;
+    }
+
+    public function setCourseId(?int $courseId): static
+    {
+        $this->courseId = $courseId;
+
+        return $this;
+    }
+
+    public function getUserId(): ?int
     {
         return $this->userId;
     }
 
-    public function setUserId(?User $userId): static
+    public function setUserId(?int $userId): static
     {
         $this->userId = $userId;
 

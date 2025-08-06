@@ -127,7 +127,7 @@ class Course
     {
         if (!$this->courseRegistrations->contains($courseRegistration)) {
             $this->courseRegistrations->add($courseRegistration);
-            $courseRegistration->setCourseId($this);
+            $courseRegistration->setCourse($this);
         }
 
         return $this;
@@ -137,8 +137,8 @@ class Course
     {
         if ($this->courseRegistrations->removeElement($courseRegistration)) {
             // set the owning side to null (unless already changed)
-            if ($courseRegistration->getCourseId() === $this) {
-                $courseRegistration->setCourseId(null);
+            if ($courseRegistration->getCourse() === $this) {
+                $courseRegistration->setCourse(null);
             }
         }
 
