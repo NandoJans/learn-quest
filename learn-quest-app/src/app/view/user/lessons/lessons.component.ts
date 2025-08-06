@@ -59,7 +59,7 @@ export class LessonsComponent implements OnInit {
   isEnrolled(): boolean {
     return this.courseService
       .getEnrolledCourses()
-      .some(course => course.id === this.courseId);
+      .some(course => course.id == this.courseId);
   }
 
   enroll() {
