@@ -12,4 +12,11 @@
     </td>
   </tr>
 </table>
-<app-footer-button [text]="'Enroll'" (click)="enroll()"></app-footer-button>
+<div *ngIf="showEnrollNotification" class="alert alert-success mt-3">
+  Enrolled successfully! Go to
+  <a routerLink="/user/dashboard" class="alert-link">your dashboard</a>.
+</div>
+<app-footer-button [text]="isEnrolled() ? 'Enrolled' : 'Enroll'"
+                   [btnClass]="isEnrolled() ? 'btn-success' : 'btn-primary'"
+                   [disabled]="isEnrolled()"
+                   (click)="enroll()"></app-footer-button>
