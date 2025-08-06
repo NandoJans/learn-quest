@@ -22,6 +22,8 @@ services:
     App\EventListener\JWTCreatedListener:
         tags:
             - { name: 'kernel.event_listener', event: 'lexik_jwt_authentication.on_jwt_created', method: '__invoke' }
-
+    App\Service\MercureTokenService:
+        arguments:
+            $jwtSecret: '%env(MERCURE_JWT_SECRET)%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

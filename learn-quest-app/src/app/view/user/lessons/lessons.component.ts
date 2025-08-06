@@ -52,6 +52,11 @@ export class LessonsComponent implements OnInit {
   }
 
   enroll() {
-    this.courseService.enrollInCourse(this.courseId);
+    this.courseService.enrollInCourse(this.courseId).subscribe({
+      next: (response: any) => {
+        // Optionally, you can reload the courses after enrollment
+        console.log('Enrolled in course:', response);
+      }
+    });
   }
 }

@@ -2,14 +2,16 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Course;
 use App\Entity\CourseRegistration;
+use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/course', name: 'app_api_course', methods: ['GET'])]
+#[Route('/api/course', methods: ['POST', 'GET'])]
 final class ApiCourseController extends AbstractController
 {
     public function __construct(
@@ -18,11 +20,22 @@ final class ApiCourseController extends AbstractController
     {
     }
 
-    #[Route('/enroll', name: 'app_api_course')]
+    #[Route('/enroll', name: 'app_api_course', methods: ['POST'])]
     public function index(Request $request): Response
     {
-        $courseId = $request->query->get('course_id');
-        $userId = $request->query->get('user_id');
+        $requestBody = json_decode($request->getContent(), true);
+
+        if (!$requestBody) {
+            return $this->json(
+                [
+                    'error' => 'Invalid JSON body',
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $courseId = (int) $requestBody['courseId'];
+        $userId = (int) $requestBody['userId'];
 
         if (!$courseId || !$userId) {
             return $this->json(
@@ -33,8 +46,8 @@ final class ApiCourseController extends AbstractController
             );
         }
 
-        $course = $this->doctrine->getRepository(CourseRegistration::class)->find($courseId);
-        $user = $this->doctrine->getRepository(CourseRegistration::class)->find($userId);
+        $course = $this->doctrine->getRepository(Course::class)->find($courseId);
+        $user = $this->doctrine->getRepository(User::class)->find($userId);
 
         if (!$course) {
             return $this->json(
