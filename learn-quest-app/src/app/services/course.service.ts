@@ -37,7 +37,19 @@ export class CourseService {
     return this.apiService.post<any>(`course/enroll`, body);
   }
 
-  getEnrolledCourses() {
+  loadEnrolledCourses(forceReload = false): void {
+    this.cacheService.loadEntities(`course/index`, Course, this.getCourseRegistrationUserFilter(), forceReload);
+  }
 
+  getEnrolledCourses() {
+    return this.cacheService.filterCachedEntities(Course, this.getCourseRegistrationUserFilter());
+  }
+
+  private getCourseRegistrationUserFilter(): {[key: string]: any} {
+    const userId = this.securityService.getUser()?.id;
+    if (!userId) {
+      throw new Error('User must be logged in to get course registrations');
+    }
+    return {'courseRegistrations.user': userId};
   }
 }

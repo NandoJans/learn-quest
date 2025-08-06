@@ -89,6 +89,7 @@ final class ApiEntityController extends AbstractController
                 }
             }
         }
+
         $items = $qb->getQuery()->getResult();
 
         // map to DTOs as before…

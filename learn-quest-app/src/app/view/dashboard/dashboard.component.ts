@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {SecurityService} from '../../services/security.service';
 import {CourseComponent} from '../../components/course/course.component';
@@ -14,7 +14,7 @@ import {CourseService} from '../../services/course.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   constructor(
     private router: Router,
     private securityService: SecurityService,
@@ -28,5 +28,10 @@ export class DashboardComponent {
   logout() {
     this.securityService.logout();
     this.router.navigate(['/login']);
+  }
+
+  ngOnInit() {
+    // Load enrolled courses when the component initializes
+    this.courseService.loadEnrolledCourses();
   }
 }

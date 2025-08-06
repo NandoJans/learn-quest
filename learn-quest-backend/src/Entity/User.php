@@ -36,7 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, CourseRegistration>
      */
-    #[ORM\OneToMany(targetEntity: CourseRegistration::class, mappedBy: 'userId', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: CourseRegistration::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $courseRegistrations;
 
     public function __construct()
