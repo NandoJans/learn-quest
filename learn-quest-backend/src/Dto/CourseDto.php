@@ -2,7 +2,7 @@
 
 namespace App\Dto;
 
-class CourseDto
+class CourseDto extends Dto
 {
     public function __construct(
         public ?int $id = null,

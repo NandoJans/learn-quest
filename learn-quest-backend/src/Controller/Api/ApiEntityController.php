@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Dto\Dto;
 use App\Service\EntityService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,38 +30,20 @@ final class ApiEntityController extends AbstractController
             : $repo->findAll();
 
         $dtoClass = $this->entityService->getEntityDtoClass($entity);
-        if (!class_exists($dtoClass)) {
-            throw new \RuntimeException(sprintf('DTO class "%s" does not exist.', $dtoClass));
-        }
 
         $dtos = array_map(function ($item) use ($dtoClass) {
-            // Match the dto constructor signature
-            try {
-                $dtoReflection = new \ReflectionClass($dtoClass);
-            } catch (\ReflectionException $e) {
-                throw new \RuntimeException(sprintf('Could not reflect DTO class "%s": %s', $dtoClass, $e->getMessage()));
-            }
-
-            $constructor = $dtoReflection->getConstructor();
-            if (!$constructor) {
-                throw new \RuntimeException(sprintf('DTO class "%s" does not have a constructor.', $dtoClass));
-            }
-
-            $params = $constructor->getParameters();
-            $args = [];
-            foreach ($params as $param) {
-                $paramName = $param->getName();
-                if (property_exists($item, $paramName)) {
-                    $getMethod = 'get' . ucfirst($paramName);
-                    $args[] = $item->$getMethod();
-                } else {
-                    throw new \RuntimeException(sprintf('Property "%s" does not exist in entity "%s".', $paramName, get_class($item)));
-                }
-            }
-
-            return new $dtoClass(...$args);
+            $dto = $this->entityService->getDtoInstance($item, $dtoClass);
+            $this->handleDtoAssociations($dto, $item);
+            return $dto;
         }, $items);
 
         return $this->json($dtos);
+    }
+
+    private function handleDtoAssociations(mixed $dto, mixed $item): void
+    {
+        if (method_exists($dto, 'extraData')) {
+            $dto->extraData($this->entityService, $this->doctrine);
+        }
     }
 }
