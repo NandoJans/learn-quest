@@ -38,6 +38,11 @@ final class ApiEntityController extends AbstractController
             $path        = [];
 
             foreach ($parts as $i => $part) {
+                // allow case-insensitive filter keys by normalising the
+                // segment to match the property name convention used in the
+                // entities (camelCase with a lowercase first letter)
+                $part = lcfirst($part);
+
                 $isLast = $i === count($parts) - 1;
                 $path[] = $part;
                 $pathKey = implode('_', $path);
