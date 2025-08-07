@@ -8,9 +8,9 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 })
 export class PrimaryButtonComponent {
   @Input() text: string = 'Submit';
-  @Output() click: EventEmitter<any> = new EventEmitter();
+  @Output() pressed: EventEmitter<void> = new EventEmitter<void>();
 
-  emit() {
-    this.click.emit();
+  emit(): void {
+    this.pressed.emit();
   }
 }
