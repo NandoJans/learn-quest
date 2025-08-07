@@ -1,23 +1,32 @@
-<form (ngSubmit)="submit()" #sectionForm="ngForm">
-  <div>
-    <label>Lesson ID</label>
-    <input type="number" [(ngModel)]="section.lessonId" name="lessonId" required>
+<div class="container d-flex h-100 align-items-center justify-content-center">
+  <div [class]="'card border-3 shadow-blocked ' + getOuterBorderColor()">
+    <div class="card-header">
+      <h1>Create Lesson Section</h1>
+    </div>
+    <div [class]="'card-body border-dotted ' + getInnerBorderColor() + ' m-2'">
+      <form (ngSubmit)="submit()" #sectionForm="ngForm">
+        <div class="form-group mb-3">
+          <label for="lessonId" class="fw-bold">Lesson ID</label>
+          <input type="number" class="form-control" id="lessonId" [(ngModel)]="section.lessonId" name="lessonId" required>
+        </div>
+        <div class="form-group mb-3">
+          <label for="type" class="fw-bold">Type</label>
+          <select class="form-select" id="type" [(ngModel)]="section.type" name="type" required>
+            <option value="text">Text</option>
+            <option value="widget">Widget</option>
+            <option value="question">Question</option>
+          </select>
+        </div>
+        <div class="form-group mb-3">
+          <label for="content" class="fw-bold">Content</label>
+          <textarea class="form-control" id="content" [(ngModel)]="section.content" name="content"></textarea>
+        </div>
+        <div class="form-group mb-3">
+          <label for="position" class="fw-bold">Position</label>
+          <input type="number" class="form-control" id="position" [(ngModel)]="section.position" name="position" required>
+        </div>
+        <app-primary-button [text]="'Create Section'" (click)="submit()"></app-primary-button>
+      </form>
+    </div>
   </div>
-  <div>
-    <label>Type</label>
-    <select [(ngModel)]="section.type" name="type" required>
-      <option value="text">Text</option>
-      <option value="widget">Widget</option>
-      <option value="question">Question</option>
-    </select>
-  </div>
-  <div>
-    <label>Content</label>
-    <textarea [(ngModel)]="section.content" name="content"></textarea>
-  </div>
-  <div>
-    <label>Position</label>
-    <input type="number" [(ngModel)]="section.position" name="position" required>
-  </div>
-  <button type="submit">Create Section</button>
-</form>
+</div>
