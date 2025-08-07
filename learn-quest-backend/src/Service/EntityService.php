@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Dto\Dto;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -19,7 +20,7 @@ class EntityService
 
     public function getEntityClass(string $entity): string
     {
-        $class = 'App\\Entity\\' . ucfirst(strtolower($entity));
+        $class = 'App\\Entity\\' . ucfirst($entity);
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('Entity "%s" does not exist.', $entity));
         }
@@ -28,7 +29,7 @@ class EntityService
 
     public function getEntityTypeClass(string $entity): string
     {
-        $type = ucfirst(strtolower($entity)) . 'Type';
+        $type = ucfirst($entity) . 'Type';
         $class = 'App\\Form\\Type\\' . $type;
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('Form type "%s" does not exist.', $type));
@@ -38,12 +39,47 @@ class EntityService
 
     public function getEntityDtoClass(string $entity): string
     {
-        $dto = ucfirst(strtolower($entity)) . 'Dto';
+        $dto = ucfirst($entity) . 'Dto';
         $class = 'App\\Dto\\' . $dto;
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('DTO class "%s" does not exist.', $dto));
         }
         return $class;
+    }
+
+    public function getDtoInstance(mixed $item, string $class): mixed
+    {
+        if (!str_ends_with($class, 'Dto')) {
+            throw new \InvalidArgumentException(sprintf('Class "%s" is not a DTO class. It should end with "Dto".', $class));
+        }
+
+        // Match the dto constructor signature
+        try {
+            $dtoReflection = new \ReflectionClass($class);
+        } catch (\ReflectionException $e) {
+            throw new \RuntimeException(sprintf('Could not reflect DTO class "%s": %s', $class, $e->getMessage()));
+        }
+
+        $constructor = $dtoReflection->getConstructor();
+        if (!$constructor) {
+            throw new \RuntimeException(sprintf('DTO class "%s" does not have a constructor.', $class));
+        }
+
+
+
+        $params = $constructor->getParameters();
+        $args = [];
+        foreach ($params as $param) {
+            $paramName = $param->getName();
+            if (property_exists($item, $paramName)) {
+                $getMethod = 'get' . ucfirst($paramName);
+                $args[] = $item->$getMethod();
+            } else {
+                throw new \RuntimeException(sprintf('Property "%s" does not exist in entity "%s".', $paramName, get_class($item)));
+            }
+        }
+
+        return new $class(...$args);
     }
 
     public function getFormFieldNames(string $formTypeClass): array

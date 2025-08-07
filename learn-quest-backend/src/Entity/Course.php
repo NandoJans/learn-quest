@@ -32,7 +32,7 @@ class Course
     /**
      * @var Collection<int, CourseRegistration>
      */
-    #[ORM\OneToMany(targetEntity: CourseRegistration::class, mappedBy: 'CourseId', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: CourseRegistration::class, mappedBy: 'course', orphanRemoval: true)]
     private Collection $courseRegistrations;
 
     #[ORM\Column(length: 255)]
@@ -127,7 +127,7 @@ class Course
     {
         if (!$this->courseRegistrations->contains($courseRegistration)) {
             $this->courseRegistrations->add($courseRegistration);
-            $courseRegistration->setCourseId($this);
+            $courseRegistration->setCourse($this);
         }
 
         return $this;
@@ -137,8 +137,8 @@ class Course
     {
         if ($this->courseRegistrations->removeElement($courseRegistration)) {
             // set the owning side to null (unless already changed)
-            if ($courseRegistration->getCourseId() === $this) {
-                $courseRegistration->setCourseId(null);
+            if ($courseRegistration->getCourse() === $this) {
+                $courseRegistration->setCourse(null);
             }
         }
 

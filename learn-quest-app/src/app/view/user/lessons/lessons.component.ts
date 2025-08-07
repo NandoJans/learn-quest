@@ -5,7 +5,7 @@ import {Course} from '../../../entities/course';
 import {IconComponent} from '../../../components/icon/icon.component';
 import {FooterButtonComponent} from '../../../components/buttons/footer-button/footer-button.component';
 import {Lesson} from '../../../entities/lesson';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {NgForOf} from '@angular/common';
 
 @Component({
@@ -13,13 +13,16 @@ import {NgForOf} from '@angular/common';
   imports: [
     IconComponent,
     FooterButtonComponent,
-    NgForOf
+    NgForOf,
+    RouterLink
   ],
   templateUrl: './lessons.component.html',
   styleUrl: './lessons.component.css'
 })
 export class LessonsComponent implements OnInit {
   @Input() courseId: number = 0;
+
+  showEnrollNotification = false;
 
   constructor(
     private courseService: CourseService,
@@ -49,5 +52,27 @@ export class LessonsComponent implements OnInit {
     // Load the course and lessons when the component initializes
     this.courseService.loadCourses({id: this.courseId});
     this.lessonService.loadLessons({courseId: this.courseId});
+    // Load courses the user is enrolled in to update the button state
+    this.courseService.loadEnrolledCourses();
+  }
+
+  isEnrolled(): boolean {
+    return this.courseService
+      .getEnrolledCourses()
+      .some(course => course.id == this.courseId);
+  }
+
+  enroll() {
+    if (this.isEnrolled()) {
+      return;
+    }
+    this.courseService.enrollInCourse(this.courseId).subscribe({
+      next: (response: any) => {
+        // Reload the enrolled courses and show a confirmation
+        this.courseService.loadEnrolledCourses(true);
+        this.showEnrollNotification = true;
+        console.log('Enrolled in course:', response);
+      }
+    });
   }
 }

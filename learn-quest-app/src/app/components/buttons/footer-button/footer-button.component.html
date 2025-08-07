@@ -1,1 +1,3 @@
-<button (click)="emit()" class="card-footer btn btn-primary w-100">{{ text }}</button>
+<button (click)="emit()"
+        [disabled]="disabled"
+        [class]="'card-footer btn w-100 ' + btnClass">{{ text }}</button>

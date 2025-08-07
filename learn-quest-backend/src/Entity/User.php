@@ -36,7 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, CourseRegistration>
      */
-    #[ORM\OneToMany(targetEntity: CourseRegistration::class, mappedBy: 'userId', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: CourseRegistration::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $courseRegistrations;
 
     public function __construct()
@@ -131,7 +131,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->courseRegistrations->contains($courseRegistration)) {
             $this->courseRegistrations->add($courseRegistration);
-            $courseRegistration->setUserId($this);
+            $courseRegistration->setUser($this);
         }
 
         return $this;
@@ -141,11 +141,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->courseRegistrations->removeElement($courseRegistration)) {
             // set the owning side to null (unless already changed)
-            if ($courseRegistration->getUserId() === $this) {
-                $courseRegistration->setUserId(null);
+            if ($courseRegistration->getUser() === $this) {
+                $courseRegistration->setUser(null);
             }
         }
 
         return $this;
+    }
+
+    /**
+     * Convenience: get all Course entities the user is enrolled in
+     * @return Collection<int, Course>
+     */
+    public function getCourses(): Collection
+    {
+        return $this->courseRegistrations
+            ->map(fn(CourseRegistration $r) => $r->getCourse())
+            ->filter(fn($c) => $c instanceof Course);
     }
 }
