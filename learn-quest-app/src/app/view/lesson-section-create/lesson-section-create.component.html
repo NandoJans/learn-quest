@@ -1,0 +1,23 @@
+<form (ngSubmit)="submit()" #sectionForm="ngForm">
+  <div>
+    <label>Lesson ID</label>
+    <input type="number" [(ngModel)]="section.lessonId" name="lessonId" required>
+  </div>
+  <div>
+    <label>Type</label>
+    <select [(ngModel)]="section.type" name="type" required>
+      <option value="text">Text</option>
+      <option value="widget">Widget</option>
+      <option value="question">Question</option>
+    </select>
+  </div>
+  <div>
+    <label>Content</label>
+    <textarea [(ngModel)]="section.content" name="content"></textarea>
+  </div>
+  <div>
+    <label>Position</label>
+    <input type="number" [(ngModel)]="section.position" name="position" required>
+  </div>
+  <button type="submit">Create Section</button>
+</form>
