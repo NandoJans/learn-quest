@@ -61,4 +61,43 @@ final class ApiLessonSectionController extends AbstractController
             'position' => $section->getPosition(),
         ], Response::HTTP_CREATED);
     }
+
+    #[Route('/{id}', name: 'app_api_lesson_section_update', methods: ['PUT'])]
+    public function update(int $id, Request $request): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_TEACHER')) {
+            return $this->json(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        if (!$data) {
+            return $this->json(['error' => 'Invalid JSON body'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $section = $this->doctrine->getRepository(LessonSection::class)->find($id);
+        if (!$section) {
+            return $this->json(['error' => 'Lesson section not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (isset($data['type'])) {
+            $section->setType($data['type']);
+        }
+        if (array_key_exists('content', $data)) {
+            $section->setContent($data['content']);
+        }
+        if (isset($data['position'])) {
+            $section->setPosition((int) $data['position']);
+        }
+
+        $em = $this->doctrine->getManager();
+        $em->flush();
+
+        return $this->json([
+            'id' => $section->getId(),
+            'lessonId' => $section->getLessonId(),
+            'type' => $section->getType(),
+            'content' => $section->getContent(),
+            'position' => $section->getPosition(),
+        ]);
+    }
 }

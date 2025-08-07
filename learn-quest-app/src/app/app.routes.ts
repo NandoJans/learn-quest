@@ -12,5 +12,10 @@ export const routes: Routes = [
   {component: DashboardComponent, path: 'user/dashboard', title: 'Dashboard', canActivate: [jwtAuthGuard]},
   {component: CoursesComponent, path: 'user/courses', title: 'Courses', canActivate: [jwtAuthGuard]},
   {component: LessonsComponent, path: 'user/course', title: 'Course', canActivate: [jwtAuthGuard]},
-  {component: LessonSectionCreateComponent, path: 'teacher/lesson-section/create', title: 'Create Lesson Section', canActivate: [jwtAuthGuard]},
+  {
+    component: LessonSectionCreateComponent,
+    path: 'teacher/lesson/:lessonId/sections',
+    title: 'Edit Lesson Sections',
+    canActivate: [jwtAuthGuard]
+  },
 ];

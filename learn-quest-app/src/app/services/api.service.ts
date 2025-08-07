@@ -14,6 +14,10 @@ export class ApiService {
     return this.http.post<T>(this.API_URL + this.parsePath(path), body);
   }
 
+  put<T>(path: string, body: object): Observable<T> {
+    return this.http.put<T>(this.API_URL + this.parsePath(path), body);
+  }
+
   get<T>(path: string, args: object = {}): Observable<T> {
     return this.http.get<T>(this.API_URL + this.parsePath(path, args));
   }

@@ -23,6 +23,10 @@ export class LessonSectionService {
     return this.apiService.post<LessonSection>('lesson_section/create', section);
   }
 
+  updateSection(section: LessonSection): Observable<LessonSection> {
+    return this.apiService.put<LessonSection>(`lesson_section/${section.id}`, section);
+  }
+
   clearCache() {
     this.cacheService.clearCache(LessonSection);
   }
