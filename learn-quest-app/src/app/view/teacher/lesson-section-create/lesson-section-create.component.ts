@@ -86,12 +86,20 @@ export class LessonSectionCreateComponent implements OnInit {
     const id = group.get('id')?.value as number | null;
 
     // Optimistically remove
+    const removedSection = this.sections.at(i);
     this.sections.removeAt(i);
     this.reindexPositions();
 
     // Delete on backend if persisted
     if (id) {
-      this.sectionService.deleteSection(id).subscribe();
+      this.sectionService.deleteSection(id).subscribe({
+        error: (err) => {
+          // Restore the section in the UI
+          this.sections.insert(i, removedSection);
+          this.reindexPositions();
+          window.alert('Failed to delete section. Please try again.');
+        }
+      });
     }
   }
 
