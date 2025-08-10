@@ -16,9 +16,6 @@ import {Mode} from '../../../types/mode';
   styleUrl: './math-basic.component.css'
 })
 export class MathBasicComponent {
-  resetSeries() {
-      throw new Error('Method not implemented.');
-  }
   /** Mode: 'author' shows settings; 'learner' hides them */
   @Input() mode: Mode = 'learner';
 
