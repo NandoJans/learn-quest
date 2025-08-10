@@ -41,23 +41,9 @@ class LessonSection
     public function setLesson(?Lesson $lesson): static
     {
         $this->lesson = $lesson;
-        $this->lessonId = $lesson?->getId();
 
         return $this;
     }
-
-    public function getLessonId(): ?int
-    {
-        return $this->lessonId;
-    }
-
-    public function setLessonId(?int $lessonId): static
-    {
-        $this->lessonId = $lessonId;
-
-        return $this;
-    }
-
     public function getType(): ?string
     {
         return $this->type;
