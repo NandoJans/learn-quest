@@ -22,7 +22,7 @@
             <div *ngIf="passwordControl.getError('required')">Password is required</div>
           </div>
         </div>
-        <app-primary-button [text]="'Login'" (click)="submit()"></app-primary-button>
+        <app-primary-button [text]="'Login'" (pressed)="submit()"></app-primary-button>
       </form>
     </div>
   </div>

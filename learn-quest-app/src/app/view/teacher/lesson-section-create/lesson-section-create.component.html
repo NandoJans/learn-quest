@@ -1,0 +1,127 @@
+<div class="sections-wrapper">
+  <form [formGroup]="sectionsForm" novalidate>
+    <div formArrayName="sections">
+      <div
+        class="section-card"
+        *ngFor="let section of sections.controls; index as i; trackBy: trackByIndex"
+        [formGroupName]="i">
+
+        <header class="sec-header">
+          <h2 class="section-title">Section {{ i + 1 }}</h2>
+
+          <div class="type-row">
+            <label class="chip">
+              <input type="radio" formControlName="type" value="text" />
+              <span>Text</span>
+            </label>
+            <label class="chip">
+              <input type="radio" formControlName="type" value="widget" />
+              <span>Interactive</span>
+            </label>
+            <label class="chip">
+              <input type="radio" formControlName="type" value="question" />
+              <span>Question</span>
+            </label>
+          </div>
+        </header>
+
+        <!-- TEXT TYPE -->
+        <section class="sec-body" *ngIf="section.get('type')?.value === 'text'">
+          <label class="field">
+            <span class="label">Explanation</span>
+            <textarea rows="5" class="input" formControlName="content" placeholder="Write your explanation..."></textarea>
+          </label>
+          <p class="hint">Supports plain text. If you use Markdown in your renderer, store raw text here.</p>
+        </section>
+
+        <!-- WIDGET TYPE -->
+        <section class="sec-body" *ngIf="section.get('type')?.value === 'widget'">
+          <div class="row">
+            <label class="field">
+              <span class="label">Widget</span>
+              <select class="input" formControlName="widgetType">
+                <option [ngValue]="null" disabled>Select a widget…</option>
+                <option *ngFor="let wt of widgetTypes" [ngValue]="wt.value">{{ wt.label }}</option>
+              </select>
+            </label>
+          </div>
+
+          <!-- Example: embed your Math Practice author UI when chosen -->
+          <!--
+          <app-math-practice
+            *ngIf="section.get('widgetType')?.value === 'math-practice'"
+            mode="author"
+            [config]="section.get('widgetConfig')?.value"
+            (saveConfig)="section.patchValue({ widgetConfig: $event })">
+          </app-math-practice>
+          -->
+
+          <!-- Fallback JSON editor for widget config -->
+          <label class="field">
+            <span class="label">Widget Config (JSON)</span>
+            <textarea
+              rows="6"
+              class="input mono"
+              [ngModel]="(section.get('widgetConfig')?.value | json)"
+              (ngModelChange)="section.patchValue({ widgetConfig: ($event ? JSON.parse($event) : null )})"
+              placeholder='{"operations":["+","-"],"min":0,"max":10,"requiredQuestions":10}'>
+            </textarea>
+          </label>
+
+          <p class="hint">Tip: If you embed an authoring widget (like Math Practice), keep this JSON in sync via its save output.</p>
+        </section>
+
+        <!-- QUESTION TYPE -->
+        <section class="sec-body" *ngIf="section.get('type')?.value === 'question'">
+          <label class="field">
+            <span class="label">Prompt</span>
+            <textarea class="input" rows="3" formControlName="questionPrompt" placeholder="Ask your question..."></textarea>
+          </label>
+
+          <div class="answers">
+            <div class="answers-head">
+              <span>Answers</span>
+              <button type="button" class="btn subtle" (click)="addAnswer(i)">Add answer</button>
+            </div>
+
+            <div class="answer-row" *ngFor="let ans of answersArray(i).controls; index as j" [formGroup]="ans">
+              <input
+                class="input"
+                type="text"
+                formControlName="text"
+                placeholder="Answer option" />
+
+              <label class="chip">
+                <input
+                  type="radio"
+                  [value]="j"
+                  [checked]="section.get('correctIndex')?.value === j"
+                  (change)="section.patchValue({ correctIndex: j })" />
+                <span>Correct</span>
+              </label>
+
+              <button type="button" class="btn danger" (click)="removeAnswer(i, j)" *ngIf="answersArray(i).length > 1">
+                Remove
+              </button>
+            </div>
+          </div>
+
+          <label class="field">
+            <span class="label">Explanation (shown after answer)</span>
+            <textarea class="input" rows="3" formControlName="explanation" placeholder="Explain the correct answer..."></textarea>
+          </label>
+        </section>
+
+        <footer class="sec-footer">
+          <span class="muted">Autosaved</span>
+          <button type="button" class="btn danger" (click)="removeSection(i)">Delete section</button>
+        </footer>
+
+      </div>
+    </div>
+  </form>
+
+  <div class="text-center mt-3">
+    <app-primary-button [text]="'Add Section'" (pressed)="addSection()"></app-primary-button>
+  </div>
+</div>
