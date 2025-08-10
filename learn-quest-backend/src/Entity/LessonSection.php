@@ -19,9 +19,6 @@ class LessonSection
     #[ORM\JoinColumn(nullable: false)]
     private ?Lesson $lesson = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $lessonId = null;
-
     #[ORM\Column(length: 50)]
     private ?string $type = null;
 
