@@ -47,65 +47,166 @@ class EntityService
         return $class;
     }
 
-    public function getDtoInstance(mixed $item, string $class): mixed
+    /**
+     * Map an entity to a DTO by matching DTO constructor params.
+     * Provide $map when names differ or for relations (e.g. ['lessonId' => 'lesson.id']).
+     *
+     * @param object $entity Doctrine entity
+     * @param class-string $dtoClass DTO FQCN
+     * @param array<string, string|callable> $map  dtoParam => 'path.like.this' | callable($entity): mixed
+     */
+    public function mapEntityToDto(object $entity, string $dtoClass, array $map = []): object
     {
-        if (!str_ends_with($class, 'Dto')) {
-            throw new \InvalidArgumentException(sprintf('Class "%s" is not a DTO class. It should end with "Dto".', $class));
+        if (!class_exists($dtoClass)) {
+            throw new \InvalidArgumentException(sprintf('DTO class "%s" does not exist.', $dtoClass));
+        }
+        $refl = new \ReflectionClass($dtoClass);
+        $ctor = $refl->getConstructor();
+        if (!$ctor) {
+            // DTO without ctor: just return new DTO and set public props if you want
+            return $refl->newInstance();
         }
 
-        // Match the dto constructor signature
-        try {
-            $dtoReflection = new \ReflectionClass($class);
-        } catch (\ReflectionException $e) {
-            throw new \RuntimeException(sprintf('Could not reflect DTO class "%s": %s', $class, $e->getMessage()));
-        }
-
-        $constructor = $dtoReflection->getConstructor();
-        if (!$constructor) {
-            throw new \RuntimeException(sprintf('DTO class "%s" does not have a constructor.', $class));
-        }
-
-
-
-        $params = $constructor->getParameters();
         $args = [];
-        foreach ($params as $param) {
-            $paramName = $param->getName();
-            if (property_exists($item, $paramName)) {
-                $getMethod = 'get' . ucfirst($paramName);
-                $args[] = $item->$getMethod();
-            } else {
-                throw new \RuntimeException(sprintf('Property "%s" does not exist in entity "%s".', $paramName, get_class($item)));
+        foreach ($ctor->getParameters() as $param) {
+            $name = $param->getName();
+
+            // 1) explicit map (callable or dot-path)
+            if (array_key_exists($name, $map)) {
+                $mapped = $map[$name];
+                $value = is_callable($mapped) ? $mapped($entity) : $this->getByPath($entity, (string) $mapped);
+                $args[] = $this->normalizeValue($value);
+                continue;
+            }
+
+            // 2) exact getter (getX / isX)
+            $value = $this->readViaGuess($entity, $name);
+            if ($value !== null) {
+                $args[] = $this->normalizeValue($value);
+                continue;
+            }
+
+            // 3) special-case: fooId -> entity->getFoo()->getId()
+            if (str_ends_with($name, 'Id')) {
+                $rel = substr($name, 0, -2); // drop 'Id'
+                $relObj = $this->readViaGuess($entity, $rel);
+                if ($relObj && method_exists($relObj, 'getId')) {
+                    $args[] = $this->normalizeValue($relObj->getId());
+                    continue;
+                }
+            }
+
+            // 4) default to null/param default
+            $args[] = $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null;
+        }
+
+        return $refl->newInstance(...$args);
+    }
+
+    /**
+     * Optionally map a DTO (or array) back into an entity.
+     * Use $map for relations (e.g. ['lesson' => fn($v) => $this->em->getRepository(Lesson::class)->find($v)])
+     *
+     * @param array<string, mixed>|object $dto
+     * @param object $entity
+     * @param array<string, string|callable> $map entityProp => dtoPath|callable($dto):mixed
+     */
+    public function mapDtoToEntity(array|object $dto, object $entity, array $map = []): object
+    {
+        $dtoArr = is_array($dto) ? $dto : $this->objectToArray($dto);
+
+        foreach ($map as $entityProp => $src) {
+            $value = is_callable($src) ? $src($dto) : $this->getFromArrayByPath($dtoArr, (string) $src);
+            $setter = 'set' . ucfirst($entityProp);
+            if (method_exists($entity, $setter)) {
+                $entity->$setter($value);
             }
         }
 
-        return new $class(...$args);
+        // naive: assign matching keys -> setters if not covered by map
+        foreach ($dtoArr as $k => $v) {
+            $setter = 'set' . ucfirst($k);
+            if (method_exists($entity, $setter) && !array_key_exists($k, $map)) {
+                $entity->$setter($v);
+            }
+        }
+
+        return $entity;
+    }
+
+    // ---------------- helpers ----------------
+
+    private function readViaGuess(object $obj, string $name): mixed
+    {
+        $getter = 'get' . ucfirst($name);
+        if (method_exists($obj, $getter)) return $obj->$getter();
+
+        $isser = 'is' . ucfirst($name);
+        if (method_exists($obj, $isser)) return $obj->$isser();
+
+        return null;
+    }
+
+    /** Resolve dot-path like 'lesson.id' by chaining getters */
+    private function getByPath(object $entity, string $path): mixed
+    {
+        $parts = explode('.', $path);
+        $current = $entity;
+        foreach ($parts as $p) {
+            if (!is_object($current)) return null;
+            $current = $this->readViaGuess($current, $p);
+            if ($current === null) return null;
+        }
+        return $current;
+    }
+
+    /** Format dates and related entities safely */
+    private function normalizeValue(mixed $v): mixed
+    {
+        if ($v instanceof \DateTimeInterface) {
+            return $v->format(\DateTimeInterface::ATOM);
+        }
+        if (is_object($v) && method_exists($v, 'getId')) {
+            return $v->getId();
+        }
+        return $v;
+    }
+
+    private function objectToArray(object $o): array
+    {
+        // crude: expose public props if any, else use getters
+        $arr = [];
+        foreach ((new \ReflectionClass($o))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
+            $arr[$prop->getName()] = $prop->getValue($o);
+        }
+        if ($arr) return $arr;
+
+        // fallback: getters to array
+        $ref = new \ReflectionClass($o);
+        foreach ($ref->getMethods(\ReflectionMethod::IS_PUBLIC) as $m) {
+            if (str_starts_with($m->getName(), 'get') && $m->getNumberOfRequiredParameters() === 0) {
+                $key = lcfirst(substr($m->getName(), 3));
+                $arr[$key] = $o->{$m->getName()}();
+            }
+        }
+        return $arr;
     }
 
     public function getFormFieldNames(string $formTypeClass): array
     {
         $form = $this->formFactory->create($formTypeClass);
         $fieldNames = [];
-
         foreach ($form->all() as $childName => $child) {
-            // Skip fields like 'submit', 'password', 'csrf_token'
-            if (in_array($childName, self::FIELD_SKIP, true)) {
-                continue;
-            }
-            // Skip collection fields
-            if ($child->getConfig()->getType()->getInnerType() instanceof CollectionType) {
-                continue;
-            }
+            if (in_array($childName, self::FIELD_SKIP, true)) continue;
+            if ($child->getConfig()->getType()->getInnerType() instanceof CollectionType) continue;
             $fieldNames[] = $childName;
         }
-
         return $fieldNames;
     }
 
     public function getEntityFields(string $entityClass): array
     {
         $metadata = $this->em->getClassMetadata($entityClass);
-
         return $metadata->getFieldNames();
     }
 }

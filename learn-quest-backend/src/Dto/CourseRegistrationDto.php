@@ -22,7 +22,7 @@ class CourseRegistrationDto extends Dto
         // This method should add course data
         if ($this->id) {
             $course = $doctrine->getRepository($entityService->getEntityClass('course'))->find($this->courseId);
-            $this->course = $entityService->getDtoInstance($course, CourseDto::class);
+            $this->course = $entityService->mapEntityToDto($course, CourseDto::class);
         }
     }
 }
