@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {LessonSectionCreateComponent} from './lesson-section-create.component';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
 import {of} from 'rxjs';
-import {LessonSectionService} from '../../services/lesson-section.service';
+import {LessonSectionService} from '../../../services/lesson-section.service';
 
 class LessonSectionServiceStub {
   createSection = jasmine.createSpy('createSection').and.callFake((section: any) => {

@@ -1,0 +1,65 @@
+:host { display: block; }
+
+.sections-wrapper {
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+}
+
+.section-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem 1.25rem 1rem;
+  margin-bottom: 1.25rem;
+  border-top: 4px solid #6c63ff;
+}
+
+.sec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font-weight: 700;
+  color: #6c63ff;
+  margin: 0;
+}
+
+.type-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid #e6e6e6; padding: 6px 10px; border-radius: 999px;
+  background: #fafafa; cursor: pointer; user-select: none; font-size: 0.95rem;
+}
+
+.sec-body { margin-top: 12px; display: grid; gap: 12px; }
+
+.field { display: grid; gap: 6px; }
+.label { font-size: .9rem; color: #555; }
+.input {
+  width: 100%; padding: 10px 12px; border: 1.5px solid #e5e5e5; border-radius: 10px;
+  font-size: 0.95rem; background: #fff;
+}
+textarea.input { resize: vertical; }
+.input.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+.answers { display: grid; gap: 10px; }
+.answers-head { display: flex; align-items: center; justify-content: space-between; }
+.answer-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
+
+.btn {
+  border: 1px solid #ddd; background: #f6f6f6; padding: 8px 12px; border-radius: 10px; cursor: pointer;
+}
+.btn.subtle { background: transparent; }
+.btn.primary { background: #0b5; border-color: #0b5; color: #fff; }
+.btn.danger { background: #ffe5e5; border-color: #ffd1d1; color: #b00020; }
+
+.sec-footer {
+  margin-top: 10px; display: flex; align-items: center; justify-content: space-between;
+}
+.muted { color: #888; font-size: .9rem; }

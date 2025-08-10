@@ -1,0 +1,126 @@
+<div class="mp-card" tabindex="0" aria-label="Math practice widget">
+  <header class="mp-header">
+    <h2 class="mp-title">Math Practice</h2>
+
+    <!-- Author mode: editable settings -->
+    <form *ngIf="mode==='author' && draft as d" class="mp-settings" (submit)="$event.preventDefault()">
+      <fieldset class="mp-group">
+        <legend>Operations</legend>
+        <label class="mp-chip">
+          <input type="checkbox" [checked]="d.operations.includes('+')" (change)="toggleDraftOp('+', $event)" />
+          <span>+</span>
+        </label>
+        <label class="mp-chip">
+          <input type="checkbox" [checked]="d.operations.includes('-')" (change)="toggleDraftOp('-', $event)" />
+          <span>−</span>
+        </label>
+        <label class="mp-chip">
+          <input type="checkbox" [checked]="d.operations.includes('×')" (change)="toggleDraftOp('×', $event)" />
+          <span>×</span>
+        </label>
+        <label class="mp-chip">
+          <input type="checkbox" [checked]="d.operations.includes('÷')" (change)="toggleDraftOp('÷', $event)" />
+          <span>÷</span>
+        </label>
+      </fieldset>
+
+      <fieldset class="mp-group">
+        <legend>Range</legend>
+        <label>Min
+          <input type="number" [(ngModel)]="d.min" name="min" />
+        </label>
+        <label>Max
+          <input type="number" [(ngModel)]="d.max" name="max" />
+        </label>
+      </fieldset>
+
+      <fieldset class="mp-group">
+        <legend>Rules</legend>
+        <label class="mp-check">
+          <input type="checkbox" [(ngModel)]="d.allowNegatives" name="allowNegatives" />
+          Allow negatives
+        </label>
+        <label class="mp-check">
+          <input type="checkbox" [(ngModel)]="d.integerDivisionOnly" name="integerDivisionOnly" />
+          Integer division
+        </label>
+      </fieldset>
+
+      <fieldset class="mp-group">
+        <legend>Flow</legend>
+        <label>Required questions
+          <input type="number" min="1" [(ngModel)]="d.requiredQuestions" name="requiredQuestions" />
+        </label>
+        <label class="mp-check">
+          <input type="checkbox" [(ngModel)]="d.autoStart" name="autoStart" />
+          Auto start (learner)
+        </label>
+      </fieldset>
+
+      <div class="mp-actions left">
+        <button class="mp-btn primary" type="button" (click)="saveDraft()">Save settings</button>
+      </div>
+    </form>
+
+    <!-- Learner mode: show fixed settings summary -->
+    <div *ngIf="mode==='learner' && config" class="mp-summary">
+      <span>Ops: {{ config.operations.join(' ') }}</span>
+      <span>Range: {{ config.min }}–{{ config.max }}</span>
+      <span>Required: {{ config.requiredQuestions }}</span>
+    </div>
+  </header>
+
+  <!-- Learner problem area -->
+  <section *ngIf="mode==='learner'" class="mp-problem" [class.locked]="stats.total >= (config?.requiredQuestions ?? 0)">
+    <ng-container *ngIf="stats.total < (config?.requiredQuestions ?? 0); else doneBlock">
+      <div class="mp-equation" *ngIf="current() as p" aria-live="polite">
+        <span class="mp-operand">{{ p.a }}</span>
+        <span class="mp-op">{{ p.op }}</span>
+        <span class="mp-operand">{{ p.b }}</span>
+        <span class="mp-op">=</span>
+
+        <input
+          class="mp-answer"
+          type="number"
+          [disabled]="checked()"
+          [(ngModel)]="answer"
+          (keyup.enter)="checked() ? next() : check()"
+          aria-label="Your answer" />
+      </div>
+
+      <div class="mp-actions">
+        <button class="mp-btn primary" (click)="checked() ? next() : check()">
+          {{ checked() ? 'Next' : 'Check' }} (Enter)
+        </button>
+        <button class="mp-btn subtle" (click)="reveal()" [disabled]="checked()">
+          Reveal
+        </button>
+      </div>
+
+      <div class="mp-feedback" *ngIf="checked()">
+        <p [class.ok]="correct()" [class.err]="!correct()">
+          {{ correct() ? 'Correct!' : 'Not quite.' }}
+          <span *ngIf="!correct()">Correct answer: {{ solution() }}</span>
+        </p>
+      </div>
+    </ng-container>
+
+    <ng-template #doneBlock>
+      <div class="mp-finished">
+        <h3>Session complete</h3>
+        <p>Answered: {{ stats.total }} • Correct: {{ stats.correct }} • Accuracy:
+          {{ (stats.total ? (stats.correct / stats.total * 100) : 0) | number:'1.0-0' }}%</p>
+      </div>
+    </ng-template>
+  </section>
+
+  <!-- Footer: shared stats (learner only) -->
+  <footer *ngIf="mode==='learner'" class="mp-footer">
+    <div class="mp-stats">
+      <span>✔ {{ stats.correct }} / {{ stats.total }}</span>
+      <span>Streak: {{ stats.streak }}</span>
+      <span *ngIf="stats.total>0">Accuracy: {{ (stats.correct / stats.total * 100) | number:'1.0-0' }}%</span>
+      <span>Required: {{ config?.requiredQuestions ?? 0 }}</span>
+    </div>
+  </footer>
+</div>

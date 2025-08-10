@@ -34,4 +34,8 @@ export class DashboardComponent implements OnInit {
     // Load enrolled courses when the component initializes
     this.courseService.loadEnrolledCourses();
   }
+
+  getCourseRoute() {
+    return '/user/courseRegistration/';
+  }
 }

@@ -4,7 +4,8 @@ import {DashboardComponent} from './view/dashboard/dashboard.component';
 import {jwtAuthGuard} from './auth/jwt-auth.guard';
 import {CoursesComponent} from './view/user/courses/courses.component';
 import {LessonsComponent} from './view/user/lessons/lessons.component';
-import {LessonSectionCreateComponent} from './view/lesson-section-create/lesson-section-create.component';
+import {LessonSectionCreateComponent} from './view/teacher/lesson-section-create/lesson-section-create.component';
+import {CourseRegistrationComponent} from './view/user/course-registration/course-registration.component';
 
 export const routes: Routes = [
   {component: LoginComponent, path: '', title: 'Login'},
@@ -18,4 +19,5 @@ export const routes: Routes = [
     title: 'Edit Lesson Sections',
     canActivate: [jwtAuthGuard]
   },
+  {component: CourseRegistrationComponent, path: 'user/courseRegistration', title: 'Course', canActivate: [jwtAuthGuard]},
 ];
