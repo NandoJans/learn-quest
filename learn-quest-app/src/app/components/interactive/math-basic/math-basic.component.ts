@@ -16,9 +16,6 @@ import {Mode} from '../../../types/mode';
   styleUrl: './math-basic.component.css'
 })
 export class MathBasicComponent {
-  max(max: any): any {
-      throw new Error('Method not implemented.');
-  }
   resetSeries() {
       throw new Error('Method not implemented.');
   }
