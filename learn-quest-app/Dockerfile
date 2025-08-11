@@ -1,20 +1,19 @@
-# Use an official Node.js runtime as a parent image
 FROM node:20
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy package files to leverage Docker cache for dependencies installation
+# Copy manifests first to leverage cache
 COPY package*.json ./
+# If you have these, they help the cache too:
+COPY angular.json tsconfig*.json ./
+# Copy proxy into the image so CMD can reference it
+COPY proxy.conf.json ./
 
-# Install Angular CLI globally (if not already part of your dependencies) and local dependencies
-RUN npm install -g @angular/cli && npm install
+RUN npm ci && npm i -g @angular/cli
 
-# Copy the rest of the application code
+# Now copy source
 COPY . .
 
-# Expose the port the Angular dev server runs on
 EXPOSE 4200
-
-# Start the Angular development server
-CMD ["ng", "serve", "--host", "0.0.0.0"]
+# IMPORTANT: use the proxy config
+CMD ["npx","ng","serve","--host","0.0.0.0","--port","4200","--proxy-config","proxy.conf.json"]
