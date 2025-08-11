@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class ApiService {
-  private API_URL = '';
+  private API_URL = '/api';
 
   constructor(private http: HttpClient) {}
 
