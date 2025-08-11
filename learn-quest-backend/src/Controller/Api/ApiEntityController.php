@@ -94,7 +94,7 @@ final class ApiEntityController extends AbstractController
 
         // map to DTOs as before…
         $dtoClass = $this->entityService->getEntityDtoClass($entity);
-        $dtos     = array_map(fn($item) => $this->entityService->getDtoInstance($item, $dtoClass), $items);
+        $dtos     = array_map(fn($item) => $this->entityService->mapEntityToDto($item, $dtoClass), $items);
 
         return $this->json($dtos);
     }

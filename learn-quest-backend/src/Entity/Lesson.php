@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LessonRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\UX\Turbo\Attribute\Broadcast;
 
@@ -35,6 +37,17 @@ class Lesson
 
     #[ORM\Column(length: 255)]
     private ?string $faIcon = null;
+
+    /**
+     * @var Collection<int, LessonSection>
+     */
+    #[ORM\OneToMany(targetEntity: LessonSection::class, mappedBy: 'lesson', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $sections;
+
+    public function __construct()
+    {
+        $this->sections = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -125,6 +138,35 @@ class Lesson
     public function setFaIcon(string $faIcon): static
     {
         $this->faIcon = $faIcon;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LessonSection>
+     */
+    public function getSections(): Collection
+    {
+        return $this->sections;
+    }
+
+    public function addSection(LessonSection $section): static
+    {
+        if (!$this->sections->contains($section)) {
+            $this->sections->add($section);
+            $section->setLesson($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSection(LessonSection $section): static
+    {
+        if ($this->sections->removeElement($section)) {
+            if ($section->getLesson() === $this) {
+                $section->setLesson(null);
+            }
+        }
 
         return $this;
     }

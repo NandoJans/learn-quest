@@ -4,6 +4,7 @@ import {CommonModule} from '@angular/common';
 import {PrimaryButtonComponent} from '../../../components/buttons/primary-button/primary-button.component';
 import {SecurityService} from '../../../services/security.service';
 import {Router} from '@angular/router';
+import {RoleService} from '../../../services/role.service';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +28,8 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private securityService: SecurityService,
-    private router: Router
+    private router: Router,
+    private roleService: RoleService
   ) {
   }
 
@@ -59,7 +61,7 @@ export class LoginComponent implements OnInit {
     this.securityService.login(username, password)
       .subscribe({
         next: (response) => {
-          this.router.navigateByUrl('/user/dashboard');
+
         },
         error: (error) => {
           console.error('Login failed', error);

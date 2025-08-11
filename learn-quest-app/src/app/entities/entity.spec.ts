@@ -1,7 +1,9 @@
 import { Entity } from './entity';
 
+class TestEntity extends Entity {}
+
 describe('Entity', () => {
   it('should create an instance', () => {
-    expect(new Entity()).toBeTruthy();
+    expect(new TestEntity()).toBeTruthy();
   });
 });

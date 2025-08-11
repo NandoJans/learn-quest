@@ -104,7 +104,7 @@ final class ApiCourseController extends AbstractController
         $courses = $user->getCourses();
 
         $courseDtos = array_map(function ($course) {
-            $this->entityService->getDtoInstance($course, CourseDto::class);
+            $this->entityService->mapEntityToDto($course, CourseDto::class);
         }, $courses->toArray());
 
         return $this->json($courseDtos, Response::HTTP_OK);

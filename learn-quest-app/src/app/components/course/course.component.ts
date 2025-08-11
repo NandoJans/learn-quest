@@ -15,6 +15,7 @@ import {IconComponent} from '../icon/icon.component';
 })
 export class CourseComponent {
   @Input() course: Course = new Course();
+  @Input() href: string = '';
 
   constructor(
     public router: Router,
@@ -34,6 +35,10 @@ export class CourseComponent {
   }
 
   navigate() {
-    this.router.navigate(['user', 'course', {courseId: this.course.id}]);
+    if (this.href) {
+      this.router.navigate([this.href, {courseId: this.course.id}]);
+    } else {
+      this.router.navigate(['/courses', {courseId: this.course.id}]);
+    }
   }
 }

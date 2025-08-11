@@ -5,6 +5,7 @@
   import {jwtDecode, JwtPayload} from 'jwt-decode';
   import {User} from '../entities/user';
   import {UserJwtPayload} from '../interfaces/user-jwt-payload';
+  import {RoleService} from './role.service';
 
   @Injectable({
     providedIn: 'root'
@@ -15,6 +16,7 @@
     constructor(
       private apiService: ApiService,
       private storageService: StorageService,
+      private roleService: RoleService,
     ) { }
 
     login(username: string, password: string): Observable<{ token: string }> {
@@ -28,6 +30,7 @@
           this.setToken(response.token);
           // Create a User object from the decoded token
           this.setUserBasedOnToken();
+          this.roleService.redirectToRoleDashboard();
         },
       })
 
@@ -66,6 +69,8 @@
         this.user.id = decoded.id;
         this.user.username = decoded.username;
         this.user.roles = decoded.roles || [];
+
+        this.roleService.init(decoded.roles || [])
 
       } catch (e) {
         console.error('Invalid token:', e);

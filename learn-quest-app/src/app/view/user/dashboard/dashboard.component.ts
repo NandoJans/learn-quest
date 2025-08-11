@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {SecurityService} from '../../services/security.service';
-import {CourseComponent} from '../../components/course/course.component';
+import {SecurityService} from '../../../services/security.service';
+import {CourseComponent} from '../../../components/course/course.component';
 import {NgForOf} from '@angular/common';
-import {CourseService} from '../../services/course.service';
+import {CourseService} from '../../../services/course.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,5 +33,9 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     // Load enrolled courses when the component initializes
     this.courseService.loadEnrolledCourses();
+  }
+
+  getCourseRoute() {
+    return '/user/courseRegistration/';
   }
 }

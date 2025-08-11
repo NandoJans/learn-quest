@@ -1,0 +1,12 @@
+<!-- Show only when user has more than one role -->
+<ng-container *ngIf="(roles | async) as r; else none">
+  <div *ngIf="r.length > 1" class="role-switcher">
+    <label for="roleSelect" class="label">Role</label>
+    <select id="roleSelect" class="select"
+            [ngModel]="(active | async) ?? r[0]"
+            (ngModelChange)="onChange($event)">
+      <option *ngFor="let role of r" [value]="role">{{ role | titlecase }}</option>
+    </select>
+  </div>
+</ng-container>
+<ng-template #none></ng-template>

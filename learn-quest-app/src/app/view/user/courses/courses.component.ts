@@ -28,4 +28,8 @@ export class CoursesComponent implements OnInit {
   ngOnInit() {
     this.courseService.loadCourses();
   }
+
+  getCourseRoute() {
+    return '/user/courseRegistration/';
+  }
 }
