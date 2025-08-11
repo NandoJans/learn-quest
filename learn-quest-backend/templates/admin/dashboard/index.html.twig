@@ -1,0 +1,13 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Hello Admin/DashboardController!{% endblock %}
+
+{% block body %}
+<h2>Api endpoints</h2>
+{% for route in api_routes %}
+    <div class="mb-2">
+        <p>{{ route['name'] }}</p>
+        <a href="{{ route['path'] }}" class="btn btn-primary">{{ route['path'] }}</a>
+    </div>
+{% endfor %}
+{% endblock %}

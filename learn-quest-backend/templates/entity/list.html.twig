@@ -1,0 +1,50 @@
+{# templates/admin/entity/list.html.twig #}
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}
+    {{ entityName|capitalize }} list
+{% endblock %}
+
+{% block body %}
+    <h2>All {{ entityName|capitalize }}s</h2>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            {% for field in fields %}
+                <th>{{ field }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr>
+                {% for field in fields %}
+                    <td class="h-100 align-content-center">
+                        {% set value = attribute(item, field) %}
+                        {{ value is iterable ? value|join(', ') : value }}
+                    </td>
+                {% endfor %}
+                <td>
+                    <a class="btn btn-primary w-100 fw-bold" href="{{ path('app_entity_edit', { entity: entityName, id: attribute(item, 'id') }) }}">Edit</a>
+                </td>
+                <td>
+                    <form action="{{ path('app_entity_delete', { entity: entityName, id: attribute(item, 'id') }) }}"
+                          method="post"
+                          onsubmit="return confirm('Are you sure?');"
+                          style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ attribute(item, 'id')) }}">
+                        <button class="btn btn-danger w-100 fw-bold" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="100%">No {{ entityName }} found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-success" href="{{ path('app_entity_create', { entity: entityName }) }}">New {{ entityName|capitalize }}</a>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% macro render_collection(field, label, add_button_text) %}
+    <fieldset class="collection-fieldset mb-4">
+        {% if label is not same as(false) %}
+            <legend class="h5">{{ label }}</legend>
+        {% endif %}
+
+        <div id="{{ field.vars.id }}_container"
+             data-prototype="{{ form_widget(field.vars.prototype)|escape('html_attr') }}"
+             class="collection-container">
+            {% for subForm in field %}
+                <div class="collection-item border p-3 mb-2 rounded">
+                    {{ form_widget(subForm) }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button"
+                class="btn btn-sm btn-outline-primary mt-2"
+                data-add-button
+                data-target="{{ field.vars.id }}_container">
+            {{ add_button_text }}
+        </button>
+    </fieldset>
+{% endmacro %}

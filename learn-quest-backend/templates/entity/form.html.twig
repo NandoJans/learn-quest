@@ -1,0 +1,48 @@
+{% extends 'admin/base.html.twig' %}
+
+{% import 'form/_collection_macros.html.twig' as macros %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-add-button]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    const container = document.getElementById(targetId);
+                    const prototype = container.dataset.prototype;
+                    const index = container.querySelectorAll('.collection-item').length;
+                    const html = prototype.replace(/__name__/g, index);
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    const newItem = temp.firstElementChild;
+                    container.appendChild(newItem);
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <h2>{{ is_edit ? 'Edit' : 'Create' }} {{ entity_name|capitalize }}</h2>
+
+    <form method="post">
+        {{ form_start(form) }}
+
+        {# Render standard fields #}
+        {% for field in form %}
+            {% if field.vars.name not in ['lessons', 'modules'] %}
+                {{ form_row(field) }}
+            {% endif %}
+        {% endfor %}
+
+        {# Render collection fields #}
+        {% if form.lessons is defined %}
+            {{ macros.render_collection(form.lessons, 'Lessons', 'Add Lesson') }}
+        {% endif %}
+
+
+        <button class="btn btn-primary mt-3">{{ is_edit ? 'Save Changes' : 'Create' }}</button>
+        {{ form_end(form) }}
+    </form>
+{% endblock %}

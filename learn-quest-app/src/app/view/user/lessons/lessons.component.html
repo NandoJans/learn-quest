@@ -1,0 +1,22 @@
+<div class="header" [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+  <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
+  <h1>{{ getCourse().name }}</h1>
+</div>
+<table class="table table-striped">
+  <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + lesson.primaryColor">
+    <td [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+      <app-icon [faIcon]="lesson.faIcon" [color]="'white'"></app-icon>
+    </td>
+    <td>
+      <h3>{{ lesson.name }}</h3>
+    </td>
+  </tr>
+</table>
+<div *ngIf="showEnrollNotification" class="alert alert-success mt-3">
+  Enrolled successfully! Go to
+  <a routerLink="/user/dashboard" class="alert-link">your dashboard</a>.
+</div>
+<app-footer-button [text]="isEnrolled() ? 'Enrolled' : 'Enroll'"
+                   [btnClass]="isEnrolled() ? 'btn-success' : 'btn-primary'"
+                   [disabled]="isEnrolled()"
+                   (click)="enroll()"></app-footer-button>

@@ -1,5 +1,28 @@
 import { Routes } from '@angular/router';
+import {LoginComponent} from './view/authentication/login/login.component';
+import {DashboardComponent} from './view/user/dashboard/dashboard.component';
+import {jwtAuthGuard} from './auth/jwt-auth.guard';
+import {CoursesComponent} from './view/user/courses/courses.component';
+import {LessonsComponent} from './view/user/lessons/lessons.component';
+import {LessonSectionCreateComponent} from './view/teacher/lesson-section-create/lesson-section-create.component';
+import {CourseRegistrationComponent} from './view/user/course-registration/course-registration.component';
+import {TeacherDashboardComponent} from './view/teacher/teacher-dashboard/teacher-dashboard.component';
 
 export const routes: Routes = [
-  {}
+  {component: LoginComponent, path: '', title: 'Login'},
+  {component: LoginComponent, path: 'login', title: 'Login'},
+  // User routes
+  {component: DashboardComponent, path: 'user/dashboard', title: 'Dashboard', canActivate: [jwtAuthGuard]},
+  {component: CoursesComponent, path: 'user/courses', title: 'Courses', canActivate: [jwtAuthGuard]},
+  {component: LessonsComponent, path: 'user/course', title: 'Course', canActivate: [jwtAuthGuard]},
+  {
+    component: LessonSectionCreateComponent,
+    path: 'teacher/lesson/:lessonId/sections',
+    title: 'Edit Lesson Sections',
+    canActivate: [jwtAuthGuard]
+  },
+  {component: CourseRegistrationComponent, path: 'user/courseRegistration', title: 'Course', canActivate: [jwtAuthGuard]},
+
+  // Teacher routes
+  {component: TeacherDashboardComponent, path : 'teacher/dashboard', title: 'Dashboard', canActivate: [jwtAuthGuard]}
 ];

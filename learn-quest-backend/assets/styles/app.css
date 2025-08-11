@@ -1,0 +1,9 @@
+:root {
+    --lq-primary-color: #4a90e2;
+    --lq-text-dim: #333333;
+}
+
+a {
+    color: var(--lq-text-dim);
+    text-decoration: none;
+}
