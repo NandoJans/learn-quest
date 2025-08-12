@@ -5,6 +5,15 @@ import { Router } from '@angular/router';
 
 const LS_KEY = 'activeRole';
 
+export type RoleDashboardRoute = {
+  name: string;
+  path: string;
+}
+
+type RoleDashboardRoutes = {
+  [role in AppRole]: RoleDashboardRoute[];
+};
+
 @Injectable({ providedIn: 'root' })
 export class RoleService {
   /** All roles granted to the logged-in user (populate from your auth flow/JWT) */
@@ -58,5 +67,36 @@ export class RoleService {
     if (role && this.roleRoutes[role]) {
       this.router.navigate([this.roleRoutes[role]]);
     }
+  }
+
+  getRole(): string {
+    return this._activeRole$.value || '';
+  }
+
+  roleDashboardRoutes: RoleDashboardRoutes = {
+    ROLE_ADMIN: [
+      { name: 'Dashboard', path: '/admin/dashboard' }
+    ],
+    ROLE_TEACHER: [
+      { name: 'Dashboard', path: '/teacher/dashboard' }
+    ],
+    ROLE_USER: [
+      { name: 'Dashboard', path: '/user/dashboard' },
+      { name: 'Courses', path: '/user/courses' },
+      { name: 'Module library', path: '/user/modules' },
+    ]
+  }
+
+  getRoutesForRole(role: AppRole | null): RoleDashboardRoute[] {
+    if (!role || !this.roleDashboardRoutes[role]) {
+      return [];
+    }
+    return this.roleDashboardRoutes[role];
+  }
+
+  logout() {
+    this.setActiveRole(null, false);
+    this._availableRoles$.next([]);
+    localStorage.removeItem(LS_KEY);
   }
 }

@@ -1,0 +1,67 @@
+/* Make the whole app a column: navbar on top, content fills the rest */
+.app-shell {
+  min-height: 100dvh; /* handles mobile chrome UI better than 100vh */
+  display: flex;
+  flex-direction: column;
+  background: #f7f7fb; /* subtle app background */
+}
+
+/* Content area */
+.content-wrap {
+  width: 100%;
+  max-width: 1200px;     /* desktop max width */
+  margin-inline: auto;   /* center */
+  padding: clamp(12px, 2.5vw, 24px);
+  flex: 1 1 auto;        /* take remaining space */
+}
+
+/* Card-like feel for inner pages (optional) */
+.content-wrap > *:first-child {
+  /* If your routed component has its own background, remove this */
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  padding: clamp(12px, 2.5vw, 24px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+/* --------- Responsive widths --------- */
+/* Mobile first: full width—handled by defaults above */
+
+@media (min-width: 640px) { /* ~tablet portrait */
+  .content-wrap {
+    max-width: 90%;
+  }
+}
+
+@media (min-width: 768px) { /* tablet landscape */
+  .content-wrap {
+    max-width: 85%;
+  }
+}
+
+@media (min-width: 1024px) { /* small desktop */
+  .content-wrap {
+    max-width: 75%;
+  }
+}
+
+/* Respect iOS safe areas when the navbar is sticky */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+app-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-top: var(--safe-top);
+}
+.content-wrap {
+  padding-bottom: max(var(--safe-bottom), clamp(12px, 2.5vw, 24px));
+}
+
+/* Reduce motion if user prefers */
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}

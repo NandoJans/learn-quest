@@ -1,0 +1,17 @@
+<div>
+  <div class="lib-header">
+    <h1>Module Library</h1>
+    <input class="search" type="search" placeholder="Search modules…" [value]="q()" (input)="q.set($any($event.target).value)">
+  </div>
+
+  <div class="grid">
+    <button class="card" *ngFor="let m of filtered()"
+            (click)="open(m.slug)">
+      <div class="title">{{ m.title }}</div>
+      <div class="desc">{{ m.description }}</div>
+      <div class="tags">
+        <span class="tag" *ngFor="let t of m.tags">{{ t }}</span>
+      </div>
+    </button>
+  </div>
+</div>

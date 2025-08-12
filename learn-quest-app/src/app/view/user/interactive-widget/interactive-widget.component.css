@@ -1,0 +1,24 @@
+.host-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.host-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.back {
+  text-decoration: none;
+}
+
+.loading {
+  color: #6b7280;
+}
+
+.error {
+  color: #b00020;
+}

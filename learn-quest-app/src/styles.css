@@ -76,3 +76,98 @@ body, html {
   border-color: var(--color-1);
   color: var(--color-1-dark);
 }
+
+/* Text colors */
+.text-color-1 { color: var(--color-1); }
+.text-color-2 { color: var(--color-2); }
+.text-color-3 { color: var(--color-3); }
+.text-color-4 { color: var(--color-4); }
+.text-color-5 { color: var(--color-5); }
+.text-color-6 { color: var(--color-6); }
+
+/* Light text colors */
+.text-color-1-light { color: var(--color-1-light); }
+.text-color-2-light { color: var(--color-2-light); }
+.text-color-3-light { color: var(--color-3-light); }
+.text-color-4-light { color: var(--color-4-light); }
+.text-color-5-light { color: var(--color-5-light); }
+.text-color-6-light { color: var(--color-6-light); }
+
+/* Background colors */
+.bg-color-1 { background-color: var(--color-1); }
+.bg-color-2 { background-color: var(--color-2); }
+.bg-color-3 { background-color: var(--color-3); }
+.bg-color-4 { background-color: var(--color-4); }
+.bg-color-5 { background-color: var(--color-5); }
+.bg-color-6 { background-color: var(--color-6); }
+
+/* Light background colors */
+.bg-color-1-light { background-color: var(--color-1-light); }
+.bg-color-2-light { background-color: var(--color-2-light); }
+.bg-color-3-light { background-color: var(--color-3-light); }
+.bg-color-4-light { background-color: var(--color-4-light); }
+.bg-color-5-light { background-color: var(--color-5-light); }
+.bg-color-6-light { background-color: var(--color-6-light); }
+
+/* Dark background colors */
+.bg-color-1-dark { background-color: var(--color-1-dark); }
+.bg-color-2-dark { background-color: var(--color-2-dark); }
+.bg-color-3-dark { background-color: var(--color-3-dark); }
+.bg-color-4-dark { background-color: var(--color-4-dark); }
+.bg-color-5-dark { background-color: var(--color-5-dark); }
+.bg-color-6-dark { background-color: var(--color-6-dark); }
+
+.btn-1 {
+  background-color: var(--color-1);
+  color: white;
+}
+
+.btn-1:hover {
+  background-color: var(--color-1-dark);
+}
+
+.btn-2 {
+  background-color: var(--color-2);
+  color: white;
+}
+
+.btn-2:hover {
+  background-color: var(--color-2-dark);
+}
+
+.btn-3 {
+  background-color: var(--color-3);
+  color: white;
+}
+
+.btn-3:hover {
+  background-color: var(--color-3-dark);
+}
+
+.btn-4 {
+  background-color: var(--color-4);
+  color: white;
+}
+
+.btn-4:hover {
+  background-color: var(--color-4-dark);
+}
+
+.btn-5 {
+  background-color: var(--color-5);
+  color: white;
+}
+
+.btn-5:hover {
+  background-color: var(--color-5-dark);
+}
+
+.btn-6 {
+  background-color: var(--color-6);
+  color: white;
+}
+
+.btn-6:hover {
+  background-color: var(--color-6-dark);
+}
+

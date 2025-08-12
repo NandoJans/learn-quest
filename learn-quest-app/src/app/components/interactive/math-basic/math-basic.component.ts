@@ -4,6 +4,8 @@ import {FormsModule} from '@angular/forms';
 import {Op} from '../../../types/op';
 import {MathBasicConfig} from '../../../interfaces/interactive/math-basic-config';
 import {Mode} from '../../../types/mode';
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import {faCheck} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-math-basic',
@@ -11,6 +13,7 @@ import {Mode} from '../../../types/mode';
     NgIf,
     FormsModule,
     DecimalPipe,
+    FaIconComponent,
   ],
   templateUrl: './math-basic.component.html',
   styleUrl: './math-basic.component.css'
@@ -223,4 +226,6 @@ export class MathBasicComponent {
       autoStart: !!c.autoStart
     };
   }
+
+  protected readonly faCheck = faCheck;
 }

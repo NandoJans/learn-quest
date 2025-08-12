@@ -99,4 +99,15 @@
         return true; // invalid token = expired for safety
       }
     }
+
+    load() {
+      // This method can be used to initialize the security service
+      // e.g. check if token exists and set user based on it
+      const token = this.getToken();
+      if (token) {
+        this.setUserBasedOnToken();
+      } else {
+        this.user = null;
+      }
+    }
   }

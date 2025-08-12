@@ -1,0 +1,11 @@
+<div class="host-wrap">
+  <header class="host-header">
+    <a (click)="back()" class="btn btn-3 back">← All modules</a>
+    <h2>{{ title }}</h2>
+  </header>
+
+  <div *ngIf="loading" class="loading">Loading module…</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <ng-container #outlet></ng-container>
+</div>

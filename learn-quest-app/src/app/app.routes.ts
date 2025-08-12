@@ -7,22 +7,41 @@ import {LessonsComponent} from './view/user/lessons/lessons.component';
 import {LessonSectionCreateComponent} from './view/teacher/lesson-section-create/lesson-section-create.component';
 import {CourseRegistrationComponent} from './view/user/course-registration/course-registration.component';
 import {TeacherDashboardComponent} from './view/teacher/teacher-dashboard/teacher-dashboard.component';
+import {
+  InteractiveWidgetLibraryComponent
+} from './view/user/interactive-widget-library/interactive-widget-library.component';
+import {roleMatchGuard} from './auth/role-match.guard';
+import {InteractiveWidgetComponent} from './view/user/interactive-widget/interactive-widget.component';
 
 export const routes: Routes = [
-  {component: LoginComponent, path: '', title: 'Login'},
-  {component: LoginComponent, path: 'login', title: 'Login'},
-  // User routes
-  {component: DashboardComponent, path: 'user/dashboard', title: 'Dashboard', canActivate: [jwtAuthGuard]},
-  {component: CoursesComponent, path: 'user/courses', title: 'Courses', canActivate: [jwtAuthGuard]},
-  {component: LessonsComponent, path: 'user/course', title: 'Course', canActivate: [jwtAuthGuard]},
-  {
-    component: LessonSectionCreateComponent,
-    path: 'teacher/lesson/:lessonId/sections',
-    title: 'Edit Lesson Sections',
-    canActivate: [jwtAuthGuard]
-  },
-  {component: CourseRegistrationComponent, path: 'user/courseRegistration', title: 'Course', canActivate: [jwtAuthGuard]},
+  { path: '', component: LoginComponent },
+  { path: 'login', component: LoginComponent },
 
-  // Teacher routes
-  {component: TeacherDashboardComponent, path : 'teacher/dashboard', title: 'Dashboard', canActivate: [jwtAuthGuard]}
+  {
+    path: 'user',
+    canMatch: [jwtAuthGuard, roleMatchGuard('ROLE_USER')],
+    children: [
+      { path: 'dashboard', component: DashboardComponent, title: 'Dashboard' },
+      { path: 'courses', component: CoursesComponent, title: 'Courses' },
+      { path: 'course', component: LessonsComponent, title: 'Course' },
+      { path: 'modules', component: InteractiveWidgetLibraryComponent, title: 'IWL' },
+      { path: 'module/:slug', component: InteractiveWidgetComponent, title: 'IWL' },
+      { path: 'courseRegistration', component: CourseRegistrationComponent, title: 'Course' },
+    ]
+  },
+  {
+    path: 'teacher',
+    canMatch: [jwtAuthGuard, roleMatchGuard('ROLE_TEACHER')],
+    children: [
+      { path: 'dashboard', component: TeacherDashboardComponent, title: 'Dashboard' },
+      { path: 'lesson/:lessonId/sections', component: LessonSectionCreateComponent, title: 'Edit Lesson Sections' },
+    ]
+  },
+  {
+    path: 'admin',
+    canMatch: [jwtAuthGuard, roleMatchGuard('ROLE_ADMIN')],
+    children: [
+      // { path: 'dashboard', component: AdminDashboardComponent, title: 'Admin' },
+    ]
+  },
 ];

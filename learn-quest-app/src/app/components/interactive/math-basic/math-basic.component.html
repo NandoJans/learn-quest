@@ -116,8 +116,8 @@
 
   <!-- Footer: shared stats (learner only) -->
   <footer *ngIf="mode==='learner'" class="mp-footer">
-    <div class="mp-stats">
-      <span>✔ {{ stats.correct }} / {{ stats.total }}</span>
+    <div class="mp-stats flex justify-between items-center">
+      <span><fa-icon [icon]="faCheck" class="text-color-2 icon"></fa-icon> {{ stats.correct }} / {{ stats.total }}</span>
       <span>Streak: {{ stats.streak }}</span>
       <span *ngIf="stats.total>0">Accuracy: {{ (stats.correct / stats.total * 100) | number:'1.0-0' }}%</span>
       <span>Required: {{ config?.requiredQuestions ?? 0 }}</span>

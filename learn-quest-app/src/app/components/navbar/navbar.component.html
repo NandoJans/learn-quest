@@ -1,0 +1,9 @@
+<div class="navbar" *ngIf="isLoggedIn()">
+  <div class="left">
+    <app-role-switcher></app-role-switcher>
+    <a *ngFor="let route of routes" class="nav-item" [href]="route.path">{{ route.name }}</a>
+  </div>
+  <div class="right">
+    <a class="nav-item" (click)="logout()" href="#">Logout</a>
+  </div>
+</div>

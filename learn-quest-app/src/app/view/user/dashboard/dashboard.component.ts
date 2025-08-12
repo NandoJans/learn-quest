@@ -16,18 +16,11 @@ import {CourseService} from '../../../services/course.service';
 })
 export class DashboardComponent implements OnInit {
   constructor(
-    private router: Router,
-    private securityService: SecurityService,
     private courseService: CourseService
   ) { }
 
   getEnrolledCourses(): any {
     return this.courseService.getEnrolledCourses();
-  }
-
-  logout() {
-    this.securityService.logout();
-    this.router.navigate(['/login']);
   }
 
   ngOnInit() {

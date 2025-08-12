@@ -1,6 +1,9 @@
-<div class="h-100 w-75 mx-auto py-2">
-  <div class="flex justify-end mb-2">
-    <app-role-switcher></app-role-switcher>
-  </div>
-  <router-outlet/>
+<div class="app-shell">
+  <app-navbar></app-navbar>
+
+  <main class="content-wrap">
+    <div class="page-content border border-color-1">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
 </div>
