@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { RoleService } from '../services/role.service';
+import { RoleService } from '../services/security/role.service';
 
 export const actAsRoleInterceptor: HttpInterceptorFn = (req, next) => {
   // optionally skip certain endpoints (e.g., login)

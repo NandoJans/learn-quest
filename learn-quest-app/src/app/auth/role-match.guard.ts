@@ -1,8 +1,8 @@
 import {CanMatchFn, Route, Router, UrlSegment} from '@angular/router';
 import {AppRole} from '../types/role';
 import {inject} from '@angular/core';
-import {RoleService} from '../services/role.service';
-import {SecurityService} from '../services/security.service';
+import {RoleService} from '../services/security/role.service';
+import {SecurityService} from '../services/security/security.service';
 
 export const roleMatchGuard  = (required: AppRole): CanMatchFn => {
   return (_route: Route, _segments: UrlSegment[]) => {

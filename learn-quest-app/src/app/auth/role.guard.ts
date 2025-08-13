@@ -1,7 +1,7 @@
 import {CanActivateFn, Router, UrlTree} from '@angular/router';
 import {inject} from '@angular/core';
-import {RoleService} from '../services/role.service';
-import { SecurityService } from '../services/security.service';
+import {RoleService} from '../services/security/role.service';
+import { SecurityService } from '../services/security/security.service';
 import {AppRole} from '../types/role';
 import {combineLatest, map, take} from 'rxjs';
 import {filter} from 'rxjs/operators';

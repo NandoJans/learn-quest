@@ -1,7 +1,7 @@
 // src/app/auth/jwt.interceptor.ts
 import { HttpInterceptorFn } from '@angular/common/http';
 import {inject} from '@angular/core';
-import {SecurityService} from '../services/security.service';
+import {SecurityService} from '../services/security/security.service';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.includes('/api/login')) {

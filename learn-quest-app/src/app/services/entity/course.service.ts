@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Course} from '../entities/course';
+import {Course} from '../../entities/course';
 import {EntityCacheService} from './entity-cache.service';
 import {Observable} from 'rxjs';
-import {ApiService} from './api.service';
-import {SecurityService} from './security.service';
+import {ApiService} from '../api/api.service';
+import {SecurityService} from '../security/security.service';
 
 @Injectable({
   providedIn: 'root'

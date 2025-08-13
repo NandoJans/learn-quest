@@ -6,7 +6,6 @@
   border: 1px solid #ececec;
   border-radius: 16px;
   padding: 16px;
-  max-width: 760px;
   background: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
@@ -165,4 +164,13 @@ fieldset.mp-group legend {
   border-radius: 12px;
   background: #fcfcfc;
   margin-top: 12px;
+}
+
+.grid-ops {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px,1fr));
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .grid-ops { grid-template-columns: repeat(2, minmax(140px,1fr)); }
 }

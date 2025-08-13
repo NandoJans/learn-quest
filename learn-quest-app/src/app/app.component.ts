@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import {RoleService} from './services/role.service';
+import {RoleService} from './services/security/role.service';
 import {AppRole} from './types/role';
-import {SecurityService} from './services/security.service';
+import {SecurityService} from './services/security/security.service';
 import {NavbarComponent} from './components/navbar/navbar.component';
 
 @Component({

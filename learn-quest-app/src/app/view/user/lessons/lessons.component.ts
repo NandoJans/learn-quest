@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CourseService} from '../../../services/course.service';
-import { LessonService } from '../../../services/lesson.service';
+import {CourseService} from '../../../services/entity/course.service';
+import { LessonService } from '../../../services/entity/lesson.service';
 import {Course} from '../../../entities/course';
 import {IconComponent} from '../../../components/icon/icon.component';
 import {FooterButtonComponent} from '../../../components/buttons/footer-button/footer-button.component';

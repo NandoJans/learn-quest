@@ -1,9 +1,9 @@
 import {Component, inject, ViewChild, ViewContainerRef} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {ModuleRegistryService} from '../../../services/module-registry.service';
-import {ModuleConfigService} from '../../../services/module-config.service';
+import {ModuleRegistryService} from '../../../services/module/module-registry.service';
+import {ModuleConfigService} from '../../../services/module/module-config.service';
 import {NgIf} from '@angular/common';
-import {RouteService} from '../../../services/route.service';
+import {RouteService} from '../../../services/core/route.service';
 
 @Component({
   selector: 'app-interactive-widget',
@@ -37,11 +37,13 @@ export class InteractiveWidgetComponent {
       const cmpRef = this.outlet.createComponent(cmpType);
 
       // Optional: fetch config for this module (e.g. from backend or route data)
-      const config = await this.configService.getConfigForSlug(this.slug).toPromise();
-      if (config && 'config' in cmpRef.instance) {
-        // convention: modules accept @Input() config
-        (cmpRef.instance as any).config = config;
-      }
+      this.configService.getConfigForSlug(this.slug).subscribe(config => {
+        if (config) {
+          console.log(config)
+          cmpRef.setInput('config', config); // ✅ triggers ngOnChanges
+          cmpRef.setInput('mode', 'learner'); // if you also want to set mode
+        }
+      });
 
     } catch (e: any) {
       this.error = e?.message || 'Failed to load module.';

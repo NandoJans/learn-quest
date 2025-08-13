@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EntityCacheService } from './entity-cache.service';
-import {Lesson} from '../entities/lesson';
+import {Lesson} from '../../entities/lesson';
 
 @Injectable({
   providedIn: 'root'

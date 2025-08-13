@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { EntityCacheService } from './entity-cache.service';
-import { LessonSection } from '../entities/lesson-section';
-import { ApiService } from './api.service';
+import { LessonSection } from '../../entities/lesson-section';
+import { ApiService } from '../api/api.service';
 import { Observable } from 'rxjs';
 
 @Injectable({

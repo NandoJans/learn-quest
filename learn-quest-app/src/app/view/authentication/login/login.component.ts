@@ -2,9 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {PrimaryButtonComponent} from '../../../components/buttons/primary-button/primary-button.component';
-import {SecurityService} from '../../../services/security.service';
+import {SecurityService} from '../../../services/security/security.service';
 import {Router} from '@angular/router';
-import {RoleService} from '../../../services/role.service';
+import {RoleService} from '../../../services/security/role.service';
 
 @Component({
   selector: 'app-login',
@@ -28,8 +28,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private securityService: SecurityService,
-    private router: Router,
-    private roleService: RoleService
+    private router: Router
   ) {
   }
 

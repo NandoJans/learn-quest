@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {CourseService} from '../../../services/course.service';
+import {CourseService} from '../../../services/entity/course.service';
 import {NgForOf} from '@angular/common';
 import {CourseComponent} from '../../../components/course/course.component';
 import {Course} from '../../../entities/course';
@@ -30,6 +30,6 @@ export class CoursesComponent implements OnInit {
   }
 
   getCourseRoute() {
-    return '/user/courseRegistration/';
+    return '/user/course';
   }
 }

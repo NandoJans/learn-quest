@@ -1,55 +1,84 @@
+/* Container */
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: sticky; top: 0; z-index: 1000;
   background: var(--color-2);
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  color: #fff;
+}
+
+/* Top bar: role switcher + hamburger */
+.bar {
+  display: flex; align-items: center; justify-content: space-between;
   padding: 0.75rem 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
 }
 
-.navbar .left,
-.navbar .right {
-  display: flex;
-  gap: 1rem;
+/* Links menu (collapsible on mobile) */
+.menu {
+  display: flex; gap: 1rem; align-items: center; justify-content: space-between;
+  padding: 0 1.5rem 0.75rem;
 }
 
-.navbar .nav-item {
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  transition: background 0.2s ease, color 0.2s ease;
+/* Items */
+.nav-item {
+  color: #fff; text-decoration: none; font-weight: 500; font-size: .95rem;
+  padding: .5rem .75rem; border-radius: 8px;
+  transition: background .2s ease, color .2s ease;
 }
+.nav-item:hover { background: rgba(255,255,255,.15); color: #f0f0ff; }
+.nav-item:active { background: rgba(255,255,255,.25); }
+.logout { margin-left: auto; }
 
-.navbar .nav-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #f0f0ff;
+/* --- Hamburger button --- */
+.hamburger {
+  display: none; /* shown on mobile via media query */
+  width: 42px; height: 42px; border: 0; background: transparent; cursor: pointer;
+  border-radius: 8px; position: relative;
 }
-
-.navbar .nav-item:active {
-  background: rgba(255, 255, 255, 0.25);
+.hamburger:focus { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
+.hamburger span {
+  position: absolute; left: 10px; right: 10px; height: 2px; background: #fff;
+  transition: transform .25s ease, opacity .2s ease, top .25s ease, bottom .25s ease;
 }
+.hamburger span:nth-child(1) { top: 13px; }
+.hamburger span:nth-child(2) { top: 20px; }
+.hamburger span:nth-child(3) { top: 27px; }
 
+/* Animate into an “X” when open */
+.menu.open ~ .bar .hamburger,
+.hamburger[aria-expanded="true"] { /* attribute binding covers state too */ }
+.menu.open + .nothing { } /* no-op to keep specificity low */
+.navbar .menu.open ~ .bar .hamburger span {} /* not used */
+
+/* simpler approach: toggle via .menu.open + using adjacent selector is tricky,
+   so we animate based on [aria-expanded] on the button */
+.hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* --- Responsive behavior --- */
 @media (max-width: 640px) {
-  .navbar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0.5rem;
+  /* show hamburger */
+  .hamburger { display: inline-block; }
+
+  /* stack menu, collapsed by default */
+  .menu {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .5rem;
+    padding: 0 1rem 0.75rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease;
+  }
+  .menu.open {
+    max-height: 400px; /* enough for your items; adjust as needed */
   }
 
-  .navbar .left,
-  .navbar .right {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
+  /* make Logout not push far right on mobile */
+  .logout { margin-left: 0; }
+}
 
-  .navbar .nav-item {
-    padding: 0.5rem 1rem;
-  }
+/* Desktop/tablet: original layout */
+@media (min-width: 641px) {
+  .menu { padding-top: 0; padding-bottom: 0.75rem; }
 }

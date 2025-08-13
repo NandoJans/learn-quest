@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {AppRole} from '../types/role';
-import { RoleService } from './role.service';
+import {AppRole} from '../../types/role';
+import { RoleService } from '../security/role.service';
 import { Router } from '@angular/router';
 
 @Injectable({

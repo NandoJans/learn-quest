@@ -1,0 +1,133 @@
+<div class="wrap" (window:keydown)="onKey($event)">
+  <header class="brand"><h1>{{ this.t()['title'] }}</h1></header>
+
+  <!-- Score -->
+  <section class="panel score" aria-labelledby="score-title">
+    <h2 id="score-title">{{ this.t()['score'] }}</h2>
+    <div class="score-grid">
+      <div><div class="k">{{ this.t()['answered'] }}</div><div class="v">{{ answered() }}</div></div>
+      <div><div class="k">{{ this.t()['correct'] }}</div><div class="v">{{ correctCount() }}</div></div>
+      <div><div class="k">{{ this.t()['mistakes'] }}</div><div class="v">{{ mistakes() }}</div></div>
+      <div><div class="k">{{ this.t()['highscore'] }}</div><div class="v">{{ highscoreDisplay() }}</div></div>
+    </div>
+  </section>
+
+  <!-- Game -->
+  <main class="main">
+    <article class="card"
+             [ngStyle]="colorHints() ? {
+        'background': 'linear-gradient(180deg, ' + withA(current().color, .22) + ', transparent 65%)',
+        'border-color': withA(current().color, .7)
+      } : null">
+      <div class="element-head">
+        <!-- Atomic number -->
+        <div class="anum" *ngIf="mode() !== 'm3_proton_mc' && mode() !== 'm4_proton_open'">
+          {{ current()?.atomicNumber }}
+        </div>
+
+        <!-- Symbol -->
+        <div class="sym">{{ current()?.symbol }}</div>
+
+        <!-- Element name -->
+        <div class="ename" *ngIf="mode() !== 'm1_name_mc' && mode() !== 'm2_name_open'">
+          {{ current() ? (lang() === 'en' ? current()?.nameEn : current()?.nameNl) : '' }}
+        </div>
+      </div>
+
+      <section class="qbody">
+        <!-- MC: name -->
+        <div class="mc" *ngIf="mode() === 'm1_name_mc'">
+          <button
+            *ngFor="let opt of mcNameOptions() ; index as i"
+            class="mcbtn" [class.selected]="mcSelection() === opt"
+            (click)="onOptionTap(opt)"
+            (dblclick)="onCheck()">
+            <span class="num">{{ i+1 }}.</span> <span class="txt">{{ opt }}</span>
+          </button>
+        </div>
+
+        <!-- MC: protons -->
+        <div class="mc" *ngIf="mode() === 'm3_proton_mc'">
+          <button
+            *ngFor="let opt of mcProtonOptions() ; index as i"
+            class="mcbtn" [class.selected]="mcSelection() === opt"
+            (click)="onOptionTap(opt)"
+            (dblclick)="onCheck()">
+            <span class="num">{{ i+1 }}.</span> <span class="txt">{{ opt }}</span>
+          </button>
+        </div>
+
+
+
+        <!-- OPEN: name -->
+        <div class="open-row" *ngIf="mode() === 'm2_name_open'">
+          <label class="visually-hidden" for="nameInput">{{ this.t()['enterName'] }}</label>
+          <input id="nameInput" class="text" [placeholder]="this.t()['enterName']"
+                 [(ngModel)]="openValue" (keydown.enter)="canCheck() && onCheck()">
+        </div>
+
+        <!-- OPEN: protons -->
+        <div class="open-row" *ngIf="mode() === 'm4_proton_open'">
+          <label class="visually-hidden" for="protonInput">{{ this.t()['enterProtons'] }}</label>
+          <input id="protonInput" class="text" [placeholder]="this.t()['enterProtons']"
+                 inputmode="numeric" pattern="[0-9]*"
+                 [(ngModel)]="openValue" (ngModelChange)="openValue=$event.replace('/[^\\d]/g','')"
+                 (keydown.enter)="canCheck() && onCheck()">
+        </div>
+      </section>
+
+      <section class="actions">
+        <button class="btn"
+                [class.btn-3]="!feedback()"
+                (click)="!feedback() ? onCheck() : nextQuestion()"
+                [disabled]="!feedback() && !canCheck()">
+          {{ !feedback() ? this.t()['check'] : this.t()['next'] }}
+        </button>
+        <div class="feedback" [class.ok]="feedback()?.ok" [class.bad]="feedback() && !feedback()?.ok" aria-live="polite">
+          <ng-container *ngIf="feedback() as f">
+            <strong>{{ f.ok ? this.t()['correctA'] : this.t()['incorrectA'] }}</strong>
+            <span *ngIf="f.detail"> — {{ f.detail }}</span>
+          </ng-container>
+        </div>
+      </section>
+
+      <footer class="help"><small>{{ this.t()['footerHelp'] }}</small></footer>
+    </article>
+  </main>
+
+  <!-- Settings -->
+  <section class="panel settings" aria-labelledby="settings-title">
+    <h2 id="settings-title">{{ this.t()['settings'] }}</h2>
+    <div class="settings-grid">
+      <div class="field">
+        <label for="modeSel">{{ this.t()['mode'] }}</label>
+        <select id="modeSel" [(ngModel)]="modeStr">
+          <option value="m1_name_mc">{{ this.t()['m1'] }}</option>
+          <option value="m2_name_open">{{ this.t()['m2'] }}</option>
+          <option value="m3_proton_mc">{{ this.t()['m3'] }}</option>
+          <option value="m4_proton_open">{{ this.t()['m4'] }}</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>{{ this.t()['language'] }}</label>
+        <div class="seg">
+          <button class="seg-btn" [class.active]="lang() === 'en'" (click)="setLang('en')">EN</button>
+          <button class="seg-btn" [class.active]="lang() === 'nl'" (click)="setLang('nl')">NL</button>
+        </div>
+      </div>
+
+      <div class="field check">
+        <label><input type="checkbox" [(ngModel)]="colorHintsBool"> {{ this.t()['colorHints'] }}</label>
+      </div>
+
+      <div class="field check">
+        <label><input type="checkbox" [(ngModel)]="perfectModeBool"> {{ this.t()['perfectMode'] }}</label>
+      </div>
+
+      <div class="field">
+        <button class="btn btn-1" (click)="resetRound(current().atomicNumber)">⟳ {{ this.t()['reset'] }}</button>
+      </div>
+    </div>
+  </section>
+</div>

@@ -35,6 +35,31 @@
       </fieldset>
 
       <fieldset class="mp-group">
+        <legend>Per-operator ranges (optional)</legend>
+
+        <div class="grid-ops">
+          <ng-container *ngFor="let op of ops; trackBy: trackByOp">
+            <label>{{ op }} Min
+              <input type="number"
+                     [ngModel]="(d.perOp?.[op]?.min ?? '')"
+                     (ngModelChange)="onPerOpChange(op, 'min', $event)"
+                     [name]="'po_' + op + '_min'">
+            </label>
+
+            <label>{{ op }} Max
+              <input type="number"
+                     [ngModel]="(d.perOp?.[op]?.max ?? '')"
+                     (ngModelChange)="onPerOpChange(op, 'max', $event)"
+                     [name]="'po_' + op + '_max'">
+            </label>
+          </ng-container>
+        </div>
+
+        <small class="hint">Leave empty to use the global range.</small>
+      </fieldset>
+
+
+      <fieldset class="mp-group">
         <legend>Rules</legend>
         <label class="mp-check">
           <input type="checkbox" [(ngModel)]="d.allowNegatives" name="allowNegatives" />
@@ -58,7 +83,7 @@
       </fieldset>
 
       <div class="mp-actions left">
-        <button class="mp-btn primary" type="button" (click)="saveDraft()">Save settings</button>
+        <button class="btn btn-2 primary" type="button" (click)="saveDraft()">Save settings</button>
       </div>
     </form>
 
@@ -69,50 +94,58 @@
       <span>Required: {{ config.requiredQuestions }}</span>
     </div>
   </header>
+  <ng-container *ngIf="!current(); else problemBlock">
+    <div class="w-100 d-flex flex-column justify-content-center align-items-center">
+      <button class="btn btn-2" type="button" (click)="newProblem()">Start</button>
+    </div>
+  </ng-container>
+  <ng-template #problemBlock>
+    <!-- Learner problem area -->
+    <section *ngIf="mode==='learner'" class="mp-problem" [class.locked]="stats.total >= (config?.requiredQuestions ?? 0)">
+      <ng-container *ngIf="stats.total < (config?.requiredQuestions ?? 1); else doneBlock">
+        <div class="mp-equation" *ngIf="current() as p" aria-live="polite">
+          <span class="mp-operand">{{ p.a }}</span>
+          <span class="mp-op">{{ p.op }}</span>
+          <span class="mp-operand">{{ p.b }}</span>
+          <span class="mp-op">=</span>
 
-  <!-- Learner problem area -->
-  <section *ngIf="mode==='learner'" class="mp-problem" [class.locked]="stats.total >= (config?.requiredQuestions ?? 0)">
-    <ng-container *ngIf="stats.total < (config?.requiredQuestions ?? 0); else doneBlock">
-      <div class="mp-equation" *ngIf="current() as p" aria-live="polite">
-        <span class="mp-operand">{{ p.a }}</span>
-        <span class="mp-op">{{ p.op }}</span>
-        <span class="mp-operand">{{ p.b }}</span>
-        <span class="mp-op">=</span>
+          <input
+            #answerInput
+            class="mp-answer"
+            type="number"
+            [disabled]="checked()"
+            [(ngModel)]="answer"
+            (keyup.enter)="checked() ? next() : check()"
+            aria-label="Your answer" />
 
-        <input
-          class="mp-answer"
-          type="number"
-          [disabled]="checked()"
-          [(ngModel)]="answer"
-          (keyup.enter)="checked() ? next() : check()"
-          aria-label="Your answer" />
-      </div>
+        </div>
 
-      <div class="mp-actions">
-        <button class="mp-btn primary" (click)="checked() ? next() : check()">
-          {{ checked() ? 'Next' : 'Check' }} (Enter)
-        </button>
-        <button class="mp-btn subtle" (click)="reveal()" [disabled]="checked()">
-          Reveal
-        </button>
-      </div>
+        <div class="mp-actions">
+          <button class="btn btn-2 primary" (click)="checked() ? next() : check()">
+            {{ checked() ? 'Next' : 'Check' }} (Enter)
+          </button>
+          <button class="btn btn-1 subtle" (click)="reveal()" [disabled]="checked()">
+            Reveal
+          </button>
+        </div>
 
-      <div class="mp-feedback" *ngIf="checked()">
-        <p [class.ok]="correct()" [class.err]="!correct()">
-          {{ correct() ? 'Correct!' : 'Not quite.' }}
-          <span *ngIf="!correct()">Correct answer: {{ solution() }}</span>
-        </p>
-      </div>
-    </ng-container>
+        <div class="mp-feedback" *ngIf="checked()">
+          <p [class.ok]="correct()" [class.err]="!correct()">
+            {{ correct() ? 'Correct!' : 'Not quite.' }}
+            <span *ngIf="!correct()">Correct answer: {{ solution() }}</span>
+          </p>
+        </div>
+      </ng-container>
 
-    <ng-template #doneBlock>
-      <div class="mp-finished">
-        <h3>Session complete</h3>
-        <p>Answered: {{ stats.total }} • Correct: {{ stats.correct }} • Accuracy:
-          {{ (stats.total ? (stats.correct / stats.total * 100) : 0) | number:'1.0-0' }}%</p>
-      </div>
-    </ng-template>
-  </section>
+      <ng-template #doneBlock>
+        <div class="mp-finished">
+          <h3>Session complete</h3>
+          <p>Answered: {{ stats.total }} • Correct: {{ stats.correct }} • Accuracy:
+            {{ (stats.total ? (stats.correct / stats.total * 100) : 0) | number:'1.0-0' }}%</p>
+        </div>
+      </ng-template>
+    </section>
+  </ng-template>
 
   <!-- Footer: shared stats (learner only) -->
   <footer *ngIf="mode==='learner'" class="mp-footer">

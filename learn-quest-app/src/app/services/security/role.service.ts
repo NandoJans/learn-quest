@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { AppRole } from '../types/role';
+import { AppRole } from '../../types/role';
 import { Router } from '@angular/router';
 
 const LS_KEY = 'activeRole';

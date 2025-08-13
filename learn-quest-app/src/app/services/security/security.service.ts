@@ -1,10 +1,10 @@
   import { Injectable } from '@angular/core';
-  import {ApiService} from './api.service';
+  import {ApiService} from '../api/api.service';
   import {Observable} from 'rxjs';
-  import {StorageService} from './storage.service';
+  import {StorageService} from '../core/storage.service';
   import {jwtDecode, JwtPayload} from 'jwt-decode';
-  import {User} from '../entities/user';
-  import {UserJwtPayload} from '../interfaces/user-jwt-payload';
+  import {User} from '../../entities/user';
+  import {UserJwtPayload} from '../../interfaces/user-jwt-payload';
   import {RoleService} from './role.service';
 
   @Injectable({

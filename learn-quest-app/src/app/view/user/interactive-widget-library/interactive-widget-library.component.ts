@@ -1,8 +1,7 @@
 import {Component, computed, inject, signal} from '@angular/core';
-import {ModuleRegistryService} from '../../../services/module-registry.service';
-import { Router } from '@angular/router';
+import {ModuleRegistryService} from '../../../services/module/module-registry.service';
 import {NgForOf} from '@angular/common';
-import {RouteService} from '../../../services/route.service';
+import {RouteService} from '../../../services/core/route.service';
 
 @Component({
   selector: 'app-interactive-widget-library',

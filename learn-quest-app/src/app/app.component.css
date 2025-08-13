@@ -28,6 +28,18 @@
 /* --------- Responsive widths --------- */
 /* Mobile first: full width—handled by defaults above */
 
+/* Phone styling */
+@media (max-width: 640px) { /* ~phone landscape */
+  .content-wrap {
+    padding: 0;
+  }
+
+  .content-wrap > *:first-child {
+    border: none;
+    border-radius: 0;
+  }
+}
+
 @media (min-width: 640px) { /* ~tablet portrait */
   .content-wrap {
     max-width: 90%;

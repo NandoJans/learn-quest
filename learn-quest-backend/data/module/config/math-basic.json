@@ -1,0 +1,18 @@
+{
+  "operations": [
+    "+",
+    "-",
+    "×",
+    "÷"
+  ],
+  "perOp": {
+    "×": { "min": 0, "max": 10 },
+    "÷": { "min": 1, "max": 10 }
+  },
+  "min": 1,
+  "max": 100,
+  "allowNegatives": false,
+  "integerDivisionOnly": true,
+  "requiredQuestions": 100,
+  "autoStart": false
+}

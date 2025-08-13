@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
+import {ApiService} from '../api/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModuleConfigService {
-  constructor(private http: HttpClient) {}
+  constructor(private apiService: ApiService) {}
 
   /** Replace with your real API shape; this is just a placeholder */
   getConfigForSlug(slug: string): Observable<any> {
     // e.g. /api/module_config?slug=math-practice OR per-lesson block config
     // return this.http.get<any>('/api/module_config', { params: { slug } });
-    return of(null);
+    return this.apiService.get<any>(`module/config/${slug}`);
   }
 }

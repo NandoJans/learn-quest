@@ -1,0 +1,8 @@
+{
+  "language": "en",
+  "initialMode": "m1_name_mc",
+  "colorHintsDefault": true,
+  "perfectModeDefault": false,
+  "autoAdvanceMs": 1000,
+  "persistKeyPrefix": "ptq"
+}

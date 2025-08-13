@@ -1,9 +1,28 @@
 <div class="navbar" *ngIf="isLoggedIn()">
-  <div class="left">
-    <app-role-switcher></app-role-switcher>
-    <a *ngFor="let route of routes" class="nav-item" [href]="route.path">{{ route.name }}</a>
+  <div class="bar">
+    <div class="left">
+      <app-role-switcher></app-role-switcher>
+    </div>
+
+    <!-- Hamburger (mobile only) -->
+    <button class="hamburger"
+            type="button"
+            aria-label="Toggle menu"
+            [attr.aria-expanded]="menuOpen"
+            (click)="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
-  <div class="right">
-    <a class="nav-item" (click)="logout()" href="#">Logout</a>
-  </div>
+
+  <!-- Collapsible menu -->
+  <nav class="menu" [class.open]="menuOpen">
+    <a *ngFor="let route of routes"
+       class="nav-item"
+       [routerLink]="route.path"
+       (click)="closeMenu()">
+      {{ route.name }}
+    </a>
+
+    <a class="nav-item logout" href="#" (click)="logout(); closeMenu()">Logout</a>
+  </nav>
 </div>

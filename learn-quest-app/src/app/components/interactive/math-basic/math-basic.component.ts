@@ -1,5 +1,15 @@
-import {Component, EventEmitter, Input, Output, signal, SimpleChanges} from '@angular/core';
-import {DecimalPipe, NgIf} from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  signal,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
+import {DecimalPipe, NgFor, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Op} from '../../../types/op';
 import {MathBasicConfig} from '../../../interfaces/interactive/math-basic-config';
@@ -14,11 +24,15 @@ import {faCheck} from '@fortawesome/free-solid-svg-icons';
     FormsModule,
     DecimalPipe,
     FaIconComponent,
+    NgFor
   ],
   templateUrl: './math-basic.component.html',
   styleUrl: './math-basic.component.css'
 })
-export class MathBasicComponent {
+export class MathBasicComponent implements OnChanges {
+  ops: Op[] = ['+', '-', '×', '÷'];
+  trackByOp = (_: number, op: Op) => op;
+
   /** Mode: 'author' shows settings; 'learner' hides them */
   @Input() mode: Mode = 'learner';
 
@@ -32,6 +46,8 @@ export class MathBasicComponent {
   @Output() problemGenerated = new EventEmitter<{ a:number; b:number; op:Op; answer:number }>();
   @Output() checkedAnswer = new EventEmitter<{ correct:boolean; given:number | null; expected:number }>();
   @Output() completed = new EventEmitter<{ total:number; correct:number; accuracy:number }>();
+
+  @ViewChild('answerInput') answerInput!: ElementRef<HTMLInputElement>;
 
   // --- runtime state (signals) ---
   current = signal<{ a:number; b:number; op:Op } | null>(null);
@@ -60,11 +76,57 @@ export class MathBasicComponent {
     if (changes['mode']) {
       if (this.mode === 'author') {
         this.draft = { ...this.config };
+        this.ensureDraftPerOpObject();
       } else {
         this.draft = null;
         this.resetSession();
         if (this.config?.autoStart !== false) this.newProblem();
       }
+    }
+  }
+
+  private ensureDraftPerOpObject() {
+    if (!this.draft) return;
+    this.draft.perOp = this.draft.perOp ?? {};
+  }
+
+  /** Update per-op min/max safely from template-driven inputs */
+  onPerOpChange(op: Op, which: 'min' | 'max', raw: any) {
+    if (!this.draft) return;
+    this.ensureDraftPerOpObject();
+
+    const val = Number(raw);
+    if (!Number.isFinite(val)) return;
+
+    const globalMin = this.draft.min;
+    const globalMax = this.draft.max;
+
+    const cur = this.draft.perOp![op] ?? { min: globalMin, max: globalMax };
+    cur[which] = val;
+
+    // If override equals global again, drop it to keep JSON minimal
+    if (cur.min === globalMin && cur.max === globalMax) {
+      delete this.draft.perOp![op];
+    } else {
+      this.draft.perOp![op] = cur;
+    }
+  }
+
+  /** Optional: call before save to strip empty perOp */
+  private cleanupPerOp() {
+    if (!this.draft?.perOp) return;
+    const globalMin = this.draft.min;
+    const globalMax = this.draft.max;
+
+    for (const op of this.ops) {
+      const r = this.draft.perOp[op as Op];
+      if (!r) continue;
+      if (r.min === globalMin && r.max === globalMax) {
+        delete this.draft.perOp[op as Op];
+      }
+    }
+    if (Object.keys(this.draft.perOp).length === 0) {
+      delete this.draft.perOp; // remove entirely if empty
     }
   }
 
@@ -79,6 +141,7 @@ export class MathBasicComponent {
 
   saveDraft() {
     if (!this.draft) return;
+    this.cleanupPerOp();               // optional tidy-up
     const cleaned = this.normalizeConfig(this.draft);
     this.saveConfig.emit(cleaned);
   }
@@ -98,7 +161,10 @@ export class MathBasicComponent {
     if (ops.length === 0) { this.current.set(null); return; }
 
     const op = ops[Math.floor(Math.random() * ops.length)];
-    const rnd = () => this.randInt(cfg.min, cfg.max);
+
+    // pick range: per-op override → global
+    const range = cfg.perOp?.[op] ?? { min: cfg.min, max: cfg.max };
+    const rnd = () => this.randInt(range.min, range.max);
 
     let a = 0, b = 0;
 
@@ -132,7 +198,12 @@ export class MathBasicComponent {
     this.correct.set(false);
 
     this.problemGenerated.emit({ a, b, op, answer: this.eval(a, b, op) });
+
+    setTimeout(() => this.answerInput?.nativeElement.focus(), 0);
   }
+
+  autoNext: ReturnType<typeof setTimeout> | null = null;
+
 
   check() {
     const p = this.current();
@@ -146,7 +217,11 @@ export class MathBasicComponent {
     this.correct.set(isCorrect);
 
     this.stats.total += 1;
-    if (isCorrect) { this.stats.correct += 1; this.stats.streak += 1; }
+    if (isCorrect) {
+      this.stats.correct += 1;
+      this.stats.streak += 1;
+      this.autoNext = setTimeout(() => this.next(), 1000);
+    }
     else { this.stats.streak = 0; }
 
     this.checkedAnswer.emit({ correct: isCorrect, given: given ?? null, expected });
@@ -169,6 +244,7 @@ export class MathBasicComponent {
     // Only proceed if we haven’t met the required question count
     if (this.stats.total >= (this.config?.requiredQuestions ?? 0)) return;
     this.newProblem();
+    clearTimeout(this.autoNext!);
   }
 
   solution(): number {
@@ -199,31 +275,61 @@ export class MathBasicComponent {
   }
 
   private ensureConfigValid() {
-    if (!this.config) throw new Error('MathPracticeComponent: config is required.');
+    if (!this.config) throw new Error('MathBasicComponent: config is required.');
     if (!Array.isArray(this.config.operations) || this.config.operations.length === 0) {
-      throw new Error('MathPracticeComponent: operations must contain at least one operator.');
+      this.config.operations = ['+'];
     }
-    if (typeof this.config.min !== 'number' || typeof this.config.max !== 'number') {
-      throw new Error('MathPracticeComponent: min/max must be numbers.');
-    }
+    // Global range
+    if (typeof this.config.min !== 'number') this.config.min = 0;
+    if (typeof this.config.max !== 'number') this.config.max = 10;
+    if (this.config.min > this.config.max) [this.config.min, this.config.max] = [this.config.max, this.config.min];
+
+    // Per-op ranges (coerce if present)
+    const coerce = (r?: {min:number; max:number}) => {
+      if (!r) return;
+      if (typeof r.min !== 'number') r.min = this.config.min;
+      if (typeof r.max !== 'number') r.max = this.config.max;
+      if (r.min > r.max) [r.min, r.max] = [r.max, r.min];
+    };
+    coerce(this.config.perOp?.['+']);
+    coerce(this.config.perOp?.['-']);
+    coerce(this.config.perOp?.['×']);
+    coerce(this.config.perOp?.['÷']);
+
     if (typeof this.config.requiredQuestions !== 'number' || this.config.requiredQuestions < 1) {
-      throw new Error('MathPracticeComponent: requiredQuestions must be >= 1.');
+      this.config.requiredQuestions = 10;
     }
   }
 
+
   private normalizeConfig(c: MathBasicConfig): MathBasicConfig {
     const ops = Array.from(new Set(c.operations)).filter(Boolean) as Op[];
-    const min = Number.isFinite(c.min) ? c.min : 0;
-    const max = Number.isFinite(c.max) ? c.max : 10;
+
+    const normRange = (min?: number, max?: number) => {
+      const a = Number.isFinite(min) ? (min as number) : 0;
+      const b = Number.isFinite(max) ? (max as number) : 10;
+      return { min: Math.min(a, b), max: Math.max(a, b) };
+    };
+
+    const global = normRange(c.min, c.max);
+
+    const perOp: MathBasicConfig['perOp'] = {};
+    (['+','-','×','÷'] as Op[]).forEach(op => {
+      const src = c.perOp?.[op];
+      if (src) perOp[op] = normRange(src.min, src.max);
+    });
+
     const rq = Math.max(1, Math.floor(c.requiredQuestions ?? 10));
+
     return {
       operations: ops.length ? ops : ['+'],
-      min: Math.min(min, max),
-      max: Math.max(min, max),
-      allowNegatives: c.allowNegatives,
-      integerDivisionOnly: c.integerDivisionOnly,
+      min: global.min,
+      max: global.max,
+      perOp,
+      allowNegatives: !!c.allowNegatives,
+      integerDivisionOnly: !!c.integerDivisionOnly,
       requiredQuestions: rq,
-      autoStart: !!c.autoStart
+      autoStart: c.autoStart !== false
     };
   }
 

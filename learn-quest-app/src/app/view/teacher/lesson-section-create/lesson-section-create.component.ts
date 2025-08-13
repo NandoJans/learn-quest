@@ -5,9 +5,8 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
-import { of } from 'rxjs';
 
-import { LessonSectionService } from '../../../services/lesson-section.service';
+import { LessonSectionService } from '../../../services/entity/lesson-section.service';
 import { LessonSection } from '../../../entities/lesson-section';
 import { PrimaryButtonComponent } from '../../../components/buttons/primary-button/primary-button.component';
 
@@ -44,8 +43,6 @@ export class LessonSectionCreateComponent implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private sectionService = inject(LessonSectionService);
-  private destroyRef = inject(DestroyRef);
-
   lessonId!: number;
 
   sectionsForm = this.fb.group({

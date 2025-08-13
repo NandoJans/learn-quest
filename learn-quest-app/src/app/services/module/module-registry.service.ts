@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {ModuleDefinition} from '../interfaces/interactive/module-meta';
+import {ModuleDefinition} from '../../interfaces/interactive/module-meta';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,16 @@ export class ModuleRegistryService {
       title: 'Math Basic',
       description: 'Basic arithmetic with configurable rules.',
       tags: ['math', 'quiz'],
-      loader: () => import('../components/interactive/math-basic/math-basic.component')
+      loader: () => import('../../components/interactive/math-basic/math-basic.component')
         .then(m => m.MathBasicComponent)
+    },
+    {
+      slug: 'periodic-quiz',
+      title: 'Periodic Quiz',
+      description: 'Periodic table quiz game.',
+      tags: ['science', 'quiz', 'chemistry'],
+      loader: () => import('../../components/interactive/periodic-quiz/periodic-quiz.component')
+        .then(m => m.PeriodicQuizComponent)
     }
   ];
 

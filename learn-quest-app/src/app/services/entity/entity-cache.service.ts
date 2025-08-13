@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from './api.service';
+import { ApiService } from '../api/api.service';
 import { EntityService } from './entity.service';
-import { Entity } from '../entities/entity';
+import { Entity } from '../../entities/entity';
 
 @Injectable({
   providedIn: 'root'

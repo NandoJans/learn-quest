@@ -22,3 +22,9 @@
 .error {
   color: #b00020;
 }
+
+@media (max-width: 640px) {
+  .host-wrap {
+    padding: 0;
+  }
+}
