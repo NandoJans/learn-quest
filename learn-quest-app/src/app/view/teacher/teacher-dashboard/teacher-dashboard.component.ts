@@ -4,7 +4,7 @@ import {CustomDashboardConfig} from '../../../interfaces/custom/custom-dashboard
 import {CourseService} from '../../../services/entity/course.service';
 import {SecurityService} from '../../../services/security/security.service';
 import {CoursesComponent} from '../../user/courses/courses.component';
-import {faBars, faBookOpen, faHamburger, faPlus} from '@fortawesome/free-solid-svg-icons';
+import {faBars, faBookOpen, faPlus} from '@fortawesome/free-solid-svg-icons';
 import {
   StudentsDashboardComponent
 } from '../../../components/dashboard/students-dashboard/students-dashboard.component';
