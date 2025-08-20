@@ -35,7 +35,7 @@ export class CoursesComponent implements OnInit {
         return this.courseService.getCourses();
       case "ROLE_TEACHER":
         return this.courseService.getCourses({
-          // user: this.securityService.getUser()?.id,
+          user: this.securityService.getUser()?.id,
         });
     }
     return [];
