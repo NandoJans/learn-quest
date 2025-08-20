@@ -34,6 +34,7 @@ export const routes: Routes = [
     canMatch: [jwtAuthGuard, roleMatchGuard('ROLE_TEACHER')],
     children: [
       { path: 'dashboard', component: TeacherDashboardComponent, title: 'Dashboard' },
+      { path: 'courses', component: CoursesComponent, title: 'Courses' },
       { path: 'lesson/:lessonId/sections', component: LessonSectionCreateComponent, title: 'Edit Lesson Sections' },
     ]
   },

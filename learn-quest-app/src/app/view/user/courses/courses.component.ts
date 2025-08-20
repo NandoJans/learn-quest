@@ -26,19 +26,7 @@ export class CoursesComponent implements OnInit {
   ) {}
 
   getCourses(): Course[] {
-    switch (this.roleService.activeRole) {
-      case "ROLE_USER":
-        return this.courseService.getCourses({
-          'courseRegistrations.user': this.securityService.getUser()?.id,
-        });
-      case "ROLE_ADMIN":
-        return this.courseService.getCourses();
-      case "ROLE_TEACHER":
-        return this.courseService.getCourses({
-          user: this.securityService.getUser()?.id,
-        });
-    }
-    return [];
+    return this.courseService.getCoursesByRole();
   }
 
   ngOnInit() {

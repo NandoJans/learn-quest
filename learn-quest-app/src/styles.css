@@ -173,3 +173,11 @@ body, html {
   background-color: var(--color-6-dark);
 }
 
+.btn-link {
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  color: white;
+}
