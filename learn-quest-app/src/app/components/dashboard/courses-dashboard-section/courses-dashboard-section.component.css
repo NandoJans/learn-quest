@@ -1,0 +1,11 @@
+.card-footer.buttons {
+  padding: 0;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+}
+
+.card-footer.buttons .btn {
+  border-radius: 0;
+  width: 100%;
+}

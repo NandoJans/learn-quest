@@ -1,0 +1,8 @@
+<div class="container-fluid d-flex flex-wrap justify-content-center">
+  <app-course class="m-3" *ngFor="let course of getCourses()" [course]="course" [href]="getCourseRoute()"></app-course>
+</div>
+<div class="card-footer buttons">
+  <a *ngFor="let button of getBottomButtons()" class="btn {{ button.buttonClass }} btn-link" [routerLink]="button.routerLink">
+    <fa-icon [icon]="button.icon"></fa-icon>
+  </a>
+</div>

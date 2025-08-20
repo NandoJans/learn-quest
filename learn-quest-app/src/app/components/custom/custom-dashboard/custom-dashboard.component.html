@@ -1,0 +1,8 @@
+
+<button class="btn btn-5" (click)="toggleEditMode()"><fa-icon [icon]="faPencil"></fa-icon></button>
+<div class="dashboard-sections d-flex flex-wrap">
+  <app-custom-dashboard-section *ngFor="let config of getDashboardSections()"
+    [config]="config"
+    [editMode]="editMode"
+  ></app-custom-dashboard-section>
+</div>

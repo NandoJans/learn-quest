@@ -1,0 +1,10 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <fa-icon [icon]="getIcon()" [style]="'color: ' + getColor()" aria-hidden="true"></fa-icon>
+      <h2>{{ getTitle() }}</h2>
+    </div>
+    <p>{{ getDescription() }}</p>
+  </div>
+  <ng-container class="card-body" #host></ng-container>
+</div>
