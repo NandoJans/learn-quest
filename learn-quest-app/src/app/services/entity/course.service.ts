@@ -68,6 +68,9 @@ export class CourseService {
           user: this.securityService.getUser()?.id,
         });
     }
-    return [];
+      default:
+        console.warn(`Unknown or undefined role: ${this.roleService.activeRole}`);
+        return [];
+    }
   }
 }
