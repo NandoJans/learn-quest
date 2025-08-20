@@ -4,6 +4,8 @@ import {CourseService} from '../../../services/entity/course.service';
 import {NgForOf} from '@angular/common';
 import {CourseComponent} from '../../../components/course/course.component';
 import {Course} from '../../../entities/course';
+import {RoleService} from '../../../services/security/role.service';
+import {SecurityService} from '../../../services/security/security.service';
 
 @Component({
   selector: 'app-courses',
@@ -19,10 +21,24 @@ export class CoursesComponent implements OnInit {
   constructor(
     private router: Router,
     private courseService: CourseService,
+    private roleService: RoleService,
+    private securityService: SecurityService
   ) {}
 
   getCourses(): Course[] {
-    return this.courseService.getCourses();
+    switch (this.roleService.activeRole) {
+      case "ROLE_USER":
+        return this.courseService.getCourses({
+          'courseRegistrations.user': this.securityService.getUser()?.id,
+        });
+      case "ROLE_ADMIN":
+        return this.courseService.getCourses();
+      case "ROLE_TEACHER":
+        return this.courseService.getCourses({
+          // user: this.securityService.getUser()?.id,
+        });
+    }
+    return [];
   }
 
   ngOnInit() {
