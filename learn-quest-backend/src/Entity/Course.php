@@ -45,9 +45,6 @@ class Course
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $userId = null;
-
     public function __construct()
     {
         $this->lessons = new ArrayCollection();
