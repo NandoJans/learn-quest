@@ -237,7 +237,26 @@ final class AutoDtoMapper
 
     private function objectToArray(object $o): array
     {
-        // naive but works for typical DTOs with public props/getters
-        return json_decode(json_encode($o, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
+        // Use reflection to extract public properties and getter methods
+        $result = get_object_vars($o);
+
+        $ref = new \ReflectionObject($o);
+        foreach ($ref->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            $name = $method->getName();
+            if (
+                $method->getNumberOfRequiredParameters() === 0 &&
+                (
+                    (str_starts_with($name, 'get') && strlen($name) > 3) ||
+                    (str_starts_with($name, 'is') && strlen($name) > 2)
+                )
+            ) {
+                // Convert method name to property-like key
+                $prop = lcfirst(preg_replace('/^(get|is)/', '', $name));
+                if (!array_key_exists($prop, $result)) {
+                    $result[$prop] = $method->invoke($o);
+                }
+            }
+        }
+        return $result;
     }
 }
