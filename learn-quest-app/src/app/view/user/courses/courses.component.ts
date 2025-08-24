@@ -1,11 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
 import {CourseService} from '../../../services/entity/course.service';
 import {NgForOf} from '@angular/common';
 import {CourseComponent} from '../../../components/course/course.component';
 import {Course} from '../../../entities/course';
-import {RoleService} from '../../../services/security/role.service';
-import {SecurityService} from '../../../services/security/security.service';
 
 @Component({
   selector: 'app-courses',
@@ -19,10 +16,7 @@ import {SecurityService} from '../../../services/security/security.service';
 export class CoursesComponent implements OnInit {
 
   constructor(
-    private router: Router,
     private courseService: CourseService,
-    private roleService: RoleService,
-    private securityService: SecurityService
   ) {}
 
   getCourses(): Course[] {

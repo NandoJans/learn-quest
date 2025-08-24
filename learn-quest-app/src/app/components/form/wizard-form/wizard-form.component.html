@@ -1,0 +1,139 @@
+<!-- Header / progress -->
+<div class="wf-header">
+  <div
+    class="wf-step"
+    *ngFor="let step of steps; let i = index"
+    [class.active]="i === currentIndex()"
+    [class.completed]="getStepGroup(i)?.valid"
+    (click)="goto(i)"
+    role="button"
+    tabindex="0"
+  >
+    <div class="wf-step-index">{{ i + 1 }}</div>
+    <div class="wf-step-info">
+      <div class="wf-step-title">{{ step.title }}</div>
+      <div class="wf-step-desc" *ngIf="step.description">{{ step.description }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Body -->
+<form class="wf-body" [formGroup]="form" (ngSubmit)="submit()">
+  <ng-container *ngFor="let step of steps; let i = index">
+    <section class="wf-panel" *ngIf="i === currentIndex()">
+      <div class="wf-fields" [formGroup]="getStepGroup(i)!">
+        <div class="wf-field" *ngFor="let field of step.fields">
+          <label [for]="step.key + '_' + field.name">{{ field.label }}</label>
+
+          <ng-container [ngSwitch]="field.type">
+            <input
+              *ngSwitchCase="'text'"
+              class="wf-input"
+              type="text"
+              [id]="step.key + '_' + field.name"
+              [placeholder]="field.placeholder"
+              [formControlName]="field.name" />
+
+            <input
+              *ngSwitchCase="'email'"
+              class="wf-input"
+              type="email"
+              [id]="step.key + '_' + field.name"
+              [placeholder]="field.placeholder"
+              [formControlName]="field.name" />
+
+            <input
+              *ngSwitchCase="'password'"
+              class="wf-input"
+              type="password"
+              [id]="step.key + '_' + field.name"
+              [placeholder]="field.placeholder"
+              [formControlName]="field.name" />
+
+            <input
+              *ngSwitchCase="'number'"
+              class="wf-input"
+              type="number"
+              [id]="step.key + '_' + field.name"
+              [placeholder]="field.placeholder"
+              [formControlName]="field.name" />
+
+            <input
+              *ngSwitchCase="'date'"
+              class="wf-input"
+              type="date"
+              [id]="step.key + '_' + field.name"
+              [formControlName]="field.name" />
+
+            <input
+              *ngSwitchCase="'color'"
+              class="wf-input wf-input-color"
+              type="color"
+              [id]="step.key + '_' + field.name"
+              [formControlName]="field.name" />
+
+            <textarea
+              *ngSwitchCase="'textarea'"
+              class="wf-textarea"
+              rows="4"
+              [id]="step.key + '_' + field.name"
+              [placeholder]="field.placeholder"
+              [formControlName]="field.name"></textarea>
+
+            <select
+              *ngSwitchCase="'select'"
+              class="wf-select"
+              [id]="step.key + '_' + field.name"
+              [formControlName]="field.name">
+              <option *ngFor="let opt of field.options || []" [ngValue]="opt.value">{{ opt.label }}</option>
+            </select>
+
+            <label *ngSwitchCase="'checkbox'" class="wf-checkbox">
+              <input type="checkbox" [formControlName]="field.name" />
+              <span>{{ field.placeholder || ' ' }}</span>
+            </label>
+          </ng-container>
+
+          <!-- Validation messages (simple set) -->
+          <div class="wf-error" *ngIf="showError(controlOf(step.key, field.name))">
+            <ng-container [ngSwitch]="true">
+              <span *ngSwitchCase="controlOf(step.key, field.name)?.errors?.['required']">
+                {{ field.label }} is required.
+              </span>
+              <span *ngSwitchCase="controlOf(step.key, field.name)?.errors?.['email']">
+                Please enter a valid email address.
+              </span>
+              <span *ngSwitchCase="controlOf(step.key, field.name)?.errors?.['min']">
+                Value is too low.
+              </span>
+              <span *ngSwitchCase="controlOf(step.key, field.name)?.errors?.['max']">
+                Value is too high.
+              </span>
+              <span *ngSwitchCase="controlOf(step.key, field.name)?.errors?.['minlength']">
+                Too short.
+              </span>
+              <span *ngSwitchCase="controlOf(step.key, field.name)?.errors?.['maxlength']">
+                Too long.
+              </span>
+              <span *ngSwitchCase="controlOf(step.key, field.name)?.errors?.['pattern']">
+                Invalid format.
+              </span>
+              <span *ngSwitchDefault>Invalid value.</span>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <!-- Footer / actions -->
+  <div class="wf-actions">
+    <button type="button" class="wf-btn" (click)="back()" [disabled]="isFirst()">← {{ backLabel }}</button>
+    <button *ngIf="!isLast()" type="button" class="wf-btn primary" (click)="next()" [disabled]="linear && !canGoNext()">
+      {{ nextLabel }} →
+    </button>
+    <button *ngIf="isLast()" type="submit" class="wf-btn success">
+      {{ submitLabel }}
+    </button>
+  </div>
+</form>

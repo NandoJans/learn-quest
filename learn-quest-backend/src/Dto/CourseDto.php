@@ -11,6 +11,7 @@ class CourseDto extends Dto
         public ?string $description = null,
         public ?string $faIcon = null,
         public ?string $primaryColor = null,
+        public ?int $userId = null,
     )
     {
     }

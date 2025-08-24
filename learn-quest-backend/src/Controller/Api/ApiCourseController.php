@@ -101,7 +101,7 @@ final class ApiCourseController extends AbstractController
             );
         }
 
-        $courses = $user->getCourses();
+        $courses = $user->getRegisteredCourses();
 
         $courseDtos = array_map(function ($course) {
             $this->entityService->mapEntityToDto($course, CourseDto::class);

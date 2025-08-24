@@ -3,11 +3,7 @@ import {CustomDashboardComponent} from '../../../components/custom/custom-dashbo
 import {CustomDashboardConfig} from '../../../interfaces/custom/custom-dashboard-config';
 import {CourseService} from '../../../services/entity/course.service';
 import {SecurityService} from '../../../services/security/security.service';
-import {CoursesComponent} from '../../user/courses/courses.component';
 import {faBars, faBookOpen, faPlus} from '@fortawesome/free-solid-svg-icons';
-import {
-  StudentsDashboardComponent
-} from '../../../components/dashboard/students-dashboard/students-dashboard.component';
 import {
   CoursesDashboardSectionComponent
 } from '../../../components/dashboard/courses-dashboard-section/courses-dashboard-section.component';
@@ -25,8 +21,6 @@ import {
 })
 export class TeacherDashboardComponent {
   constructor(
-    private courseService: CourseService,
-    private securityService: SecurityService
   ) {
   }
 
@@ -49,7 +43,7 @@ export class TeacherDashboardComponent {
             },
             {
               icon: faPlus,
-              routerLink: '/teacher/course',
+              routerLink: '/teacher/course/create',
               buttonClass: 'btn-2',
             }
           ]

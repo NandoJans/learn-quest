@@ -41,6 +41,10 @@ class Course
     #[ORM\Column(length: 255)]
     private ?string $faIcon = null;
 
+    #[ORM\ManyToOne(inversedBy: 'courses')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->lessons = new ArrayCollection();
@@ -169,6 +173,30 @@ class Course
     public function setFaIcon(string $faIcon): static
     {
         $this->faIcon = $faIcon;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->userId;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function setUserId(?int $userId): static
+    {
+        $this->userId = $userId;
 
         return $this;
     }
