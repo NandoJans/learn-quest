@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Dto\Dto;
 use App\Service\EntityService;
+use App\Util\AutoDtoMapper;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +15,8 @@ final class ApiEntityController extends AbstractController
 {
     public function __construct(
         private ManagerRegistry $doctrine,
-        private EntityService $entityService
+        private EntityService $entityService,
+        private AutoDtoMapper $autoDtoMapper,
     )
     {
     }
@@ -97,6 +99,33 @@ final class ApiEntityController extends AbstractController
         $dtos     = array_map(fn($item) => $this->entityService->mapEntityToDto($item, $dtoClass), $items);
 
         return $this->json($dtos);
+    }
+
+    #[Route('/api/{entity}/create', name: 'api_course_create', methods: ['POST'])]
+    public function create(Request $request): Response
+    {
+        $body = $request->getContent();
+        $data = json_decode($body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $entity = $request->attributes->get('entity');
+        $class = $this->entityService->getEntityClass($entity);
+
+        $instance = new $class();
+        $dtoClass = $this->entityService->getEntityDtoClass($entity);
+        $dto = new $dtoClass();
+        $dto->fromArray($data, $this->entityService, $this->doctrine);
+        $instance = $this->autoDtoMapper->map($dto, $instance, true);
+
+        $em = $this->doctrine->getManagerForClass($class);
+        $em->persist($instance);
+        $em->flush();
+
+        return $this->json(['status' => 'Entity created successfully', 'data' => [
+            'entity' => $entity,
+        ]], Response::HTTP_CREATED);
     }
 
 }

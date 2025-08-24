@@ -11,4 +11,14 @@ abstract class Dto
     {
 
     }
+
+    public function fromArray(array $data, EntityService $entityService, ManagerRegistry $doctrine): void
+    {
+        foreach ($data as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            }
+        }
+        $this->extraData($entityService, $doctrine);
+    }
 }

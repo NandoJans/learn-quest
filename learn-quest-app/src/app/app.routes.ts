@@ -12,6 +12,7 @@ import {
 } from './view/user/interactive-widget-library/interactive-widget-library.component';
 import {roleMatchGuard} from './auth/role-match.guard';
 import {InteractiveWidgetComponent} from './view/user/interactive-widget/interactive-widget.component';
+import {CreateCourseComponent} from './view/teacher/course/create-course/create-course.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -34,7 +35,9 @@ export const routes: Routes = [
     canMatch: [jwtAuthGuard, roleMatchGuard('ROLE_TEACHER')],
     children: [
       { path: 'dashboard', component: TeacherDashboardComponent, title: 'Dashboard' },
+      { path: 'courses', component: CoursesComponent, title: 'Courses' },
       { path: 'lesson/:lessonId/sections', component: LessonSectionCreateComponent, title: 'Edit Lesson Sections' },
+      { path: 'course/create', component: CreateCourseComponent, title: 'Create Course' },
     ]
   },
   {

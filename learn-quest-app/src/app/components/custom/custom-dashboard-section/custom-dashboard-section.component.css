@@ -1,0 +1,14 @@
+.card {
+  margin: 1rem;
+}
+
+.card-title {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.card-title fa-icon {
+  font-size: 2rem;
+  margin-right: 0.5rem;
+}
