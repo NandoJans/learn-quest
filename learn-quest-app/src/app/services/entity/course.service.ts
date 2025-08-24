@@ -56,21 +56,30 @@ export class CourseService {
   }
 
   getCoursesByRole(): Course[] {
+    let params: {[key: string]: any} = {};
     switch (this.roleService.activeRole) {
       case "ROLE_USER":
-        return this.getCourses({
+        params = {
           'courseRegistrations.user': this.securityService.getUser()?.id,
-        });
+        };
+        break;
       case "ROLE_ADMIN":
-        return this.getCourses();
+        break; // no params, get all courses
       case "ROLE_TEACHER":
-        return this.getCourses({
-          user: this.securityService.getUser()?.id,
-        });
-    }
+        params = {
+          userId: this.securityService.getUser()?.id,
+        }
+        break;
       default:
         console.warn(`Unknown or undefined role: ${this.roleService.activeRole}`);
-        return [];
     }
+
+    this.loadCourses(params);
+    return this.getCourses(params);
+  }
+
+  createCourse(course: Course): Observable<Course> {
+    course.userId = this.securityService.getUser()?.id ?? 0;
+    return this.apiService.post<Course>('course/create', course);
   }
 }

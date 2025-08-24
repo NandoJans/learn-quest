@@ -6,4 +6,5 @@ export class Course extends Entity {
   description: string = '';
   primaryColor: string = '';
   faIcon: string = '';
+  userId: number = 0;
 }
