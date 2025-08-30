@@ -16,7 +16,7 @@
   Enrolled successfully! Go to
   <a routerLink="/user/dashboard" class="alert-link">your dashboard</a>.
 </div>
-<app-footer-button [text]="isEnrolled() ? 'Enrolled' : 'Enroll'"
+<app-footer-button *ngIf="isUser()" [text]="isEnrolled() ? 'Enrolled' : 'Enroll'"
                    [btnClass]="isEnrolled() ? 'btn-success' : 'btn-primary'"
                    [disabled]="isEnrolled()"
                    (click)="enroll()"></app-footer-button>

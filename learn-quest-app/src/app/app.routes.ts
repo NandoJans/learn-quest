@@ -36,8 +36,9 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: TeacherDashboardComponent, title: 'Dashboard' },
       { path: 'courses', component: CoursesComponent, title: 'Courses' },
-      { path: 'lesson/:lessonId/sections', component: LessonSectionCreateComponent, title: 'Edit Lesson Sections' },
+      { path: 'course', component: LessonsComponent, title: 'Course Lessons' },
       { path: 'course/create', component: CreateCourseComponent, title: 'Create Course' },
+      { path: 'lesson/:lessonId/sections', component: LessonSectionCreateComponent, title: 'Edit Lesson Sections' },
     ]
   },
   {

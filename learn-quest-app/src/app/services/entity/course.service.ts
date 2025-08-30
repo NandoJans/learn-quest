@@ -65,6 +65,9 @@ export class CourseService {
         break;
       case "ROLE_ADMIN":
         break; // no params, get all courses
+      case "ROLE_TEACHER":
+        params = {
+          'user': this.securityService.getUser()?.id,
         };
         break;
       default:

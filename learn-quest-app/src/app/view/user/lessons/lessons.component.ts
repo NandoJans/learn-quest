@@ -6,7 +6,8 @@ import {IconComponent} from '../../../components/icon/icon.component';
 import {FooterButtonComponent} from '../../../components/buttons/footer-button/footer-button.component';
 import {Lesson} from '../../../entities/lesson';
 import {Router, RouterLink} from '@angular/router';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
+import {RoleService} from '../../../services/security/role.service';
 
 @Component({
   selector: 'app-lessons',
@@ -14,7 +15,8 @@ import {NgForOf} from '@angular/common';
     IconComponent,
     FooterButtonComponent,
     NgForOf,
-    RouterLink
+    RouterLink,
+    NgIf
   ],
   templateUrl: './lessons.component.html',
   styleUrl: './lessons.component.css'
@@ -27,6 +29,7 @@ export class LessonsComponent implements OnInit {
   constructor(
     private courseService: CourseService,
     private lessonService: LessonService,
+    private roleService: RoleService,
     private router: Router
   ) {}
 
@@ -60,6 +63,14 @@ export class LessonsComponent implements OnInit {
     return this.courseService
       .getEnrolledCourses()
       .some(course => course.id == this.courseId);
+  }
+
+  isUser(): boolean {
+    return this.roleService.activeRole === 'ROLE_USER';
+  }
+
+  isTeacher(): boolean {
+    return this.roleService.activeRole === 'ROLE_TEACHER';
   }
 
   enroll() {
