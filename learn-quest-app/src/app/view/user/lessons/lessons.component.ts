@@ -8,6 +8,9 @@ import {Lesson} from '../../../entities/lesson';
 import {Router, RouterLink} from '@angular/router';
 import {NgForOf, NgIf} from '@angular/common';
 import {RoleService} from '../../../services/security/role.service';
+import {RouteService} from '../../../services/core/route.service';
+import {SideButtonComponent} from '../../../components/buttons/side-button/side-button.component';
+import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-lessons',
@@ -16,20 +19,21 @@ import {RoleService} from '../../../services/security/role.service';
     FooterButtonComponent,
     NgForOf,
     RouterLink,
-    NgIf
+    NgIf,
+    SideButtonComponent
   ],
   templateUrl: './lessons.component.html',
   styleUrl: './lessons.component.css'
 })
 export class LessonsComponent implements OnInit {
   @Input() courseId: number = 0;
-
   showEnrollNotification = false;
 
   constructor(
     private courseService: CourseService,
     private lessonService: LessonService,
     private roleService: RoleService,
+    private routeService: RouteService,
     private router: Router
   ) {}
 
@@ -50,7 +54,6 @@ export class LessonsComponent implements OnInit {
     this.router.navigate(['/courses', this.courseId, 'lessons', lesson.id]);
   }
 
-
   ngOnInit() {
     // Load the course and lessons when the component initializes
     this.courseService.loadCourses({id: this.courseId});
@@ -58,6 +61,7 @@ export class LessonsComponent implements OnInit {
     // Load courses the user is enrolled in to update the button state
     this.courseService.loadEnrolledCourses();
   }
+
 
   isEnrolled(): boolean {
     return this.courseService
@@ -85,5 +89,15 @@ export class LessonsComponent implements OnInit {
         console.log('Enrolled in course:', response);
       }
     });
+  }
+
+  navigateToCreateLesson() {
+    this.routeService.navigateTo(['lesson', 'create'], {courseId: this.courseId});
+  }
+
+  protected readonly faArrowRight = faArrowRight;
+
+  navigateToLesson(id: number) {
+    this.routeService.navigateTo(['lesson', 'sections'], {lessonId: id});
   }
 }

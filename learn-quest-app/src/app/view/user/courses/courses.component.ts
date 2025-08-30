@@ -29,6 +29,6 @@ export class CoursesComponent implements OnInit {
 
   getCourseRoute() {
 
-    return '/course';
+    return 'course';
   }
 }

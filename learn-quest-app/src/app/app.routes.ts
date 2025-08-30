@@ -13,6 +13,7 @@ import {
 import {roleMatchGuard} from './auth/role-match.guard';
 import {InteractiveWidgetComponent} from './view/user/interactive-widget/interactive-widget.component';
 import {CreateCourseComponent} from './view/teacher/course/create-course/create-course.component';
+import {CreateLessonComponent} from './view/teacher/lesson/create-lesson/create-lesson.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -38,7 +39,8 @@ export const routes: Routes = [
       { path: 'courses', component: CoursesComponent, title: 'Courses' },
       { path: 'course', component: LessonsComponent, title: 'Course Lessons' },
       { path: 'course/create', component: CreateCourseComponent, title: 'Create Course' },
-      { path: 'lesson/:lessonId/sections', component: LessonSectionCreateComponent, title: 'Edit Lesson Sections' },
+      { path: 'lesson/create', component: CreateLessonComponent, title: 'Create Lesson' },
+      { path: 'lesson/sections', component: LessonSectionCreateComponent, title: 'Edit Lesson Sections' },
     ]
   },
   {

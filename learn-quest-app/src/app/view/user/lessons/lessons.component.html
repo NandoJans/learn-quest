@@ -3,13 +3,18 @@
   <h1>{{ getCourse().name }}</h1>
 </div>
 <table class="table table-striped">
-  <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + lesson.primaryColor">
+  <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + getCourse().primaryColor">
     <td [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
       <app-icon [faIcon]="lesson.faIcon" [color]="'white'"></app-icon>
     </td>
     <td>
       <h3>{{ lesson.name }}</h3>
     </td>
+    <app-side-button
+      [icon]="faArrowRight"
+      [btnClass]="'right'"
+      (click)="navigateToLesson(lesson.id)"
+    ></app-side-button>
   </tr>
 </table>
 <div *ngIf="showEnrollNotification" class="alert alert-success mt-3">
@@ -20,3 +25,6 @@
                    [btnClass]="isEnrolled() ? 'btn-success' : 'btn-primary'"
                    [disabled]="isEnrolled()"
                    (click)="enroll()"></app-footer-button>
+<app-footer-button *ngIf="isTeacher()" [text]="'Create Lesson'"
+                   [btnClass]="'btn-2'"
+                   (click)="navigateToCreateLesson()"></app-footer-button>

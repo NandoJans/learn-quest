@@ -33,7 +33,10 @@ export class RouteService {
     this.router.navigate([this.getRoleRouteBase(), 'module', slug, params]);
   }
 
-  navigateTo(path: string, params: {[key: string]: any} = {}) {
-    this.router.navigate([this.getRoleRouteBase(), path, params]);
+  navigateTo(path: string|string[], params: {[key: string]: any} = {}) {
+    if (typeof path === 'string') {
+      path = [path];
+    }
+    this.router.navigate([this.getRoleRouteBase(), ...path, params]);
   }
 }
