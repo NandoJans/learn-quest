@@ -36,12 +36,12 @@ export class TeacherDashboardComponent {
           bottomButtons: [
             {
               icon: faBars,
-              routerLink: 'courses',
+              routerLink: ['courses'],
               buttonClass: 'btn-3'
             },
             {
               icon: faPlus,
-              routerLink: 'course/create',
+              routerLink: ['course', 'create'],
               buttonClass: 'btn-2',
             }
           ]
