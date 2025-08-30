@@ -12,7 +12,7 @@ class PostLoginRedirect
     public function __construct(
         private array $roleRouteMap = [
             'ROLE_ADMIN'   => 'admin_dashboard',
-            'ROLE_TEACHER'   => 'teacher_dashboard',
+            'ROLE_TEACHER'   => 'app_logout',
         ]
     ) {}
 
