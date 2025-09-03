@@ -78,8 +78,8 @@ export class CreateLessonComponent implements OnInit {
 
     this.lessonService.createLesson(lesson, this.course).subscribe({
       next: (response) => {
-        console.log(response);
-        // this.routeService.navigateTo(`lesson//create`);
+        this.lessonService.clearCache();
+        this.routeService.navigateTo(['lesson', 'sections'], {lessonId: response.id});
       }
     });
   }
