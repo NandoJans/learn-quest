@@ -3,16 +3,15 @@ import {CourseComponent} from '../../course/course.component';
 import {NgForOf} from '@angular/common';
 import {CourseService} from '../../../services/entity/course.service';
 import {Course} from '../../../entities/course';
-import {RouterLink} from '@angular/router';
 import {Button} from '../../../interfaces/button';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import {RouteService} from '../../../services/core/route.service';
 
 @Component({
   selector: 'app-courses-dashboard-section',
   imports: [
     CourseComponent,
     NgForOf,
-    RouterLink,
     FaIconComponent
   ],
   templateUrl: './courses-dashboard-section.component.html',
@@ -24,6 +23,7 @@ export class CoursesDashboardSectionComponent {
 
   constructor(
     private courseService: CourseService,
+    private routeService: RouteService
   ) {
 
   }
@@ -38,5 +38,9 @@ export class CoursesDashboardSectionComponent {
 
   getCourseRoute() {
     return this.courseRouterLink;
+  }
+
+  navigate(routerLink: string) {
+    this.routeService.navigateTo(routerLink);
   }
 }

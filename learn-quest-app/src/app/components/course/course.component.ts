@@ -3,12 +3,18 @@ import {Course} from '../../entities/course';
 import {FooterButtonComponent} from '../buttons/footer-button/footer-button.component';
 import {Router} from '@angular/router';
 import {IconComponent} from '../icon/icon.component';
+import {RouteService} from '../../services/core/route.service';
+import {NgIf} from '@angular/common';
+import {faArrowRight, faBars} from '@fortawesome/free-solid-svg-icons';
+import {SideButtonComponent} from '../buttons/side-button/side-button.component';
 
 @Component({
   selector: 'app-course',
   imports: [
     FooterButtonComponent,
-    IconComponent
+    IconComponent,
+    NgIf,
+    SideButtonComponent
   ],
   templateUrl: './course.component.html',
   styleUrl: './course.component.css'
@@ -16,9 +22,11 @@ import {IconComponent} from '../icon/icon.component';
 export class CourseComponent {
   @Input() course: Course = new Course();
   @Input() href: string = '';
+  @Input() lite: boolean = false;
 
   constructor(
     public router: Router,
+    private routeService: RouteService
   ) {
   }
 
@@ -35,10 +43,9 @@ export class CourseComponent {
   }
 
   navigate() {
-    if (this.href) {
-      this.router.navigate([this.href, {courseId: this.course.id}]);
-    } else {
-      this.router.navigate(['/courses', {courseId: this.course.id}]);
-    }
+    this.routeService.navigateTo(this.href, {courseId: this.course.id});
   }
+
+  protected readonly faBars = faBars;
+  protected readonly faArrowRight = faArrowRight;
 }
