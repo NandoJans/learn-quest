@@ -182,9 +182,6 @@ class Course
         return $this->user;
     }
 
-        return $this->user?->getId();
-    }
-
     public function setUser(?User $user): static
     {
         $this->user = $user;
