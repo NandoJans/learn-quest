@@ -65,10 +65,6 @@
           return;
         }
 
-        const roles = (typeof decoded.roles === 'object')
-          ? Object.values(decoded.roles)
-          : (decoded.roles ? [decoded.roles] : []);
-
         this.user = new User();
         this.user.id = decoded.id;
         this.user.username = decoded.username;

@@ -9,6 +9,9 @@ import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs
 import { LessonSectionService } from '../../../services/entity/lesson-section.service';
 import { LessonSection } from '../../../entities/lesson-section';
 import { PrimaryButtonComponent } from '../../../components/buttons/primary-button/primary-button.component';
+import {InteractiveWidgetService} from '../../../services/lesson/interactive-widget.service';
+import {ModuleRegistryService} from '../../../services/module/module-registry.service';
+import {ModuleDefinition} from '../../../interfaces/interactive/module-meta';
 
 // OPTIONAL: If you have the MathPractice author component available, you can import it and show it conditionally.
 // import { MathPracticeComponent, MathPracticeConfig } from '../../widgets/math-practice/math-practice.component';
@@ -35,7 +38,7 @@ interface SectionFormValue {
 @Component({
   selector: 'app-lesson-section-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PrimaryButtonComponent, FormsModule, /*, MathPracticeComponent*/],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './lesson-section-create.component.html',
   styleUrls: ['./lesson-section-create.component.css']
 })
@@ -50,11 +53,13 @@ export class LessonSectionCreateComponent implements OnInit {
   });
 
   // For widget type selector (extend as you add widgets)
-  widgetTypes = [
-    { value: 'math-practice', label: 'Math Practice' },
-    { value: 'simulator', label: 'Simulator' },
-    { value: 'custom', label: 'Custom (JSON config)' }
-  ];
+  widgetTypes: ModuleDefinition[];
+
+  constructor(
+    private moduleRegistryService: ModuleRegistryService
+  ) {
+    this.widgetTypes = this.moduleRegistryService.list();
+  }
 
   ngOnInit(): void {
     this.lessonId = Number(this.route.snapshot.paramMap.get('lessonId'));

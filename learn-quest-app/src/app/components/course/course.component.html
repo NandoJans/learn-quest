@@ -1,10 +1,11 @@
-<div class="card mx-auto my-2">
+<div class="card mx-auto my-2 {{ lite ? 'lite-card' : '' }}">
   <div class="card-header" [style]="'--primary-color: ' + getColor() + ';'">
     <app-icon [faIcon]="course.faIcon" [color]="'white'"></app-icon>
   </div>
   <div class="card-body text-center">
     <h3>{{ getName() }}</h3>
-    <p>{{ getDescription() }}</p>
+    <p *ngIf="!lite">{{ getDescription() }}</p>
   </div>
-  <app-footer-button [text]="'View Lessons'" (click)="navigate()"></app-footer-button>
+  <app-footer-button *ngIf="!lite" [text]="'View Lessons'" (click)="navigate()"></app-footer-button>
+  <app-side-button *ngIf="lite" [icon]="faArrowRight" [btnClass]="'right'" (click)="navigate()"></app-side-button>
 </div>

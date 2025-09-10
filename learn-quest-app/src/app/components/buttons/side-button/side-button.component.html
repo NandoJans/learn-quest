@@ -1,0 +1,3 @@
+<button (click)="emit($event)"
+        [disabled]="disabled"
+        [class]="'btn w-100 btn-1 ' + btnClass"><fa-icon *ngIf="isIcon()" [icon]="getIcon()"></fa-icon>{{ text }}</button>

@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import {CustomDashboardComponent} from '../../../components/custom/custom-dashboard/custom-dashboard.component';
 import {CustomDashboardConfig} from '../../../interfaces/custom/custom-dashboard-config';
-import {CourseService} from '../../../services/entity/course.service';
-import {SecurityService} from '../../../services/security/security.service';
 import {faBars, faBookOpen, faPlus} from '@fortawesome/free-solid-svg-icons';
 import {
   CoursesDashboardSectionComponent
@@ -34,16 +32,16 @@ export class TeacherDashboardComponent {
         component: CoursesDashboardSectionComponent,
         color: '#4CAF50',
         inputs: {
-          courseRouterLink: '/teacher/course',
+          courseRouterLink: 'course',
           bottomButtons: [
             {
               icon: faBars,
-              routerLink: '/teacher/courses',
+              routerLink: ['courses'],
               buttonClass: 'btn-3'
             },
             {
               icon: faPlus,
-              routerLink: '/teacher/course/create',
+              routerLink: ['course', 'create'],
               buttonClass: 'btn-2',
             }
           ]

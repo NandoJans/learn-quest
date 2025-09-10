@@ -28,6 +28,7 @@ export class CoursesComponent implements OnInit {
   }
 
   getCourseRoute() {
-    return '/user/course';
+
+    return 'course';
   }
 }
