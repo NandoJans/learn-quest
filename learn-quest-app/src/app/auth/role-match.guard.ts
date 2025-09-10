@@ -11,8 +11,12 @@ export const roleMatchGuard  = (required: AppRole): CanMatchFn => {
     const router = inject(Router);
 
     security.load();
-    const active = roles.activeRole;
-    const available = roles.availableRoles;
+    const active: AppRole | null = roles.activeRole;
+    let available: AppRole[] = roles.availableRoles;
+
+    if (typeof available === 'object') {
+      available = Object.values(available);
+    }
 
     // If user has required role but isn’t acting as it, switch silently.
     if (!active && available.includes(required)) {
