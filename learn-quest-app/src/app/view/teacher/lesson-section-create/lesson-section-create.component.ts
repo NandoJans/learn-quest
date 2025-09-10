@@ -4,7 +4,7 @@ import {
   FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, tap} from 'rxjs/operators';
 
 import { LessonSectionService } from '../../../services/entity/lesson-section.service';
 import { LessonSection } from '../../../entities/lesson-section';
@@ -12,6 +12,7 @@ import { PrimaryButtonComponent } from '../../../components/buttons/primary-butt
 import {InteractiveWidgetService} from '../../../services/lesson/interactive-widget.service';
 import {ModuleRegistryService} from '../../../services/module/module-registry.service';
 import {ModuleDefinition} from '../../../interfaces/interactive/module-meta';
+import {EMPTY, map} from 'rxjs';
 
 // OPTIONAL: If you have the MathPractice author component available, you can import it and show it conditionally.
 // import { MathPracticeComponent, MathPracticeConfig } from '../../widgets/math-practice/math-practice.component';
@@ -186,29 +187,81 @@ export class LessonSectionCreateComponent implements OnInit {
     }
   }
 
-  // --------- autosave ----------
-  private registerAutosave(group: FormGroup): void {
-    group.valueChanges
-      .pipe(
-        debounceTime(350),
-        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-        filter(() => group.valid),
-        switchMap(value => {
-          const payload = this.toPayload(value as SectionFormValue);
-          // create or update
-          if (!payload.id) {
-            return this.sectionService.createSection(payload).pipe(
-              tap(created => {
-                group.patchValue({ id: created.id }, { emitEvent: false });
-              })
-            );
-          } else {
-            return this.sectionService.updateSection(payload);
-          }
-        })
-      )
-      .subscribe();
+  autosaving = false;
+
+  registerAutosave(group: FormGroup): void {
+    let creating = false; // closure per group
+
+    group.valueChanges.pipe(
+      debounceTime(350),
+      // compare the payload, not the raw form value
+      map(v => this.toPayload(v as SectionFormValue)),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      switchMap(payload => {
+        if (!payload.id) {
+          if (creating) return EMPTY;            // ignore until first create resolves
+          creating = true;
+          return this.sectionService.createSection(payload).pipe(
+            tap(created => group.patchValue({ id: created.id }, { emitEvent: false })),
+            finalize(() => creating = false),
+            catchError(err => { console.error(err); return EMPTY; })
+          );
+        }
+        // updates can use switchMap normally
+        return this.sectionService.updateSection(payload).pipe(
+          catchError(err => { console.error(err); return EMPTY; })
+        );
+      })
+    ).subscribe();
   }
+
+
+  private isSavable(g: FormGroup): boolean {
+    const t = g.get('type')!.value as SectionType;
+    if (t === 'text') {
+      const val = (g.get('content')!.value as string)?.trim() ?? '';
+      return val.length >= 3;
+    }
+    if (t === 'widget') {
+      return !!g.get('widgetType')!.value; // config optional
+    }
+    if (t === 'question') {
+      const prompt = (g.get('questionPrompt')!.value as string)?.trim() ?? '';
+      const ci = g.get('correctIndex')!.value as number | null;
+      const answers = (g.get('answers')!.value as { text: string }[])
+        .map(a => (a.text ?? '').trim())
+        .filter(Boolean);
+      const hasPrompt = prompt.length >= 3;
+      const hasAnswers = answers.length >= 1;
+      const ciOk = ci !== null && ci >= 0 && ci < answers.length;
+      return hasPrompt && hasAnswers && ciOk;
+    }
+    return false;
+  }
+
+  getUnsavedReasons(g: FormGroup): string[] {
+    const t = g.get('type')!.value as SectionType;
+    const reasons: string[] = [];
+    if (t === 'text') {
+      const val = (g.get('content')!.value as string)?.trim() ?? '';
+      if (!val) reasons.push('Explanation is required');
+      if (val.length > 0 && val.length < 3) reasons.push('Minimum 3 characters');
+    } else if (t === 'widget') {
+      if (!g.get('widgetType')!.value) reasons.push('Choose a widget type');
+    } else if (t === 'question') {
+      const prompt = (g.get('questionPrompt')!.value as string)?.trim() ?? '';
+      const answers = (g.get('answers')!.value as { text: string }[])
+        .map(a => (a.text ?? '').trim());
+      const ci = g.get('correctIndex')!.value as number | null;
+
+      if (!prompt) reasons.push('Add a prompt');
+      if (prompt && prompt.length < 3) reasons.push('Prompt must be at least 3 characters');
+      if (answers.filter(Boolean).length === 0) reasons.push('Add at least one answer');
+      if (ci === null) reasons.push('Mark one answer as correct');
+    }
+    return reasons;
+  }
+
 
   private toPayload(v: SectionFormValue): LessonSection {
     let content: string | null = null;

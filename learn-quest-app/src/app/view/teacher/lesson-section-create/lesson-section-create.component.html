@@ -114,7 +114,7 @@
         </section>
 
         <footer class="sec-footer">
-          <span class="muted">Autosaved</span>
+          <span class="muted">{{ (autosaving) ? 'Autosaving' : 'Autosaved' }}</span>
           <button type="button" class="btn btn-1" (click)="removeSection(i)">Delete section</button>
         </footer>
         <hr class="divider"/>

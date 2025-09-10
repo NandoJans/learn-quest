@@ -16,7 +16,7 @@ export class LessonSectionService {
 
   /** Load many into cache (optionally filtered) */
   loadSections(params: {[key: string]: any} = {}, forceReload = false): void {
-    this.cacheService.loadEntities('lesson_section/index', LessonSection, params, forceReload);
+    this.cacheService.loadEntities('lessonSection/index', LessonSection, params, forceReload);
   }
 
   /** Get many from cache (optionally filtered) */
@@ -34,22 +34,22 @@ export class LessonSectionService {
 
   /** Fetch one from API (does not write to cache unless your ApiService does it internally) */
   fetchSection(id: number): Observable<LessonSection> {
-    return this.apiService.get<LessonSection>(`lesson_section/${id}`);
+    return this.apiService.get<LessonSection>(`lessonSection/${id}`);
   }
 
   /** Create via API */
   createSection(section: LessonSection): Observable<LessonSection> {
-    return this.apiService.post<LessonSection>('lesson_section/create', section);
+    return this.apiService.post<LessonSection>('lessonSection/create', section);
   }
 
   /** Update via API */
   updateSection(section: LessonSection): Observable<LessonSection> {
-    return this.apiService.put<LessonSection>(`lesson_section/${section.id}`, section);
+    return this.apiService.put<LessonSection>(`lessonSection/${section.id}`, section);
   }
 
   /** Delete via API */
   deleteSection(id: number): Observable<void> {
-    return this.apiService.delete<void>(`lesson_section/${id}`);
+    return this.apiService.delete<void>(`lessonSection/${id}`);
   }
 
   /** Convenience: create or update depending on presence of id */
