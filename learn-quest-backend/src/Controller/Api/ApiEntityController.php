@@ -125,6 +125,7 @@ final class ApiEntityController extends AbstractController
 
         return $this->json(['status' => 'Entity created successfully', 'data' => [
             'entity' => $entity,
+            'instance' => $instance
         ]], Response::HTTP_CREATED);
     }
 

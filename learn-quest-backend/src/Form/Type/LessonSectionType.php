@@ -23,10 +23,6 @@ class LessonSectionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('lesson', EntityType::class, [
-                'class' => Lesson::class,
-                'choice_label' => 'name',
-            ])
             ->add('type', ChoiceType::class, [
                 'choices' => [
                     'Text' => 'text',
