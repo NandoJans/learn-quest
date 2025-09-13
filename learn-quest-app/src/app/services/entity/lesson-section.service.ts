@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { EntityCacheService } from './entity-cache.service';
-import { LessonSection } from '../../entities/lesson-section';
-import { ApiService } from '../api/api.service';
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {EntityCacheService} from './entity-cache.service';
+import {LessonSection} from '../../entities/lesson-section';
+import {ApiService} from '../api/api.service';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,15 +12,18 @@ export class LessonSectionService {
   constructor(
     private cacheService: EntityCacheService<LessonSection>,
     private apiService: ApiService
-  ) {}
+  ) {
+  }
 
   /** Load many into cache (optionally filtered) */
-  loadSections(params: {[key: string]: any} = {}, forceReload = false): void {
-    this.cacheService.loadEntities('lessonSection/index', LessonSection, params, forceReload);
+  loadSections(params: {
+    [key: string]: any
+  } = {}, onLoaded?: ((entities: LessonSection[]) => void) | undefined, forceReload = false): void {
+    this.cacheService.loadEntities('lessonSection/index', LessonSection, params, forceReload, onLoaded);
   }
 
   /** Get many from cache (optionally filtered) */
-  getSections(params: {[key: string]: any} = {}): LessonSection[] {
+  getSections(params: { [key: string]: any } = {}): LessonSection[] {
     return this.cacheService.filterCachedEntities(LessonSection, params);
   }
 
@@ -28,7 +31,7 @@ export class LessonSectionService {
   getSectionById(id: number): LessonSection | undefined {
     // If your cache has a direct getter, prefer that; otherwise filter:
     return this.cacheService
-      .filterCachedEntities(LessonSection, { id })
+      .filterCachedEntities(LessonSection, {id})
       .find(s => s.id === id);
   }
 

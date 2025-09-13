@@ -64,9 +64,61 @@ export class LessonSectionCreateComponent implements OnInit {
 
   ngOnInit(): void {
     this.lessonId = Number(this.route.snapshot.paramMap.get('lessonId'));
-    // Ensure at least one section
-    if (this.sections.length === 0) this.addSection();
+
+    // 1) Load existing sections from backend
+    this.sectionService.loadSections({lesson: this.lessonId}, sections => {
+      // Clear current
+      while (this.sections.length) this.sections.removeAt(0);
+
+      // Push groups
+      sections
+        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+        .forEach(s => this.sections.push(this.createSectionGroupFromEntity(s)));
+
+      // If none exist, start with one empty section
+      if (this.sections.length === 0) this.addSection();
+
+      // 2) Register autosave for each group (after creation)
+      this.sections.controls.forEach(g => this.registerAutosave(g as FormGroup));
+    });
   }
+
+  private createSectionGroupFromEntity(e: LessonSection): FormGroup {
+    const base: Partial<SectionFormValue> = {
+      id: e.id ?? null,
+      type: e.type as SectionType,
+      position: e.position ?? this.sections.length,
+      content: '',
+      widgetType: null,
+      widgetConfig: null,
+      questionPrompt: '',
+      answers: [{ text: '' }, { text: '' }],
+      correctIndex: null,
+      explanation: ''
+    };
+
+    if (e.type === 'text') {
+      base.content = e.content ?? '';
+    } else if (e.type === 'widget') {
+      try {
+        const parsed = e.content ? JSON.parse(e.content) : {};
+        base.widgetType = parsed?.widgetType ?? null;
+        base.widgetConfig = parsed?.config ?? null;
+      } catch { /* keep defaults */ }
+    } else if (e.type === 'question') {
+      try {
+        const parsed = e.content ? JSON.parse(e.content) : {};
+        base.questionPrompt = parsed?.prompt ?? '';
+        base.answers = (parsed?.answers ?? ['']).map((t: string) => ({ text: t ?? '' }));
+        base.correctIndex = Number.isInteger(parsed?.correctIndex) ? parsed.correctIndex : null;
+        base.explanation = parsed?.explanation ?? '';
+      } catch { /* keep defaults */ }
+    }
+
+    const g = this.createSectionGroup(base.position!, base);
+    return g;
+  }
+
 
   // --------- getters ----------
   get sections(): FormArray<FormGroup> {
@@ -202,7 +254,10 @@ export class LessonSectionCreateComponent implements OnInit {
           if (creating) return EMPTY;            // ignore until first create resolves
           creating = true;
           return this.sectionService.createSection(payload).pipe(
-            tap(created => group.patchValue({ id: created.id }, { emitEvent: false })),
+            tap(created => {
+              console.log('Created section', created);
+              group.patchValue({id: created.id}, {emitEvent: false})
+            }),
             finalize(() => creating = false),
             catchError(err => { console.error(err); return EMPTY; })
           );

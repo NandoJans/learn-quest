@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { EntityService } from './entity.service';
 import { Entity } from '../../entities/entity';
+import {Observable, Subscription} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +28,9 @@ export class EntityCacheService<T extends Entity> {
     endpoint: string,
     entityClass: new () => T,
     params: { [key: string]: any } = {},
-    forceReload = false
-  ): void {
+    forceReload = false,
+    onLoaded?: (entities: T[]) => void
+  ): Subscription | void {
     const entityName = this.getEntityName(entityClass);
     const key = this.generateKey(params);
 
@@ -41,10 +43,13 @@ export class EntityCacheService<T extends Entity> {
       return; // already loaded
     }
 
-    this.apiService.get<T[]>(endpoint, params).subscribe({
+    return this.apiService.get<T[]>(endpoint, params).subscribe({
       next: data => {
         const mapped = this.entityService.matchDataToEntity<T>(data, entityClass);
         entityCache.set(key, mapped);
+        if (onLoaded) {
+          onLoaded(mapped);
+        }
       },
       error: err => {
         console.error(`Error fetching ${entityName} from ${endpoint}:`, err);

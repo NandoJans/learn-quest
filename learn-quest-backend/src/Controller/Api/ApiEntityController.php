@@ -104,29 +104,53 @@ final class ApiEntityController extends AbstractController
     #[Route('/api/{entity}/create', name: 'api_course_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
-        $body = $request->getContent();
-        $data = json_decode($body, true);
+        $data = json_decode($request->getContent(), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return $this->json(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
         $entity = $request->attributes->get('entity');
-        $class = $this->entityService->getEntityClass($entity);
+        $class  = $this->entityService->getEntityClass($entity);
 
         $instance = new $class();
         $dtoClass = $this->entityService->getEntityDtoClass($entity);
-        $dto = new $dtoClass();
+        $dto      = new $dtoClass();
         $dto->fromArray($data, $this->entityService, $this->doctrine);
         $instance = $this->autoDtoMapper->map($dto, $instance, true);
 
         $em = $this->doctrine->getManagerForClass($class);
         $em->persist($instance);
+        $em->flush(); // id is now set
+
+        // Return only what the frontend needs to switch to "update" mode:
+        return $this->json(['id' => $instance->getId()], Response::HTTP_CREATED);
+    }
+
+    #[Route('/api/{entity}/{id}', name: 'api_entity_update', methods: ['PUT'])]
+    public function update(string $entity, int $id, Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $class  = $this->entityService->getEntityClass($entity);
+        $em     = $this->doctrine->getManagerForClass($class);
+        $repo   = $em->getRepository($class);
+        $item   = $repo->find($id);
+        if (!$item) {
+            return $this->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $dtoClass = $this->entityService->getEntityDtoClass($entity);
+        $dto      = new $dtoClass();
+        $dto->fromArray($data, $this->entityService, $this->doctrine);
+        $item     = $this->autoDtoMapper->map($dto, $item, false);
+
+        $em->persist($item);
         $em->flush();
 
-        return $this->json(['status' => 'Entity created successfully', 'data' => [
-            'entity' => $entity,
-            'instance' => $instance
-        ]], Response::HTTP_CREATED);
+        return $this->json(['status' => 'ok']);
     }
 
 }
