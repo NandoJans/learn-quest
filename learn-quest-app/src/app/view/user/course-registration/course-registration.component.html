@@ -1,6 +1,13 @@
-<app-math-basic
-  mode="learner"
-  [config]="mathBasicConfig"
-  (completed)="onCompleted($event)"
->
-</app-math-basic>
+<div class="container">
+<!--  Display the header of the course-->
+
+
+<!--  Display the lessonRegistrations-->
+  <div *ngFor="let registration of lessonRegistrations" class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">{{ registration.lesson.name }}</h5>
+      <p class="card-text">{{ registration.lesson.description }}</p>
+      <a [routerLink]="['/lessons', registration.lesson.id]" class="btn btn-primary">Go to Lesson</a>
+    </div>
+  </div>
+</div>
