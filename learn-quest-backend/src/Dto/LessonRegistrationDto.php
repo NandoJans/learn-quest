@@ -8,7 +8,7 @@ use Symfony\Bridge\Doctrine\ManagerRegistry;
 
 class LessonRegistrationDto extends Dto
 {
-    private ?LessonDto $lesson = null;
+    public ?LessonDto $lesson = null;
 
     public function __construct(
         public ?int $id = null,
@@ -24,7 +24,7 @@ class LessonRegistrationDto extends Dto
         // This method should add course data
         if ($this->id) {
             $lesson = $doctrine->getRepository($entityService->getEntityClass('lesson'))->find($this->lessonId);
-            $this->lesson = $entityService->mapEntityToDto($lesson, Lesson::class);
+            $this->lesson = $entityService->mapEntityToDto($lesson, LessonDto::class);
         }
     }
 }

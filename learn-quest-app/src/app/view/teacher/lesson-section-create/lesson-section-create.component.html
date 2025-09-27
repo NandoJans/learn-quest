@@ -28,10 +28,12 @@
         <!-- TEXT TYPE -->
         <section class="sec-body" *ngIf="section.get('type')?.value === 'text'">
           <label class="field">
-            <span class="label">Explanation</span>
-            <textarea rows="5" class="input" formControlName="content" placeholder="Write your explanation..."></textarea>
+            <span class="label">Explanation (HTML)</span>
+            <app-html-field
+              formControlName="content"
+            >
+            </app-html-field>
           </label>
-          <p class="hint">Supports plain text. If you use Markdown in your renderer, store raw text here.</p>
         </section>
 
         <!-- WIDGET TYPE -->

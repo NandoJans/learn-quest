@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Dto\Dto;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormFactoryInterface;
 
@@ -14,6 +15,7 @@ class EntityService
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly FormFactoryInterface $formFactory,
+        private readonly ManagerRegistry $doctrine,
     )
     {
     }
@@ -56,6 +58,15 @@ class EntityService
      * @param array<string, string|callable> $map  dtoParam => 'path.like.this' | callable($entity): mixed
      */
     public function mapEntityToDto(object $entity, string $dtoClass, array $map = []): object
+    {
+        $dto = $this->handleMapEntityToDto($entity, $dtoClass, $map);
+        if ($dto instanceof Dto) {
+            $dto->extraData($this, $this->doctrine);
+        }
+        return $dto;
+    }
+
+    private function handleMapEntityToDto(object $entity, string $dtoClass, array $map = []): object
     {
         if (!class_exists($dtoClass)) {
             throw new \InvalidArgumentException(sprintf('DTO class "%s" does not exist.', $dtoClass));

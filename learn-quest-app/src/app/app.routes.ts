@@ -14,6 +14,7 @@ import {roleMatchGuard} from './auth/role-match.guard';
 import {InteractiveWidgetComponent} from './view/user/interactive-widget/interactive-widget.component';
 import {CreateCourseComponent} from './view/teacher/course/create-course/create-course.component';
 import {CreateLessonComponent} from './view/teacher/lesson/create-lesson/create-lesson.component';
+import {LessonRegistrationComponent} from './view/user/lesson-registration/lesson-registration.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -29,6 +30,7 @@ export const routes: Routes = [
       { path: 'modules', component: InteractiveWidgetLibraryComponent, title: 'IWL' },
       { path: 'module/:slug', component: InteractiveWidgetComponent, title: 'IWL' },
       { path: 'courseRegistration', component: CourseRegistrationComponent, title: 'Course' },
+      { path: 'lessonRegistration', component: LessonRegistrationComponent, title: 'Lesson' },
     ]
   },
   {

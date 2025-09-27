@@ -1,0 +1,11 @@
+<div *ngFor="let section of lessonSections" class="section">
+  <div *ngIf="section.type === 'text'" class="content">
+    <div [innerHtml]="section.content"></div>
+  </div>
+  <div *ngIf="section.type === 'widget'">
+    <p>Widget type not implemented yet</p>
+  </div>
+  <div *ngIf="section.type === 'question'">
+    <p>Question type not implemented yet</p>
+  </div>
+</div>

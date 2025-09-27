@@ -1,13 +1,20 @@
-<div class="container">
-<!--  Display the header of the course-->
 
-
-<!--  Display the lessonRegistrations-->
-  <div *ngFor="let registration of lessonRegistrations" class="card mb-3">
-    <div class="card-body">
-      <h5 class="card-title">{{ registration.lesson.name }}</h5>
-      <p class="card-text">{{ registration.lesson.description }}</p>
-      <a [routerLink]="['/lessons', registration.lesson.id]" class="btn btn-primary">Go to Lesson</a>
-    </div>
+  <div class="header" [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+    <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
+    <h1>{{ getCourse().name }}</h1>
   </div>
-</div>
+  <table class="table table-striped">
+    <tr *ngFor="let lessonRegistration of lessonRegistrations" [style]="'--primary-color: ' + getCourse().primaryColor">
+      <td [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+        <app-icon [faIcon]="lessonRegistration.lesson.faIcon" [color]="'white'"></app-icon>
+      </td>
+      <td>
+        <h3>{{ lessonRegistration.lesson.name }}</h3>
+      </td>
+      <app-side-button
+        [icon]="faArrowRight"
+        [btnClass]="'right'"
+        (click)="navigateToLesson(lessonRegistration.id)"
+      ></app-side-button>
+    </tr>
+  </table>

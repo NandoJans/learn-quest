@@ -13,6 +13,7 @@ import {InteractiveWidgetService} from '../../../services/lesson/interactive-wid
 import {ModuleRegistryService} from '../../../services/module/module-registry.service';
 import {ModuleDefinition} from '../../../interfaces/interactive/module-meta';
 import {EMPTY, map} from 'rxjs';
+import {HtmlFieldComponent} from '../../../components/form/html-field/html-field.component';
 
 // OPTIONAL: If you have the MathPractice author component available, you can import it and show it conditionally.
 // import { MathPracticeComponent, MathPracticeConfig } from '../../widgets/math-practice/math-practice.component';
@@ -39,7 +40,7 @@ interface SectionFormValue {
 @Component({
   selector: 'app-lesson-section-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, HtmlFieldComponent],
   templateUrl: './lesson-section-create.component.html',
   styleUrls: ['./lesson-section-create.component.css']
 })
@@ -360,4 +361,8 @@ export class LessonSectionCreateComponent implements OnInit {
   asAny(x: unknown) { return x as any; }
 
   protected readonly JSON = JSON;
+
+  getAllowedTags() {
+    return new Set(['p','br','strong','em','u','s','blockquote','pre','code','span','ul','ol','li','h2','h3','h4','a','mark','hint','callout']);
+  }
 }
