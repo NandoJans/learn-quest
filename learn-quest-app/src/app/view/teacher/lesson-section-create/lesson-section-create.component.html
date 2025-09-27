@@ -76,8 +76,8 @@
               <textarea
                 rows="6"
                 class="input mono"
-                [ngModel]="section.get('moduleConfig')?.value | json"
-                (ngModelChange)="section.patchValue({ moduleConfig: parseJsonSafe($event) })"
+                [value]="section.get('moduleConfig')?.value | json"
+                (input)="section.patchValue({ moduleConfig: parseJsonSafe(getEncodedJson($event.target)) })"
                 placeholder='{"min":0,"max":10,"operations":["+","-"]}'></textarea>
             </details>
           </div>

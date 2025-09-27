@@ -1,0 +1,28 @@
+<div class="bb-wrap">
+  <div class="stage">
+    <canvas #universeCanvas></canvas>
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="epoch-title">{{ currentEpoch?.label || '—' }}</div>
+      <div class="epoch-note">{{ currentEpoch?.note || 'Geen specifieke fase' }}</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="pill">{{ fmtAge(t) }}</div>
+    <input
+      class="range"
+      type="range"
+      min="0" max="1" step="0.001"
+      [value]="slider"
+      (input)="onScrub($event)"
+      (pointerdown)="dragging=true"
+      (pointerup)="onScrubEnd()"
+    />
+  </div>
+
+  <div class="chips">
+    <button *ngFor="let e of epochs" type="button" (click)="animateToT(e.start, 280)">{{ e.label }}</button>
+  </div>
+</div>

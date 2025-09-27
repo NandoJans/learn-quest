@@ -5,12 +5,14 @@ import {Lesson} from '../../../entities/lesson';
 import {LessonSection} from '../../../entities/lesson-section';
 import { LessonSectionService } from '../../../services/entity/lesson-section.service';
 import {NgForOf, NgIf} from '@angular/common';
+import {ModuleHostComponent} from '../../../components/module-host/module-host.component';
 
 @Component({
   selector: 'app-lesson-registration',
   imports: [
     NgForOf,
-    NgIf
+    NgIf,
+    ModuleHostComponent
   ],
   templateUrl: './lesson-registration.component.html',
   styleUrl: './lesson-registration.component.css'
@@ -38,5 +40,9 @@ export class LessonRegistrationComponent implements OnInit {
 
   getLesson(): Lesson {
     return this.lessonRegistration.lesson;
+  }
+
+  onWidgetConfigChange(section: LessonSection, $event: any) {
+    
   }
 }

@@ -391,4 +391,9 @@ export class LessonSectionCreateComponent implements OnInit {
   parseJsonSafe(v: string) {
     try { return JSON.parse(v ?? '{}'); } catch { return null; }
   }
+
+  getEncodedJson(target: EventTarget | null) {
+    if (!(target instanceof HTMLTextAreaElement)) return '';
+    return target.value;
+  }
 }
