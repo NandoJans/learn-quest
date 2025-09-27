@@ -301,7 +301,7 @@ export class LessonSectionCreateComponent implements OnInit {
       return val.length >= 3;
     }
     if (t === 'module') {
-      return !!g.get('moduleType')!.value; // config optional
+      return !!g.get('moduleSlug')!.value; // config optional
     }
     if (t === 'question') {
       const prompt = (g.get('questionPrompt')!.value as string)?.trim() ?? '';
@@ -325,7 +325,7 @@ export class LessonSectionCreateComponent implements OnInit {
       if (!val) reasons.push('Explanation is required');
       if (val.length > 0 && val.length < 3) reasons.push('Minimum 3 characters');
     } else if (t === 'module') {
-      if (!g.get('moduleType')!.value) reasons.push('Choose a module type');
+      if (!g.get('moduleSlug')!.value) reasons.push('Choose a module');
     } else if (t === 'question') {
       const prompt = (g.get('questionPrompt')!.value as string)?.trim() ?? '';
       const answers = (g.get('answers')!.value as { text: string }[])
@@ -347,7 +347,8 @@ export class LessonSectionCreateComponent implements OnInit {
     if (v.type === 'text') {
       content = v.content;
     } else if (v.type === 'module') {
-      content = JSON.stringify({ moduleType: v.moduleSlug, config: v.moduleConfig ?? null });
+      // For module type, keep content empty as we use separate fields
+      content = '';
     } else if (v.type === 'question') {
       content = JSON.stringify({
         prompt: v.questionPrompt,
@@ -357,13 +358,21 @@ export class LessonSectionCreateComponent implements OnInit {
       });
     }
 
-    return {
+    const payload: any = {
       id: v.id ?? undefined,
       lessonId: this.lessonId,
       type: v.type,
       content: content ?? '',
       position: v.position
-    } as LessonSection;
+    };
+
+    // Add module-specific fields
+    if (v.type === 'module') {
+      payload.moduleSlug = v.moduleSlug;
+      payload.moduleConfig = v.moduleConfig;
+    }
+
+    return payload as LessonSection;
   }
 
   private reindexPositions() {

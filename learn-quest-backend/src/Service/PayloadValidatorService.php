@@ -56,9 +56,11 @@ readonly class PayloadValidatorService
         return new Assert\Collection([
             'fields' => [
                 'lessonId' => [new Assert\NotBlank(), new Assert\Type('integer'), new Assert\GreaterThan(0)],
-                'type'     => [new Assert\NotBlank(), new Assert\Choice(['text', 'widget', 'question'])],
+                'type'     => [new Assert\NotBlank(), new Assert\Choice(['text', 'module', 'question'])],
                 'content'  => [new Assert\Optional([new Assert\Type('string')])],
                 'position' => [new Assert\Optional([new Assert\Type('integer'), new Assert\GreaterThanOrEqual(0)])],
+                'moduleSlug' => [new Assert\Optional([new Assert\Type('string')])],
+                'moduleConfig' => [new Assert\Optional([])], // Any type allowed for config
             ],
             'allowMissingFields' => true,  // position/content may be omitted
             'allowExtraFields'   => true,  // ignore unknowns to stay forward-compatible
@@ -71,9 +73,11 @@ readonly class PayloadValidatorService
         return new Assert\Collection([
             'fields' => [
                 'lessonId' => [new Assert\Optional([new Assert\Type('integer'), new Assert\GreaterThan(0)])],
-                'type'     => [new Assert\Optional([new Assert\Choice(['text', 'widget', 'question'])])],
+                'type'     => [new Assert\Optional([new Assert\Choice(['text', 'module', 'question'])])],
                 'content'  => [new Assert\Optional([new Assert\Type('string')])],
                 'position' => [new Assert\Optional([new Assert\Type('integer'), new Assert\GreaterThanOrEqual(0)])],
+                'moduleSlug' => [new Assert\Optional([new Assert\Type('string')])],
+                'moduleConfig' => [new Assert\Optional([])], // Any type allowed for config
             ],
             'allowMissingFields' => true,
             'allowExtraFields'   => true,
