@@ -29,7 +29,7 @@ class LessonSection
     private int $position = 0;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $moduleType = null;
+    private ?string $moduleSlug = null;
 
     #[ORM\Column(nullable: true)]
     private ?array $moduleConfig = null;
@@ -86,14 +86,14 @@ class LessonSection
         return $this;
     }
 
-    public function getModuleType(): ?string
+    public function getModuleSlug(): ?string
     {
-        return $this->moduleType;
+        return $this->moduleSlug;
     }
 
-    public function setModuleType(?string $moduleType): static
+    public function setModuleSlug(?string $moduleSlug): static
     {
-        $this->moduleType = $moduleType;
+        $this->moduleSlug = $moduleSlug;
 
         return $this;
     }
