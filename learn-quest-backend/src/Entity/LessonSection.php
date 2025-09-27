@@ -28,6 +28,12 @@ class LessonSection
     #[ORM\Column]
     private int $position = 0;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $moduleType = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?array $moduleConfig = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,6 +82,30 @@ class LessonSection
     public function setPosition(int $position): static
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    public function getModuleType(): ?string
+    {
+        return $this->moduleType;
+    }
+
+    public function setModuleType(?string $moduleType): static
+    {
+        $this->moduleType = $moduleType;
+
+        return $this;
+    }
+
+    public function getModuleConfig(): ?array
+    {
+        return $this->moduleConfig;
+    }
+
+    public function setModuleConfig(?array $moduleConfig): static
+    {
+        $this->moduleConfig = $moduleConfig;
 
         return $this;
     }
