@@ -15,7 +15,7 @@
               <span>Text</span>
             </label>
             <label class="chip">
-              <input type="radio" formControlName="type" value="widget" />
+              <input type="radio" formControlName="type" value="module" />
               <span>Interactive</span>
             </label>
             <label class="chip">
@@ -36,42 +36,51 @@
           </label>
         </section>
 
-        <!-- WIDGET TYPE -->
-        <section class="sec-body" *ngIf="section.get('type')?.value === 'widget'">
+        <!-- Module TYPE -->
+        <section class="sec-body" *ngIf="section.get('type')?.value === 'module'">
           <div class="row">
             <label class="field">
-              <span class="label">Widget</span>
-              <select class="input" formControlName="widgetType">
-                <option [ngValue]="null" disabled>Select a widget…</option>
-                <option *ngFor="let wt of widgetTypes" [ngValue]="wt.slug">{{ wt.title }}</option>
-              </select>
+              <span class="label">Module</span>
+<!--              Display selected module-->
+              <div class="selected-module" *ngIf="section.get('moduleSlug')?.value;">
+                <strong>{{ section.get('moduleSlug')?.value }}</strong>
+              </div>
+              <div class="no-module" *ngIf="!section.get('moduleSlug')?.value;">
+                No module selected
+              </div>
             </label>
+
+            <button type="button" class="btn btn-2" (click)="openModuleLibraryFor(i)">
+              Choose from module library
+            </button>
           </div>
 
-          <!-- Example: embed your Math Practice author UI when chosen -->
-          <!--
-          <app-math-practice
-            *ngIf="section.get('widgetType')?.value === 'math-practice'"
-            mode="author"
-            [config]="section.get('widgetConfig')?.value"
-            (saveConfig)="section.patchValue({ widgetConfig: $event })">
-          </app-math-practice>
-          -->
+          <div class="module-preview-container mt-2">
+            <app-module-host
+              *ngIf="section.get('moduleSlug')?.value"
+              [slug]="section.get('moduleSlug')?.value"
+              [config]="section.get('moduleConfig')?.value"
+              (configChange)="section.patchValue({ moduleConfig: $event }, { emitEvent: false })">
+            </app-module-host>
+          </div>
 
-          <!-- Fallback JSON editor for widget config -->
-          <label class="field">
-            <span class="label">Widget Config (JSON)</span>
-            <textarea
-              rows="6"
-              class="input mono"
-              formControlName="widgetConfigText"
-              placeholder='{"operations":["+","-"],"min":0,"max":10,"requiredQuestions":10}'></textarea>
-            <small class="error" *ngIf="section.get('widgetConfigText')?.invalid && section.get('widgetConfigText')?.touched">
-              Invalid JSON
-            </small>
-          </label>
+          <div class="config-form-container" *ngIf="section.get('moduleSlug')?.value">
+            <h4 class="config-section-title">Module Configuration</h4>
+            <app-module-config-form
+              [config]="section.get('moduleConfig')?.value || {}"
+              (configChange)="section.patchValue({ moduleConfig: $event }, { emitEvent: false })">
+            </app-module-config-form>
 
-          <p class="hint">Tip: If you embed an authoring widget (like Math Practice), keep this JSON in sync via its save output.</p>
+            <details class="json-details">
+              <summary>Advanced: Edit JSON directly</summary>
+              <textarea
+                rows="6"
+                class="input mono"
+                [ngModel]="section.get('moduleConfig')?.value | json"
+                (ngModelChange)="section.patchValue({ moduleConfig: parseJsonSafe($event) })"
+                placeholder='{"min":0,"max":10,"operations":["+","-"]}'></textarea>
+            </details>
+          </div>
         </section>
 
         <!-- QUESTION TYPE -->

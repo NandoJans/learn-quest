@@ -8,17 +8,19 @@ import {catchError, debounceTime, distinctUntilChanged, filter, finalize, switch
 
 import { LessonSectionService } from '../../../services/entity/lesson-section.service';
 import { LessonSection } from '../../../entities/lesson-section';
-import { PrimaryButtonComponent } from '../../../components/buttons/primary-button/primary-button.component';
-import {InteractiveWidgetService} from '../../../services/lesson/interactive-widget.service';
 import {ModuleRegistryService} from '../../../services/module/module-registry.service';
 import {ModuleDefinition} from '../../../interfaces/interactive/module-meta';
 import {EMPTY, map} from 'rxjs';
 import {HtmlFieldComponent} from '../../../components/form/html-field/html-field.component';
+import {ModalService} from '../../../services/modal/modal.service';
+import {InteractiveModuleLibraryComponent} from '../interactive-module-library/interactive-module-library.component';
+import {ModuleHostComponent} from '../../../components/module-host/module-host.component';
+import {ModuleConfigFormComponent} from '../../../components/module-config-form/module-config-form.component';
 
 // OPTIONAL: If you have the MathPractice author component available, you can import it and show it conditionally.
 // import { MathPracticeComponent, MathPracticeConfig } from '../../widgets/math-practice/math-practice.component';
 
-type SectionType = 'text' | 'widget' | 'question';
+type SectionType = 'text' | 'module' | 'question';
 
 interface SectionFormValue {
   id: number | null;
@@ -27,9 +29,9 @@ interface SectionFormValue {
   position: number;
   // Text:
   content: string;
-  // Widget:
-  widgetType: string | null;
-  widgetConfig: any; // store JSONable config
+  // Module:
+  moduleSlug: string | null;
+  moduleConfig: any;
   // Question:
   questionPrompt: string;
   answers: { text: string }[];
@@ -40,7 +42,14 @@ interface SectionFormValue {
 @Component({
   selector: 'app-lesson-section-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, HtmlFieldComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    HtmlFieldComponent,
+    ModuleHostComponent,
+    ModuleConfigFormComponent
+  ],
   templateUrl: './lesson-section-create.component.html',
   styleUrls: ['./lesson-section-create.component.css']
 })
@@ -55,13 +64,26 @@ export class LessonSectionCreateComponent implements OnInit {
   });
 
   // For widget type selector (extend as you add widgets)
-  widgetTypes: ModuleDefinition[];
+  moduleSlugs: ModuleDefinition[];
 
   constructor(
-    private moduleRegistryService: ModuleRegistryService
+    private moduleRegistryService: ModuleRegistryService,
+    private modalService: ModalService,
   ) {
-    this.widgetTypes = this.moduleRegistryService.list();
+    this.moduleSlugs = this.moduleRegistryService.list();
   }
+
+  async openModuleLibraryFor(index: number) {
+    const res = await this.modalService.open(InteractiveModuleLibraryComponent);
+    if (!res) return;
+    // res: { slug, config }
+    const g = this.sectionAt(index);
+    g.patchValue({
+      moduleSlug: res.slug,
+      moduleConfig: res.config
+    });
+  }
+
 
   ngOnInit(): void {
     this.lessonId = Number(this.route.snapshot.paramMap.get('lessonId'));
@@ -90,8 +112,8 @@ export class LessonSectionCreateComponent implements OnInit {
       type: e.type as SectionType,
       position: e.position ?? this.sections.length,
       content: '',
-      widgetType: null,
-      widgetConfig: null,
+      moduleSlug: null,
+      moduleConfig: null,
       questionPrompt: '',
       answers: [{ text: '' }, { text: '' }],
       correctIndex: null,
@@ -100,11 +122,11 @@ export class LessonSectionCreateComponent implements OnInit {
 
     if (e.type === 'text') {
       base.content = e.content ?? '';
-    } else if (e.type === 'widget') {
+    } else if (e.type === 'module') {
       try {
         const parsed = e.content ? JSON.parse(e.content) : {};
-        base.widgetType = parsed?.widgetType ?? null;
-        base.widgetConfig = parsed?.config ?? null;
+        base.moduleSlug = parsed?.moduleSlug ?? null;
+        base.moduleConfig = parsed?.moduleConfig ?? null;
       } catch { /* keep defaults */ }
     } else if (e.type === 'question') {
       try {
@@ -170,8 +192,8 @@ export class LessonSectionCreateComponent implements OnInit {
       content: new FormControl<string>(prefill?.content ?? '', { nonNullable: true }),
 
       // Widget
-      widgetType: new FormControl<string | null>(prefill?.widgetType ?? null),
-      widgetConfig: new FormControl<any>(prefill?.widgetConfig ?? null),
+      moduleSlug: new FormControl<string | null>(prefill?.moduleSlug ?? null),
+      moduleConfig: new FormControl<any>(prefill?.moduleConfig ?? null),
 
       // Question
       questionPrompt: new FormControl<string>(prefill?.questionPrompt ?? '', { nonNullable: true }),
@@ -196,15 +218,15 @@ export class LessonSectionCreateComponent implements OnInit {
     group.get('content')!.clearValidators();
     group.get('questionPrompt')!.clearValidators();
     group.get('correctIndex')!.clearValidators();
-    group.get('widgetType')!.clearValidators();
+    group.get('moduleSlug')!.clearValidators();
 
     switch (type) {
       case 'text':
         group.get('content')!.addValidators([Validators.required, Validators.minLength(3)]);
         break;
 
-      case 'widget':
-        group.get('widgetType')!.addValidators([Validators.required]);
+      case 'module':
+        group.get('moduleSlug')!.addValidators([Validators.required]);
         // widgetConfig can be nullable; enforce in UI if specific widget chosen
         break;
 
@@ -217,7 +239,7 @@ export class LessonSectionCreateComponent implements OnInit {
     group.get('content')!.updateValueAndValidity({ emitEvent: false });
     group.get('questionPrompt')!.updateValueAndValidity({ emitEvent: false });
     group.get('correctIndex')!.updateValueAndValidity({ emitEvent: false });
-    group.get('widgetType')!.updateValueAndValidity({ emitEvent: false });
+    group.get('moduleSlug')!.updateValueAndValidity({ emitEvent: false });
   }
 
   // --------- answers helpers ----------
@@ -278,8 +300,8 @@ export class LessonSectionCreateComponent implements OnInit {
       const val = (g.get('content')!.value as string)?.trim() ?? '';
       return val.length >= 3;
     }
-    if (t === 'widget') {
-      return !!g.get('widgetType')!.value; // config optional
+    if (t === 'module') {
+      return !!g.get('moduleType')!.value; // config optional
     }
     if (t === 'question') {
       const prompt = (g.get('questionPrompt')!.value as string)?.trim() ?? '';
@@ -302,8 +324,8 @@ export class LessonSectionCreateComponent implements OnInit {
       const val = (g.get('content')!.value as string)?.trim() ?? '';
       if (!val) reasons.push('Explanation is required');
       if (val.length > 0 && val.length < 3) reasons.push('Minimum 3 characters');
-    } else if (t === 'widget') {
-      if (!g.get('widgetType')!.value) reasons.push('Choose a widget type');
+    } else if (t === 'module') {
+      if (!g.get('moduleType')!.value) reasons.push('Choose a module type');
     } else if (t === 'question') {
       const prompt = (g.get('questionPrompt')!.value as string)?.trim() ?? '';
       const answers = (g.get('answers')!.value as { text: string }[])
@@ -324,8 +346,8 @@ export class LessonSectionCreateComponent implements OnInit {
 
     if (v.type === 'text') {
       content = v.content;
-    } else if (v.type === 'widget') {
-      content = JSON.stringify({ widgetType: v.widgetType, config: v.widgetConfig ?? null });
+    } else if (v.type === 'module') {
+      content = JSON.stringify({ moduleType: v.moduleSlug, config: v.moduleConfig ?? null });
     } else if (v.type === 'question') {
       content = JSON.stringify({
         prompt: v.questionPrompt,
@@ -364,5 +386,9 @@ export class LessonSectionCreateComponent implements OnInit {
 
   getAllowedTags() {
     return new Set(['p','br','strong','em','u','s','blockquote','pre','code','span','ul','ol','li','h2','h3','h4','a','mark','hint','callout']);
+  }
+
+  parseJsonSafe(v: string) {
+    try { return JSON.parse(v ?? '{}'); } catch { return null; }
   }
 }

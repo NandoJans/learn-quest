@@ -5,4 +5,6 @@ export class LessonSection extends Entity {
   type: string = '';
   content: string = '';
   position: number = 0;
+  moduleSlug: string | null = null;
+  moduleConfig: any = null;
 }

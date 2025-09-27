@@ -10,6 +10,8 @@ class LessonSectionDto extends Dto
         public ?string $type = null,
         public ?string $content = null,
         public ?int $position = null,
+        public ?string $moduleSlug = null,
+        public mixed $moduleConfig = null,
     ) {
     }
 }

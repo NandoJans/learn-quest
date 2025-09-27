@@ -1,0 +1,29 @@
+<div class="config-form">
+  <form [formGroup]="form">
+    <div class="form-fields">
+      <ng-container *ngFor="let k of keys(config); let i = index">
+        <div class="form-field">
+          <label [for]="'config-' + k">
+            <span class="field-name">{{k}}</span>
+            <div class="input-container">
+              <input *ngIf="isPrimitive(config[k]) && !isNumber(config[k])"
+                    [id]="'config-' + k"
+                    [formControlName]="k"
+                    class="form-input" />
+              <input *ngIf="isNumber(config[k])"
+                    [id]="'config-' + k"
+                    type="number"
+                    [formControlName]="k"
+                    class="form-input" />
+              <small class="field-help" *ngIf="getHelpText(k)">{{getHelpText(k)}}</small>
+            </div>
+          </label>
+        </div>
+        <hr *ngIf="i < keys(config).length - 1" class="field-divider">
+      </ng-container>
+    </div>
+    <div class="no-config" *ngIf="keys(config).length === 0">
+      No configuration options available for this module.
+    </div>
+  </form>
+</div>
