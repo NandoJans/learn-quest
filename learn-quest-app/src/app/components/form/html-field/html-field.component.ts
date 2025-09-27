@@ -188,4 +188,11 @@ export class HtmlFieldComponent implements ControlValueAccessor, AfterViewInit {
   onBlur()  { this.isFocused = false; this.onTouched(); }
 
   focusEditor() { this.ed.nativeElement.focus(); }
+
+  setHeading(tag: 'h1'|'h2'|'h3'|'h4') {
+    this.focusEditor();
+    document.execCommand('formatBlock', false, tag);
+    this.onInput();
+  }
+
 }

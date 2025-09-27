@@ -7,8 +7,11 @@
 .editable-view {
   min-height: 220px;
   padding: .5rem;
-  border: 1px solid #ddd; border-radius: .5rem; background: #fff;
-  white-space: pre-wrap; word-break: break-word;
+  border: 1px solid #ddd;
+  border-radius: .5rem;
+  background: #fff;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .editable-view:focus {
@@ -20,7 +23,10 @@
   opacity: .6;
 }
 
-.htmleditor { display: grid; gap: .5rem; }
+.htmleditor {
+  display: grid;
+  gap: .5rem;
+}
 
 /* If you use sticky, give space so it doesn't sit over the editor */
 .toolbar {
@@ -55,7 +61,7 @@
 
 .toolbar .button:active {
   background: #dbe6ff;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, .1);
 }
 
 .toolbar .button i,
@@ -68,8 +74,34 @@
 
 /* Editor should be below, not underlap */
 .editable-view {
-  position: relative; z-index: 0;
+  position: relative;
+  z-index: 0;
   min-height: 220px;
   padding: .5rem;
-  border: 1px solid #ddd; border-radius: .5rem;
+  border: 1px solid #ddd;
+  border-radius: .5rem;
+}
+
+.editable-view h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: .75em 0 .25em;
+}
+
+.editable-view h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: .65em 0 .25em;
+}
+
+.editable-view h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: .55em 0 .25em;
+}
+
+.editable-view h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: .45em 0 .25em;
 }
