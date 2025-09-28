@@ -147,11 +147,9 @@ export class LessonSectionCreateComponent implements OnInit {
     if (e.type === 'text') {
       base.content = e.content ?? '';
     } else if (e.type === 'module') {
-      try {
-        const parsed = e.content ? JSON.parse(e.content) : {};
-        base.moduleSlug = parsed?.moduleSlug ?? null;
-        base.moduleConfig = parsed?.moduleConfig ?? null;
-      } catch { /* keep defaults */ }
+      // For module type, use the separate fields directly
+      base.moduleSlug = e.moduleSlug ?? null;
+      base.moduleConfig = e.moduleConfig ?? null;
     } else if (e.type === 'question') {
       try {
         const parsed = e.content ? JSON.parse(e.content) : {};
