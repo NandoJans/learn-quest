@@ -88,22 +88,46 @@ export class LessonSectionCreateComponent implements OnInit {
   ngOnInit(): void {
     this.lessonId = Number(this.route.snapshot.paramMap.get('lessonId'));
 
-    // 1) Load existing sections from backend
+    // Load and populate sections from backend/cache
+    this.loadAndPopulateSections();
+  }
+
+  private loadAndPopulateSections(): void {
+    // 1) Try to load from backend/cache
     this.sectionService.loadSections({lesson: this.lessonId}, sections => {
-      // Clear current
-      while (this.sections.length) this.sections.removeAt(0);
-
-      // Push groups
-      sections
-        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-        .forEach(s => this.sections.push(this.createSectionGroupFromEntity(s)));
-
-      // If none exist, start with one empty section
-      if (this.sections.length === 0) this.addSection();
-
-      // 2) Register autosave for each group (after creation)
-      this.sections.controls.forEach(g => this.registerAutosave(g as FormGroup));
+      this.populateSectionsFromData(sections);
     });
+
+    // 2) If data was already cached, the callback won't be triggered,
+    //    so we also check the cache directly
+    const cachedSections = this.sectionService.getSections({lesson: this.lessonId});
+    if (cachedSections.length > 0) {
+      this.populateSectionsFromData(cachedSections);
+    } else if (cachedSections.length === 0) {
+      // No cached data and no callback means we need to wait for the API call
+      // or there are truly no sections, so we'll add one empty section if needed
+      setTimeout(() => {
+        if (this.sections.length === 0) {
+          this.addSection();
+        }
+      }, 100);
+    }
+  }
+
+  private populateSectionsFromData(sections: LessonSection[]): void {
+    // Clear current
+    while (this.sections.length) this.sections.removeAt(0);
+
+    // Push groups
+    sections
+      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      .forEach(s => this.sections.push(this.createSectionGroupFromEntity(s)));
+
+    // If none exist, start with one empty section
+    if (this.sections.length === 0) this.addSection();
+
+    // Register autosave for each group (after creation)
+    this.sections.controls.forEach(g => this.registerAutosave(g as FormGroup));
   }
 
   private createSectionGroupFromEntity(e: LessonSection): FormGroup {
