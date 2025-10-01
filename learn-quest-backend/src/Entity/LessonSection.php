@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LessonSectionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\UX\Turbo\Attribute\Broadcast;
 
@@ -33,6 +35,17 @@ class LessonSection
 
     #[ORM\Column(nullable: true)]
     private ?array $moduleConfig = null;
+
+    /**
+     * @var Collection<int, LessonSectionAnswer>
+     */
+    #[ORM\OneToMany(targetEntity: LessonSectionAnswer::class, mappedBy: 'lessonSection', orphanRemoval: true)]
+    private Collection $lessonSectionAnswers;
+
+    public function __construct()
+    {
+        $this->lessonSectionAnswers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -106,6 +119,36 @@ class LessonSection
     public function setModuleConfig(?array $moduleConfig): static
     {
         $this->moduleConfig = $moduleConfig;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LessonSectionAnswer>
+     */
+    public function getLessonSectionAnswers(): Collection
+    {
+        return $this->lessonSectionAnswers;
+    }
+
+    public function addLessonSectionAnswer(LessonSectionAnswer $lessonSectionAnswer): static
+    {
+        if (!$this->lessonSectionAnswers->contains($lessonSectionAnswer)) {
+            $this->lessonSectionAnswers->add($lessonSectionAnswer);
+            $lessonSectionAnswer->setLessonSection($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLessonSectionAnswer(LessonSectionAnswer $lessonSectionAnswer): static
+    {
+        if ($this->lessonSectionAnswers->removeElement($lessonSectionAnswer)) {
+            // set the owning side to null (unless already changed)
+            if ($lessonSectionAnswer->getLessonSection() === $this) {
+                $lessonSectionAnswer->setLessonSection(null);
+            }
+        }
 
         return $this;
     }
