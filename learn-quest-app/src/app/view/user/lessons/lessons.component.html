@@ -3,7 +3,7 @@
   <h1>{{ getCourse().name }}</h1>
 </div>
 <table class="table table-striped">
-  <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + lesson.primaryColor">
+  <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + lesson.primaryColor" (click)="navigate(lesson)" style="cursor: pointer;">
     <td [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
       <app-icon [faIcon]="lesson.faIcon" [color]="'white'"></app-icon>
     </td>

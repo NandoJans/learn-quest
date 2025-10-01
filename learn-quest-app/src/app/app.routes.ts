@@ -4,6 +4,7 @@ import {DashboardComponent} from './view/user/dashboard/dashboard.component';
 import {jwtAuthGuard} from './auth/jwt-auth.guard';
 import {CoursesComponent} from './view/user/courses/courses.component';
 import {LessonsComponent} from './view/user/lessons/lessons.component';
+import {LessonDetailComponent} from './view/user/lesson-detail/lesson-detail.component';
 import {LessonSectionCreateComponent} from './view/teacher/lesson-section-create/lesson-section-create.component';
 import {CourseRegistrationComponent} from './view/user/course-registration/course-registration.component';
 import {TeacherDashboardComponent} from './view/teacher/teacher-dashboard/teacher-dashboard.component';
@@ -25,6 +26,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent, title: 'Dashboard' },
       { path: 'courses', component: CoursesComponent, title: 'Courses' },
       { path: 'course', component: LessonsComponent, title: 'Course' },
+      { path: 'lesson/:lessonId', component: LessonDetailComponent, title: 'Lesson' },
       { path: 'modules', component: InteractiveWidgetLibraryComponent, title: 'IWL' },
       { path: 'module/:slug', component: InteractiveWidgetComponent, title: 'IWL' },
       { path: 'courseRegistration', component: CourseRegistrationComponent, title: 'Course' },

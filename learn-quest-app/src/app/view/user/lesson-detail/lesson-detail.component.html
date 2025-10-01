@@ -1,0 +1,114 @@
+<div class="lesson-detail-wrapper">
+  <div class="header">
+    <button class="btn btn-secondary" (click)="goBack()">← Back to Courses</button>
+    <h1>{{ lesson?.name || 'Loading...' }}</h1>
+    <p *ngIf="lesson?.description">{{ lesson.description }}</p>
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <p>Loading lesson sections...</p>
+  </div>
+
+  <div *ngIf="!loading" class="sections-container">
+    <div *ngFor="let state of sectionStates; let i = index" class="section-card">
+      
+      <!-- TEXT SECTION -->
+      <div *ngIf="state.section.type === 'text'" class="section-text">
+        <div class="content">{{ state.section.content }}</div>
+      </div>
+
+      <!-- WIDGET SECTION -->
+      <div *ngIf="state.section.type === 'widget'" class="section-widget">
+        <p class="alert alert-info">Interactive widget: {{ state.section.content }}</p>
+      </div>
+
+      <!-- QUESTION SECTION -->
+      <div *ngIf="state.section.type === 'question'" class="section-question">
+        <h3 class="question-prompt">{{ state.section.questionPrompt }}</h3>
+
+        <!-- Radio buttons (single choice) -->
+        <div *ngIf="state.section.questionInputType === 'radio'" class="answer-options">
+          <label *ngFor="let answer of state.section.questionAnswers" class="answer-option">
+            <input
+              type="radio"
+              [value]="answer"
+              [(ngModel)]="state.userAnswer"
+              [disabled]="state.isSubmitted"
+              name="question-{{i}}" />
+            <span>{{ answer }}</span>
+          </label>
+        </div>
+
+        <!-- Checkboxes (multiple choice) -->
+        <div *ngIf="state.section.questionInputType === 'checkbox'" class="answer-options">
+          <label *ngFor="let answer of state.section.questionAnswers" class="answer-option">
+            <input
+              type="checkbox"
+              [checked]="isCheckboxChecked(i, answer)"
+              (change)="onCheckboxChange(i, answer, $any($event.target).checked)"
+              [disabled]="state.isSubmitted" />
+            <span>{{ answer }}</span>
+          </label>
+        </div>
+
+        <!-- Text input -->
+        <div *ngIf="state.section.questionInputType === 'text'" class="answer-input">
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="state.userAnswer"
+            [disabled]="state.isSubmitted"
+            placeholder="Enter your answer..." />
+        </div>
+
+        <!-- Number input -->
+        <div *ngIf="state.section.questionInputType === 'number'" class="answer-input">
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="state.userAnswer"
+            [disabled]="state.isSubmitted"
+            placeholder="Enter your answer..." />
+        </div>
+
+        <!-- Submit button -->
+        <div class="question-actions">
+          <button
+            *ngIf="!state.isSubmitted"
+            class="btn btn-primary"
+            (click)="submitAnswer(i)"
+            [disabled]="!state.userAnswer">
+            Submit Answer
+          </button>
+
+          <!-- Feedback -->
+          <div *ngIf="state.isSubmitted" class="feedback">
+            <div *ngIf="state.isCorrect" class="alert alert-success">
+              ✓ Correct!
+            </div>
+            <div *ngIf="state.isCorrect === false" class="alert alert-danger">
+              ✗ Incorrect
+              <div *ngIf="state.correctAnswer" class="mt-2">
+                <strong>Correct answer:</strong> {{ state.correctAnswer }}
+              </div>
+            </div>
+
+            <!-- Explanation toggle -->
+            <button
+              class="btn btn-info btn-sm mt-2"
+              (click)="toggleExplanation(i)">
+              {{ state.showExplanation ? 'Hide' : 'Show' }} Explanation
+            </button>
+
+            <!-- Explanation -->
+            <div *ngIf="state.showExplanation && state.explanation" class="alert alert-info mt-2">
+              <strong>Explanation:</strong><br>
+              {{ state.explanation }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
