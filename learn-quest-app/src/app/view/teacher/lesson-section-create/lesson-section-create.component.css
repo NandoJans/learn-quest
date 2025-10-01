@@ -62,6 +62,7 @@
   font-size: .9rem;
   color: #555;
 }
+
 .config-form-container {
   margin-top: 20px;
   border: 1px solid #eee;
@@ -101,6 +102,7 @@
   font-family: monospace;
   font-size: 0.9rem;
 }
+
 .input {
   width: 100%;
   padding: 10px 12px;
@@ -150,4 +152,38 @@ textarea.input {
 .muted {
   color: #888;
   font-size: .9rem;
+}
+
+.sections-drop-list.cdk-drop-list-dragging .section-card:not(.cdk-drag-placeholder) {
+  transition: transform 180ms ease;
+}
+
+.section-card.cdk-drag-preview {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+  border-radius: 12px;
+  background: var(--bs-gray-400, #fff);
+}
+
+.section-card.cdk-drag-placeholder {
+  opacity: .2;
+}
+
+.drag-handle {
+  cursor: grab;
+  user-select: none;
+  border: 0;
+  background: transparent;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.sec-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  justify-content: space-between;
 }

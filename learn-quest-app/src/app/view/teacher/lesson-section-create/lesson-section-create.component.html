@@ -1,12 +1,24 @@
 <div class="sections-wrapper">
   <form [formGroup]="sectionsForm" novalidate>
-    <div formArrayName="sections">
+    <div
+      formArrayName="sections"
+      cdkDropList
+      [cdkDropListData]="sections.controls"
+      cdkDropListOrientation="vertical"
+      (cdkDropListDropped)="dropSection($event)"
+      class="sections-drop-list"
+    >
       <div
         class="section-card"
-        *ngFor="let section of sections.controls; index as i; trackBy: trackByIndex"
-        [formGroupName]="i">
+        *ngFor="let section of sections.controls; index as i"
+        [formGroupName]="i"
+        [id]="section.get('id')?.value"
+        cdkDrag
+      >
 
         <header class="sec-header">
+          <button type="button" class="drag-handle" cdkDragHandle aria-label="Drag to reorder">⠿</button>
+
           <h2 class="section-title">Section {{ i + 1 }}</h2>
 
           <div class="type-row">

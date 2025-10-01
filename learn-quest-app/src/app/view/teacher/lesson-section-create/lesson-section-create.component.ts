@@ -1,6 +1,7 @@
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  AbstractControl,
   FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -16,6 +17,7 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {InteractiveModuleLibraryComponent} from '../interactive-module-library/interactive-module-library.component';
 import {ModuleHostComponent} from '../../../components/module-host/module-host.component';
 import {ModuleConfigFormComponent} from '../../../components/module-config-form/module-config-form.component';
+import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, DragDropModule} from '@angular/cdk/drag-drop';
 
 type SectionType = 'text' | 'module' | 'question';
 
@@ -45,7 +47,10 @@ interface SectionFormValue {
     FormsModule,
     HtmlFieldComponent,
     ModuleHostComponent,
-    ModuleConfigFormComponent
+    ModuleConfigFormComponent,
+    CdkDropList,
+    CdkDrag,
+    CdkDragHandle
   ],
   templateUrl: './lesson-section-create.component.html',
   styleUrls: ['./lesson-section-create.component.css']
@@ -406,10 +411,6 @@ export class LessonSectionCreateComponent implements OnInit {
     });
   }
 
-  // --------- UI short-hands ----------
-  trackByIndex = (_: number, __: unknown) => _;
-  asAny(x: unknown) { return x as any; }
-
   protected readonly JSON = JSON;
 
   getAllowedTags() {
@@ -423,5 +424,28 @@ export class LessonSectionCreateComponent implements OnInit {
   getEncodedJson(target: EventTarget | null) {
     if (!(target instanceof HTMLTextAreaElement)) return '';
     return target.value;
+  }
+
+  /** Move a control inside a FormArray without recreating it */
+  private moveFormArrayControl(array: FormArray, from: number, to: number) {
+    if (from === to) return;
+    const dir = to > from ? 1 : -1;
+    const item = array.at(from);
+    for (let i = from; i !== to; i += dir) {
+      const next = array.at(i + dir);
+      array.setControl(i, next);
+    }
+    array.setControl(to, item);
+  }
+
+  dropSection(event: CdkDragDrop<FormGroup[]>) {
+    if (event.previousIndex === event.currentIndex) return;
+    console.log(event);
+    this.moveFormArrayControl(this.sections, event.previousIndex, event.currentIndex);
+    console.log('Moved section', event.previousIndex, event.currentIndex);
+    // Trigger your autosave / change detection
+    this.sections.markAsDirty();
+    this.sections.updateValueAndValidity({ emitEvent: true });
+    this.reindexPositions();
   }
 }
