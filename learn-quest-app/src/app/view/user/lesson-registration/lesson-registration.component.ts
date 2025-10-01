@@ -32,10 +32,14 @@ export class LessonRegistrationComponent implements OnInit {
         this.lessonRegistration = registrations[0] as LessonRegistration;
 
         this.lessonSectionService.loadSections({lesson: this.lessonRegistration.lesson.id}, (sections) => {
-          this.lessonSections = sections as LessonSection[];
+          this.lessonSections = (sections as LessonSection[]).sort(this.sortByPosition.bind(this));
         });
       }
     });
+  }
+
+  private sortByPosition(a: LessonSection, b: LessonSection): number {
+    return (a.position ?? 0) - (b.position ?? 0);
   }
 
   getLesson(): Lesson {
@@ -43,6 +47,6 @@ export class LessonRegistrationComponent implements OnInit {
   }
 
   onWidgetConfigChange(section: LessonSection, $event: any) {
-    
+
   }
 }

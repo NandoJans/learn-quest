@@ -95,41 +95,74 @@ export class LessonSectionCreateComponent implements OnInit {
   }
 
   private loadAndPopulateSections(): void {
-    // 1) Try to load from backend/cache
-    this.sectionService.loadSections({lesson: this.lessonId}, sections => {
-      this.populateSectionsFromData(sections);
-    });
-
-    // 2) If data was already cached, the callback won't be triggered,
-    //    so we also check the cache directly
-    const cachedSections = this.sectionService.getSections({lesson: this.lessonId});
-    if (cachedSections.length > 0) {
-      this.populateSectionsFromData(cachedSections);
-    } else if (cachedSections.length === 0) {
-      // No cached data and no callback means we need to wait for the API call
-      // or there are truly no sections, so we'll add one empty section if needed
-      setTimeout(() => {
-        if (this.sections.length === 0) {
-          this.addSection();
-        }
-      }, 100);
-    }
+    // Force a new API call to get the latest data, without relying on cached data
+    this.sectionService.loadSections(
+      { lesson: this.lessonId },
+      sections => {
+        console.log('API response received with', sections.length, 'sections');
+        // Process sections only when API response is received
+        this.populateSectionsFromData(sections);
+      },
+      true // force reload from API
+    );
   }
 
   private populateSectionsFromData(sections: LessonSection[]): void {
-    // Clear current
+    console.log('Populating form with sections data', sections);
+
+    // Clear current sections
     while (this.sections.length) this.sections.removeAt(0);
 
-    // Push groups
+    // Push groups sorted by position
     sections
       .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
       .forEach(s => this.sections.push(this.createSectionGroupFromEntity(s)));
 
-    // If none exist, start with one empty section
-    if (this.sections.length === 0) this.addSection();
+    // If no sections were received, add one empty section
+    if (this.sections.length === 0) {
+      console.log('No sections found, adding empty section');
+      this.addSection();
+    }
 
     // Register autosave for each group (after creation)
     this.sections.controls.forEach(g => this.registerAutosave(g as FormGroup));
+
+    // Manually update form controls to ensure HTML editors receive their values
+    this.refreshFormControls();
+  }
+
+  /**
+   * Explicitly refresh form control values to ensure the HTML editors
+   * and Bootstrap accordions are properly initialized
+   */
+  private refreshFormControls(): void {
+    // Short timeout to ensure components are rendered first
+    setTimeout(() => {
+      console.log('Refreshing form controls for', this.sections.length, 'sections');
+
+      // Process each section
+      this.sections.controls.forEach((group: AbstractControl, index: number) => {
+        const formGroup = group as FormGroup;
+
+        // 1. Re-apply content to HTML editors (if type is 'text')
+        if (formGroup.get('type')?.value === 'text') {
+          const currentContent = formGroup.get('content')?.value;
+          if (currentContent) {
+            // Force a rewrite of the content value to trigger writeValue in the HTML editor
+            formGroup.get('content')?.setValue(currentContent, { emitEvent: true });
+            console.log(`Refreshed content for section ${index}`);
+          }
+        }
+
+        // 2. Ensure Bootstrap accordions are properly expanded
+        const sectionId = this.getSectionElementId(formGroup);
+        const collapseEl = document.getElementById(sectionId);
+        if (collapseEl && !collapseEl.classList.contains('show')) {
+          collapseEl.classList.add('show');
+          console.log(`Expanded accordion for section ${index}`);
+        }
+      });
+    }, 100); // Small delay to ensure DOM is ready
   }
 
   private createSectionGroupFromEntity(e: LessonSection): FormGroup {
@@ -412,6 +445,9 @@ export class LessonSectionCreateComponent implements OnInit {
   }
 
   protected readonly JSON = JSON;
+  trackByPosition(index: number, item: AbstractControl) {
+    return item.get('position')?.value;
+  }
 
   getAllowedTags() {
     return new Set(['p','br','strong','em','u','s','blockquote','pre','code','span','ul','ol','li','h2','h3','h4','a','mark','hint','callout']);
@@ -454,6 +490,20 @@ export class LessonSectionCreateComponent implements OnInit {
   }
 
   setSectionOpen($event: PointerEvent) {
-    console.log($event.target);
+    // Ensure proper initialization of all accordions after toggling
+    setTimeout(() => {
+      // Make sure HTML editors inside any visible sections are properly displayed
+      document.querySelectorAll('.accordion-collapse.show app-html-field').forEach(editor => {
+        const editorId = editor.getAttribute('id');
+        if (editorId) {
+          const editorEl = document.getElementById(editorId);
+          if (editorEl) {
+            // Trigger a resize/redraw event for the editor
+            const event = new Event('resize');
+            window.dispatchEvent(event);
+          }
+        }
+      });
+    }, 100);
   }
 }

@@ -10,7 +10,7 @@
     >
       <div
         class="section-card accordion-item"
-        *ngFor="let section of sections.controls; index as i"
+        *ngFor="let section of sections.controls; index as i; trackBy: trackByPosition"
         [formGroupName]="i"
         [id]="section.get('id')?.value"
         cdkDrag
@@ -31,15 +31,15 @@
               <button type="button" class="drag-handle" cdkDragHandle aria-label="Drag to reorder">⠿</button>
               <h2 class="section-title">Section {{ i + 1 }}</h2>
 
-              <div class="type-row">
-                <input type="radio" class="btn-check btn-3" id="textTypeOption" formControlName="type" value="text" />
-                <label class="btn btn-3 btn-header" for="textTypeOption">Text</label>
+              <div class="type-row" (click)="$event.stopPropagation()">
+                <input type="radio" class="btn-check btn-3" id="textTypeOption-{{i}}" formControlName="type" value="text" />
+                <label class="btn btn-3 btn-header" for="textTypeOption-{{i}}">Text</label>
 
-                <input type="radio" class="btn-check btn-3" id="moduleTypeOption" formControlName="type" value="module" />
-                <label class="btn btn-3 btn-header" for="moduleTypeOption">Interactive</label>
+                <input type="radio" class="btn-check btn-3" id="moduleTypeOption-{{i}}" formControlName="type" value="module" />
+                <label class="btn btn-3 btn-header" for="moduleTypeOption-{{i}}">Interactive</label>
 
-                <input type="radio" class="btn-check btn-3" id="questionTypeOption" formControlName="type" value="question" />
-                <label class="btn btn-3 btn-header" for="questionTypeOption">Question</label>
+                <input type="radio" class="btn-check btn-3" id="questionTypeOption-{{i}}" formControlName="type" value="question" />
+                <label class="btn btn-3 btn-header" for="questionTypeOption-{{i}}">Question</label>
               </div>
             </div>
           </button>
@@ -52,6 +52,8 @@
               <span class="label">Explanation (HTML)</span>
               <app-html-field
                 formControlName="content"
+                [attr.data-section-index]="i"
+                [attr.id]="'html-editor-' + i"
               >
               </app-html-field>
             </label>

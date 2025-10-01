@@ -24,6 +24,7 @@ export class HtmlFieldComponent implements ControlValueAccessor, AfterViewInit {
 
   writeValue(val: string): void {
     const next = val ?? '';
+    console.log('writeValue', next);
     if (next !== this._html) {
       this._html = next;
 
@@ -32,7 +33,7 @@ export class HtmlFieldComponent implements ControlValueAccessor, AfterViewInit {
         this.ed.nativeElement.innerHTML = this._html || '<p><br></p>';
       } else {
         // view not ready yet — render later in ngAfterViewInit
-        this.needsRender = true;                       // <— add
+        this.needsRender = true;
       }
     }
   }
@@ -43,16 +44,9 @@ export class HtmlFieldComponent implements ControlValueAccessor, AfterViewInit {
       document.execCommand('styleWithCSS', false, 'true');
     } catch {}
 
-    if (this._html) {
-      this.ed.nativeElement.innerHTML = this._html;
-    } else {
-      this.ed.nativeElement.innerHTML = '<p><br></p>';
-    }
-
-    if (this.needsRender && !this.isFocused) {
-      this.ed.nativeElement.innerHTML = this._html || '<p><br></p>';
-      this.needsRender = false;
-    }
+    // Always render the content when the view initializes
+    this.ed.nativeElement.innerHTML = this._html || '<p><br></p>';
+    this.needsRender = false;
   }
 
   registerOnChange(fn: any): void { this.onChange = fn; }

@@ -189,6 +189,10 @@ textarea.input {
   justify-content: space-between;
 }
 
+.accordion-item {
+  border: none;
+}
+
 button.accordion-button .accordion-button-body {
   width: 100%;
   display: flex;
@@ -201,4 +205,22 @@ button.accordion-button .accordion-button-body {
 
 button.accordion-button {
   --bs-accordion-active-bg: var(--color-3-white);
+}
+
+@media (max-width: 768px) {
+  .sections-wrapper {
+    padding: 0;
+  }
+
+  .section-card {
+    padding: 0;
+  }
+
+  .accordion-button {
+    padding: 0.5rem;
+  }
+
+  .drag-handle {
+    padding: 0rem;
+  }
 }
