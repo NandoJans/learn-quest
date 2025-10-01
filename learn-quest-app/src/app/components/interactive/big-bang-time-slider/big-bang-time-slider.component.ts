@@ -77,6 +77,7 @@ export class BigBangTimeSliderComponent implements AfterViewInit, OnDestroy {
         { label: 'Donkere Middeleeuwen', start: 3.7e5*YEAR,       end: 1.5e8*YEAR,        note: 'Weinig lichtbronnen; bijna zwart heelal.' },
         { label: 'Eerste sterren',       start: 1.5e8*YEAR,       end: 5e8*YEAR,          note: 'Populatie III sterren ontsteken.' },
         { label: 'Sterrenstelsels',      start: 5e8*YEAR,         end: 1e9*YEAR,          note: 'Galaxy-vorming en -groei.' },
+        { label: 'Sterrenstelsels',      start: 1e9*YEAR,         end: 13.8e9*YEAR,          note: 'The same as now.' },
       ]
     };
 
@@ -384,14 +385,42 @@ export class BigBangTimeSliderComponent implements AfterViewInit, OnDestroy {
   // - >= 1s: k/m/b suffix
   // - < 1s: ms, µs, ns, ps, fs, as…
   fmtAge(s: number): string {
-    if (s >= 1e9) return `${(s/1e9).toFixed(this.frac(s,1e9))} b s`;
-    if (s >= 1e6) return `${(s/1e6).toFixed(this.frac(s,1e6))} m s`;
-    if (s >= 1e3) return `${(s/1e3).toFixed(this.frac(s,1e3))} k s`;
-    if (s >= 1)   return `${s.toFixed(this.frac(s,1))} s`;
+    if (s >= 31_449_600e9) {
+      // years
+      return `${(s/ 31_449_600e9).toFixed(2)}b years`;
+    }
+    if (s >= 31_449_600e6) {
+      // years
+      return `${(s/31_449_600e6).toFixed(2)}m years`;
+    }
+    if (s >= 31_449_600) {
+      // years
+      return `${(s/31_449_600).toFixed(2)} years`;
+    }
+    if (s >= 2_620_800) {
+      // years
+      return `${(s/2_620_800).toFixed(2)} months`;
+    }
+    if (s >= 604_800) {
+      // weeks
+      return `${(s/604_800).toFixed(2)} weeks`;
+    }
+    if (s >= 86_400) {
+      // days
+      return `${(s/86_400).toFixed(2)} days`;
+    }
+    if (s >= 3600) {
+      // hours
+      return `${(s/3600).toFixed(2)} hours`;
+    }
+    if (s >= 60) {
+      // minutes
+      return `${(s/60).toFixed(2)} minutes`;
+    }
+    if (s >= 1)   return `${s.toFixed(this.frac(s,1))} seconds`;
 
     const units = [
-      {u:'ms', f:1e-3},{u:'µs',f:1e-6},{u:'ns',f:1e-9},{u:'ps',f:1e-12},
-      {u:'fs',f:1e-15},{u:'as',f:1e-18},{u:'zs',f:1e-21},{u:'ys',f:1e-24},
+      {u:'ms', f:1e-3},{u:'µs',f:1e-6},{u:'ns',f:1e-9}
     ];
     for (const {u,f} of units) {
       if (s >= f) return `${(s/f).toFixed(2)} ${u}`;
