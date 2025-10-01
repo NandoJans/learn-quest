@@ -283,6 +283,13 @@ export class LessonSectionCreateComponent implements OnInit {
     g.get('type')!.valueChanges.subscribe((t: SectionType) => this.applyTypeValidators(g, t));
     this.applyTypeValidators(g, g.get('type')!.value as SectionType);
 
+    // Question type changes handler
+    g.get('questionType')!.valueChanges.subscribe((qt: string | null) => {
+      if (g.get('type')!.value === 'question') {
+        this.handleQuestionTypeChange(g, qt);
+      }
+    });
+
     return g;
   }
 
@@ -350,6 +357,28 @@ export class LessonSectionCreateComponent implements OnInit {
     
     // Set correctIndex to 0 (the first and only answer for text/number types)
     g.patchValue({ correctIndex: 0 });
+  }
+
+  handleQuestionTypeChange(group: FormGroup, questionType: string | null) {
+    const arr = group.get('answers') as FormArray<FormGroup>;
+    
+    // For text/number types, ensure we have exactly one answer option
+    if (questionType === 'text' || questionType === 'number') {
+      // Keep only the first answer or create one
+      while (arr.length > 1) {
+        arr.removeAt(arr.length - 1);
+      }
+      if (arr.length === 0) {
+        arr.push(this.fb.group({ text: this.fb.control('', { nonNullable: true }) }));
+      }
+      // Set correctIndex to 0 by default for text/number
+      group.patchValue({ correctIndex: 0 }, { emitEvent: false });
+    } else if (questionType === 'radio' || questionType === 'checkbox') {
+      // For radio/checkbox, ensure at least 2 options
+      while (arr.length < 2) {
+        arr.push(this.fb.group({ text: this.fb.control('', { nonNullable: true, validators: [Validators.required] }) }));
+      }
+    }
   }
 
   autosaving = false;
