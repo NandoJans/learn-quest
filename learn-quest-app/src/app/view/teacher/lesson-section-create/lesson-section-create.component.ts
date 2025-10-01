@@ -99,8 +99,6 @@ export class LessonSectionCreateComponent implements OnInit {
     this.sectionService.loadSections(
       { lesson: this.lessonId },
       sections => {
-        console.log('API response received with', sections.length, 'sections');
-        // Process sections only when API response is received
         this.populateSectionsFromData(sections);
       },
       true // force reload from API
@@ -120,7 +118,6 @@ export class LessonSectionCreateComponent implements OnInit {
 
     // If no sections were received, add one empty section
     if (this.sections.length === 0) {
-      console.log('No sections found, adding empty section');
       this.addSection();
     }
 
@@ -150,7 +147,6 @@ export class LessonSectionCreateComponent implements OnInit {
           if (currentContent) {
             // Force a rewrite of the content value to trigger writeValue in the HTML editor
             formGroup.get('content')?.setValue(currentContent, { emitEvent: true });
-            console.log(`Refreshed content for section ${index}`);
           }
         }
 
@@ -335,7 +331,6 @@ export class LessonSectionCreateComponent implements OnInit {
           creating = true;
           return this.sectionService.createSection(payload).pipe(
             tap(created => {
-              console.log('Created section', created);
               group.patchValue({id: created.id}, {emitEvent: false})
             }),
             finalize(() => creating = false),
@@ -478,7 +473,6 @@ export class LessonSectionCreateComponent implements OnInit {
     if (event.previousIndex === event.currentIndex) return;
     console.log(event);
     this.moveFormArrayControl(this.sections, event.previousIndex, event.currentIndex);
-    console.log('Moved section', event.previousIndex, event.currentIndex);
     // Trigger your autosave / change detection
     this.sections.markAsDirty();
     this.sections.updateValueAndValidity({ emitEvent: true });

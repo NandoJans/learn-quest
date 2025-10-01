@@ -28,7 +28,6 @@ export class RoleSwitcherComponent implements OnInit {
     // Ensure the active role is set on initialization
     this.roleService.activeRole$.subscribe(role => {
       this.active = role;
-      console.log('Active role changed:', role);
     });
     this.roleService.availableRoles$.subscribe(availableRoles => {
       this.roles = availableRoles;

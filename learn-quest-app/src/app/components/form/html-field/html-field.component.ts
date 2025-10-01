@@ -24,7 +24,6 @@ export class HtmlFieldComponent implements ControlValueAccessor, AfterViewInit {
 
   writeValue(val: string): void {
     const next = val ?? '';
-    console.log('writeValue', next);
     if (next !== this._html) {
       this._html = next;
 
