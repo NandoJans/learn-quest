@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Dto\LessonSectionDto;
 use App\Entity\Lesson;
 use App\Entity\LessonSection;
+use App\Entity\QuestionOption;
 use App\Service\EntityService;
 use App\Service\PayloadValidatorService;
 use Doctrine\Persistence\ManagerRegistry;
@@ -44,7 +45,7 @@ final class ApiLessonSectionController extends AbstractController
         $sections = $qb->getQuery()->getResult();
 
         $dtos = array_map(
-            fn (LessonSection $s) => $this->entityService->mapEntityToDto($s, LessonSectionDto::class, ['lessonId' => 'lesson.id']),
+            fn (LessonSection $s) => $this->mapSectionToDto($s),
             $sections
         );
 
@@ -59,7 +60,7 @@ final class ApiLessonSectionController extends AbstractController
         $section = $this->doctrine->getRepository(LessonSection::class)->find($id);
         if (!$section) return $this->json(['error' => 'Lesson section not found'], Response::HTTP_NOT_FOUND);
 
-        $dto = $this->entityService->mapEntityToDto($section, LessonSectionDto::class, ['lessonId' => 'lesson.id']);
+        $dto = $this->mapSectionToDto($section);
         return $this->json($dto);
     }
 
@@ -93,11 +94,16 @@ final class ApiLessonSectionController extends AbstractController
             'lesson' => fn(array $dto) => $lesson,
         ]);
 
+        // Handle questionOptions if present
+        if (isset($data['questionOptions']) && is_array($data['questionOptions'])) {
+            $this->updateQuestionOptions($section, $data['questionOptions']);
+        }
+
         $em = $this->doctrine->getManager();
         $em->persist($section);
         $em->flush();
 
-        $dto = $this->entityService->mapEntityToDto($section, LessonSectionDto::class, ['lessonId' => 'lesson.id']);
+        $dto = $this->mapSectionToDto($section);
         return $this->json($dto, Response::HTTP_CREATED);
     }
 
@@ -126,9 +132,14 @@ final class ApiLessonSectionController extends AbstractController
             'lesson' => fn(array $dto) => $lessonOverride ?: $section->getLesson(),
         ]);
 
+        // Handle questionOptions if present
+        if (isset($data['questionOptions']) && is_array($data['questionOptions'])) {
+            $this->updateQuestionOptions($section, $data['questionOptions']);
+        }
+
         $this->doctrine->getManager()->flush();
 
-        $dto = $this->entityService->mapEntityToDto($section, LessonSectionDto::class, ['lessonId' => 'lesson.id']);
+        $dto = $this->mapSectionToDto($section);
         return $this->json($dto);
     }
 
@@ -196,5 +207,44 @@ final class ApiLessonSectionController extends AbstractController
             if ($this->isGranted($role)) return;
         }
         $this->denyAccessUnlessGranted($roles[0]); // will throw 403
+    }
+
+    /** Helper: update question options collection */
+    private function updateQuestionOptions(LessonSection $section, array $optionsData): void
+    {
+        $em = $this->doctrine->getManager();
+        
+        // Remove existing options
+        foreach ($section->getQuestionOptions() as $option) {
+            $em->remove($option);
+        }
+        $section->getQuestionOptions()->clear();
+        
+        // Add new options
+        foreach ($optionsData as $optData) {
+            $option = new QuestionOption();
+            $option->setOptionText($optData['optionText'] ?? '');
+            $option->setPosition($optData['position'] ?? 0);
+            $section->addQuestionOption($option);
+        }
+    }
+
+    /** Helper: map section to DTO with question options */
+    private function mapSectionToDto(LessonSection $section): LessonSectionDto
+    {
+        $dto = $this->entityService->mapEntityToDto($section, LessonSectionDto::class, ['lessonId' => 'lesson.id']);
+        
+        // Manually add question options
+        $options = [];
+        foreach ($section->getQuestionOptions() as $option) {
+            $options[] = [
+                'id' => $option->getId(),
+                'optionText' => $option->getOptionText(),
+                'position' => $option->getPosition(),
+            ];
+        }
+        $dto->questionOptions = $options;
+        
+        return $dto;
     }
 }
