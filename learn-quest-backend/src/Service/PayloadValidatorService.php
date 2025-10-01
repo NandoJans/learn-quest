@@ -123,6 +123,19 @@ readonly class PayloadValidatorService
         ]);
     }
 
+    public function schemaQuestionOptionIndexQuery(): Assert\Collection
+    {
+        return new Assert\Collection([
+            'fields' => [
+                'lessonSectionId' => [new Assert\NotBlank(), new Assert\Type('digit')],
+                'orderBy'  => [new Assert\Optional([new Assert\Choice(['position', 'id'])])],
+                'order'    => [new Assert\Optional([new Assert\Choice(['asc', 'desc', 'ASC', 'DESC'])])],
+            ],
+            'allowMissingFields' => true,
+            'allowExtraFields'   => true,
+        ]);
+    }
+
     /**
      * Validate query params with a schema.
      */
