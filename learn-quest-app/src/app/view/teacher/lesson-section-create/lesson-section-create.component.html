@@ -113,14 +113,24 @@
         <section class="accordion-collapse collapse show" *ngIf="section.get('type')?.value === 'question'" [id]="getSectionElementId(section)">
           <div class="sec-body accordion-body">
             <label class="field">
+              <span class="label">Question Type</span>
+              <select class="input" formControlName="questionType">
+                <option value="text">Text Input</option>
+                <option value="number">Number Input</option>
+                <option value="checkbox">Checkbox (Multiple Choice)</option>
+                <option value="radio">Radio (Single Choice)</option>
+              </select>
+            </label>
+
+            <label class="field">
               <span class="label">Prompt</span>
               <textarea class="input" rows="3" formControlName="questionPrompt" placeholder="Ask your question..."></textarea>
             </label>
 
-            <div class="answers">
+            <div class="answers" *ngIf="section.get('questionType')?.value === 'radio' || section.get('questionType')?.value === 'checkbox'">
               <div class="answers-head">
-                <span>Answers</span>
-                <button type="button" class="btn subtle" (click)="addAnswer(i)">Add answer</button>
+                <span>Answer Options</span>
+                <button type="button" class="btn subtle" (click)="addAnswer(i)">Add option</button>
               </div>
 
               <div class="answer-row" *ngFor="let ans of answersArray(i).controls; index as j" [formGroup]="ans">
@@ -143,6 +153,18 @@
                   Remove
                 </button>
               </div>
+            </div>
+
+            <div class="answers" *ngIf="section.get('questionType')?.value === 'text' || section.get('questionType')?.value === 'number'">
+              <label class="field">
+                <span class="label">Correct Answer</span>
+                <input 
+                  class="input"
+                  [type]="section.get('questionType')?.value === 'number' ? 'number' : 'text'"
+                  [value]="section.get('correctIndex')?.value !== null ? answersArray(i).at(section.get('correctIndex')?.value || 0)?.get('text')?.value : ''"
+                  (input)="updateTextAnswer(i, $event)"
+                  placeholder="Enter the correct answer" />
+              </label>
             </div>
 
             <label class="field">
