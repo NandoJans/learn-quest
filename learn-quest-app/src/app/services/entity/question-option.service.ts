@@ -31,9 +31,14 @@ export class QuestionOptionService {
       .find(o => o.id === id);
   }
 
-  /** Fetch question options from API */
-  fetchQuestionOptions(lessonSectionId: number): Observable<QuestionOption[]> {
-    return this.apiService.get<QuestionOption[]>(`question_option/index?lessonSectionId=${lessonSectionId}`);
+  /** Fetch question options from API by lessonSectionId */
+  fetchQuestionOptionsByLessonSection(lessonSectionId: number): Observable<QuestionOption[]> {
+    return this.apiService.get<QuestionOption[]>(`question_option/index?lessonSection=${lessonSectionId}`);
+  }
+
+  /** Fetch question options from API by lessonId */
+  fetchQuestionOptionsByLesson(lessonId: number): Observable<QuestionOption[]> {
+    return this.apiService.get<QuestionOption[]>(`question_option/index?lesson=${lessonId}`);
   }
 
   /** Clear cache for this entity type */

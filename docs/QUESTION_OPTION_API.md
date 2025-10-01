@@ -1,24 +1,32 @@
 # QuestionOption API
 
 ## Overview
-This document describes the QuestionOption API endpoint that allows fetching question options for a specific lesson section separately from the main lesson section data.
+This document describes how to fetch question options using the generic entity API endpoint.
 
 ## Endpoint
 
 ### GET /api/question_option/index
 
-Fetches all question options for a specific lesson section.
+Fetches question options using the generic entity index route with flexible filtering.
 
 #### Query Parameters
 
-- `lessonSectionId` (required): The ID of the lesson section
-- `orderBy` (optional): Sort field, defaults to 'position'. Options: 'position', 'id'
-- `order` (optional): Sort direction, defaults to 'ASC'. Options: 'ASC', 'DESC'
+You can filter by any property of the QuestionOption entity:
 
-#### Example Request
+- `lessonSection` - Filter by lesson section ID
+- `lesson` - Filter by lesson ID (allows fetching all question options for a lesson at once)
+- Any other entity property
 
+#### Example Requests
+
+**Fetch question options by lesson section:**
 ```
-GET /api/question_option/index?lessonSectionId=123
+GET /api/question_option/index?lessonSection=123
+```
+
+**Fetch all question options for a lesson:**
+```
+GET /api/question_option/index?lesson=456
 ```
 
 #### Example Response
@@ -28,18 +36,21 @@ GET /api/question_option/index?lessonSectionId=123
   {
     "id": 1,
     "lessonSectionId": 123,
+    "lessonId": 456,
     "optionText": "Paris",
     "position": 0
   },
   {
     "id": 2,
     "lessonSectionId": 123,
+    "lessonId": 456,
     "optionText": "London",
     "position": 1
   },
   {
     "id": 3,
     "lessonSectionId": 123,
+    "lessonId": 456,
     "optionText": "Berlin",
     "position": 2
   }
@@ -56,8 +67,13 @@ import { QuestionOptionService } from './services/entity/question-option.service
 constructor(private questionOptionService: QuestionOptionService) {}
 
 // Fetch question options for a specific lesson section
-this.questionOptionService.fetchQuestionOptions(lessonSectionId).subscribe(options => {
-  console.log('Question options:', options);
+this.questionOptionService.fetchQuestionOptionsByLessonSection(lessonSectionId).subscribe(options => {
+  console.log('Question options for section:', options);
+});
+
+// Fetch all question options for a lesson
+this.questionOptionService.fetchQuestionOptionsByLesson(lessonId).subscribe(options => {
+  console.log('All question options for lesson:', options);
 });
 ```
 
@@ -67,6 +83,8 @@ See `lesson-registration.component.ts` for a complete example of how to fetch qu
 
 ## Notes
 
+- Uses the generic entity/index route for consistent API patterns
+- The QuestionOption entity includes both `lessonSection` and `lesson` properties
+- Allows fetching all question options for a lesson at once for improved performance
 - The LessonSection DTO still includes questionOptions for backward compatibility
 - Clients can choose to use either the embedded options or fetch them separately using this endpoint
-- The endpoint requires authentication (ROLE_ADMIN, ROLE_TEACHER, or ROLE_STUDENT)

@@ -39,7 +39,7 @@ export class LessonRegistrationComponent implements OnInit {
           // Fetch question options separately for each question section
           this.lessonSections.forEach(section => {
             if (section.type === 'question' && section.id) {
-              this.questionOptionService.fetchQuestionOptions(section.id).subscribe(options => {
+              this.questionOptionService.fetchQuestionOptionsByLessonSection(section.id).subscribe(options => {
                 section.questionOptions = options;
               });
             }

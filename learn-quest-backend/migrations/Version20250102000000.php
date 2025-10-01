@@ -26,8 +26,9 @@ final class Version20250102000000 extends AbstractMigration
         $this->addSql('ALTER TABLE lesson_section ADD correct_answer LONGTEXT DEFAULT NULL');
 
         // Create question_option table
-        $this->addSql('CREATE TABLE question_option (id INT AUTO_INCREMENT NOT NULL, lesson_section_id INT NOT NULL, option_text LONGTEXT NOT NULL, position INT NOT NULL, INDEX IDX_C6F6759AD52AAAAB (lesson_section_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE question_option (id INT AUTO_INCREMENT NOT NULL, lesson_section_id INT NOT NULL, lesson_id INT NOT NULL, option_text LONGTEXT NOT NULL, position INT NOT NULL, INDEX IDX_C6F6759AD52AAAAB (lesson_section_id), INDEX IDX_question_option_lesson (lesson_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE question_option ADD CONSTRAINT FK_C6F6759AD52AAAAB FOREIGN KEY (lesson_section_id) REFERENCES lesson_section (id)');
+        $this->addSql('ALTER TABLE question_option ADD CONSTRAINT FK_question_option_lesson FOREIGN KEY (lesson_id) REFERENCES lesson (id)');
     }
 
     public function postUp(Schema $schema): void
@@ -37,7 +38,7 @@ final class Version20250102000000 extends AbstractMigration
         
         // Get all question-type sections
         $sections = $connection->fetchAllAssociative(
-            "SELECT id, content FROM lesson_section WHERE type = 'question' AND content IS NOT NULL AND content != ''"
+            "SELECT ls.id, ls.content, ls.lesson_id FROM lesson_section ls WHERE ls.type = 'question' AND ls.content IS NOT NULL AND ls.content != ''"
         );
         
         foreach ($sections as $section) {
@@ -49,6 +50,7 @@ final class Version20250102000000 extends AbstractMigration
             }
             
             $sectionId = $section['id'];
+            $lessonId = $section['lesson_id'];
             $prompt = $data['prompt'] ?? '';
             $explanation = $data['explanation'] ?? '';
             $answers = $data['answers'] ?? [];
@@ -63,8 +65,8 @@ final class Version20250102000000 extends AbstractMigration
             // Insert question options
             foreach ($answers as $position => $answerText) {
                 $connection->executeStatement(
-                    'INSERT INTO question_option (lesson_section_id, option_text, position) VALUES (?, ?, ?)',
-                    [$sectionId, $answerText, $position]
+                    'INSERT INTO question_option (lesson_section_id, lesson_id, option_text, position) VALUES (?, ?, ?, ?)',
+                    [$sectionId, $lessonId, $answerText, $position]
                 );
             }
             
@@ -80,6 +82,7 @@ final class Version20250102000000 extends AbstractMigration
     {
         // Drop question_option table
         $this->addSql('ALTER TABLE question_option DROP FOREIGN KEY FK_C6F6759AD52AAAAB');
+        $this->addSql('ALTER TABLE question_option DROP FOREIGN KEY FK_question_option_lesson');
         $this->addSql('DROP TABLE question_option');
 
         // Remove question fields from lesson_section
