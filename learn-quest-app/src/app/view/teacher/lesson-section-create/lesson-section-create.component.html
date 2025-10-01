@@ -6,77 +6,88 @@
       [cdkDropListData]="sections.controls"
       cdkDropListOrientation="vertical"
       (cdkDropListDropped)="dropSection($event)"
-      class="sections-drop-list"
+      class="sections-drop-list accordion"
     >
       <div
-        class="section-card"
+        class="section-card accordion-item"
         *ngFor="let section of sections.controls; index as i"
         [formGroupName]="i"
         [id]="section.get('id')?.value"
         cdkDrag
       >
 
-        <header class="sec-header">
-          <button type="button" class="drag-handle" cdkDragHandle aria-label="Drag to reorder">⠿</button>
+        <header class="sec-header accordion-header">
+          <button
+            type="button"
+            class="accordion-button"
+            [attr.data-bs-toggle]="'collapse'"
+            [attr.data-bs-target]="'#'+getSectionElementId(section)"
+            aria-expanded="true"
+            aria-controls="panelsStayOpen-collapseOne"
+            aria-label="Open or close"
+            (click)="setSectionOpen($event)"
+          >
+            <div class="accordion-button-body">
+              <button type="button" class="drag-handle" cdkDragHandle aria-label="Drag to reorder">⠿</button>
+              <h2 class="section-title">Section {{ i + 1 }}</h2>
 
-          <h2 class="section-title">Section {{ i + 1 }}</h2>
+              <div class="type-row">
+                <input type="radio" class="btn-check btn-3" id="textTypeOption" formControlName="type" value="text" />
+                <label class="btn btn-3 btn-header" for="textTypeOption">Text</label>
 
-          <div class="type-row">
-            <label class="chip">
-              <input type="radio" formControlName="type" value="text" />
-              <span>Text</span>
-            </label>
-            <label class="chip">
-              <input type="radio" formControlName="type" value="module" />
-              <span>Interactive</span>
-            </label>
-            <label class="chip">
-              <input type="radio" formControlName="type" value="question" />
-              <span>Question</span>
-            </label>
-          </div>
+                <input type="radio" class="btn-check btn-3" id="moduleTypeOption" formControlName="type" value="module" />
+                <label class="btn btn-3 btn-header" for="moduleTypeOption">Interactive</label>
+
+                <input type="radio" class="btn-check btn-3" id="questionTypeOption" formControlName="type" value="question" />
+                <label class="btn btn-3 btn-header" for="questionTypeOption">Question</label>
+              </div>
+            </div>
+          </button>
         </header>
 
         <!-- TEXT TYPE -->
-        <section class="sec-body" *ngIf="section.get('type')?.value === 'text'">
-          <label class="field">
-            <span class="label">Explanation (HTML)</span>
-            <app-html-field
-              formControlName="content"
-            >
-            </app-html-field>
-          </label>
+        <section class="accordion-collapse collapse show" *ngIf="section.get('type')?.value === 'text'" [id]="getSectionElementId(section)">
+          <div class="sec-body accordion-body">
+            <label class="field">
+              <span class="label">Explanation (HTML)</span>
+              <app-html-field
+                formControlName="content"
+              >
+              </app-html-field>
+            </label>
+          </div>
         </section>
 
         <!-- Module TYPE -->
-        <section class="sec-body" *ngIf="section.get('type')?.value === 'module'">
-          <div class="row">
-            <label class="field">
-              <span class="label">Module</span>
-<!--              Display selected module-->
-              <div class="selected-module" *ngIf="section.get('moduleSlug')?.value;">
-                <strong>{{ section.get('moduleSlug')?.value }}</strong>
-              </div>
-              <div class="no-module" *ngIf="!section.get('moduleSlug')?.value;">
-                No module selected
-              </div>
-            </label>
+        <section class="accordion-collapse collapse show" *ngIf="section.get('type')?.value === 'module'" [id]="getSectionElementId(section)">
+          <div class="sec-body accordion-body">
+            <div class="row">
+              <label class="field">
+                <span class="label">Module</span>
+  <!--              Display selected module-->
+                <div class="selected-module" *ngIf="section.get('moduleSlug')?.value;">
+                  <strong>{{ section.get('moduleSlug')?.value }}</strong>
+                </div>
+                <div class="no-module" *ngIf="!section.get('moduleSlug')?.value;">
+                  No module selected
+                </div>
+              </label>
 
-            <button type="button" class="btn btn-2" (click)="openModuleLibraryFor(i)">
-              Choose from module library
-            </button>
-          </div>
+              <button type="button" class="btn btn-2" (click)="openModuleLibraryFor(i)">
+                Choose from module library
+              </button>
+            </div>
 
-          <div class="module-preview-container mt-2">
-            <app-module-host
-              *ngIf="section.get('moduleSlug')?.value"
-              [slug]="section.get('moduleSlug')?.value"
-              [config]="section.get('moduleConfig')?.value"
-              (configChange)="section.patchValue({ moduleConfig: $event }, { emitEvent: false })">
-            </app-module-host>
-          </div>
+            <div class="module-preview-container mt-2">
+              <app-module-host
+                *ngIf="section.get('moduleSlug')?.value"
+                [slug]="section.get('moduleSlug')?.value"
+                [config]="section.get('moduleConfig')?.value"
+                (configChange)="section.patchValue({ moduleConfig: $event }, { emitEvent: false })">
+              </app-module-host>
+            </div>
 
-          <div class="config-form-container" *ngIf="section.get('moduleSlug')?.value">
+            <div class="config-form-container" *ngIf="section.get('moduleSlug')?.value">
             <h4 class="config-section-title">Module Configuration</h4>
             <app-module-config-form
               [config]="section.get('moduleConfig')?.value || {}"
@@ -93,47 +104,50 @@
                 placeholder='{"min":0,"max":10,"operations":["+","-"]}'></textarea>
             </details>
           </div>
+          </div>
         </section>
 
         <!-- QUESTION TYPE -->
-        <section class="sec-body" *ngIf="section.get('type')?.value === 'question'">
-          <label class="field">
-            <span class="label">Prompt</span>
-            <textarea class="input" rows="3" formControlName="questionPrompt" placeholder="Ask your question..."></textarea>
-          </label>
+        <section class="accordion-collapse collapse show" *ngIf="section.get('type')?.value === 'question'" [id]="getSectionElementId(section)">
+          <div class="sec-body accordion-body">
+            <label class="field">
+              <span class="label">Prompt</span>
+              <textarea class="input" rows="3" formControlName="questionPrompt" placeholder="Ask your question..."></textarea>
+            </label>
 
-          <div class="answers">
-            <div class="answers-head">
-              <span>Answers</span>
-              <button type="button" class="btn subtle" (click)="addAnswer(i)">Add answer</button>
-            </div>
+            <div class="answers">
+              <div class="answers-head">
+                <span>Answers</span>
+                <button type="button" class="btn subtle" (click)="addAnswer(i)">Add answer</button>
+              </div>
 
-            <div class="answer-row" *ngFor="let ans of answersArray(i).controls; index as j" [formGroup]="ans">
-              <input
-                class="input"
-                type="text"
-                formControlName="text"
-                placeholder="Answer option" />
-
-              <label class="chip">
+              <div class="answer-row" *ngFor="let ans of answersArray(i).controls; index as j" [formGroup]="ans">
                 <input
-                  type="radio"
-                  [value]="j"
-                  [checked]="section.get('correctIndex')?.value === j"
-                  (change)="section.patchValue({ correctIndex: j })" />
-                <span>Correct</span>
-              </label>
+                  class="input"
+                  type="text"
+                  formControlName="text"
+                  placeholder="Answer option" />
 
-              <button type="button" class="btn btn-1" (click)="removeAnswer(i, j)" *ngIf="answersArray(i).length > 1">
-                Remove
-              </button>
+                <label class="chip">
+                  <input
+                    type="radio"
+                    [value]="j"
+                    [checked]="section.get('correctIndex')?.value === j"
+                    (change)="section.patchValue({ correctIndex: j })" />
+                  <span>Correct</span>
+                </label>
+
+                <button type="button" class="btn btn-1" (click)="removeAnswer(i, j)" *ngIf="answersArray(i).length > 1">
+                  Remove
+                </button>
+              </div>
             </div>
-          </div>
 
-          <label class="field">
+            <label class="field">
             <span class="label">Explanation (shown after answer)</span>
             <textarea class="input" rows="3" formControlName="explanation" placeholder="Explain the correct answer..."></textarea>
           </label>
+          </div>
         </section>
 
         <footer class="sec-footer">

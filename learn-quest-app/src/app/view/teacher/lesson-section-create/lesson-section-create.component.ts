@@ -448,4 +448,12 @@ export class LessonSectionCreateComponent implements OnInit {
     this.sections.updateValueAndValidity({ emitEvent: true });
     this.reindexPositions();
   }
+
+  getSectionElementId(section: FormGroup): string {
+    return `lessonSectionContent-${ section.get('id')?.value ?? 'new' }`;
+  }
+
+  setSectionOpen($event: PointerEvent) {
+    console.log($event.target);
+  }
 }

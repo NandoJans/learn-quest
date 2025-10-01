@@ -12,6 +12,7 @@
   border-radius: 1rem;
   padding: 1.25rem 1.25rem 1rem;
   margin-bottom: 1.25rem;
+  border: none;
 }
 
 .sec-header {
@@ -30,7 +31,6 @@
 
 .type-row {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -173,8 +173,9 @@ textarea.input {
   user-select: none;
   border: 0;
   background: transparent;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   line-height: 1;
+  color: var(--color-3-dark);
 }
 
 .drag-handle:active {
@@ -186,4 +187,18 @@ textarea.input {
   align-items: center;
   gap: .75rem;
   justify-content: space-between;
+}
+
+button.accordion-button .accordion-button-body {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-3-dark);
+  margin-right: 0.5rem;
+}
+
+button.accordion-button {
+  --bs-accordion-active-bg: var(--color-3-white);
 }
