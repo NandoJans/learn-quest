@@ -225,6 +225,7 @@ final class ApiLessonSectionController extends AbstractController
             $option = new QuestionOption();
             $option->setOptionText($optData['optionText'] ?? '');
             $option->setPosition($optData['position'] ?? 0);
+            $option->setLesson($section->getLesson());
             $section->addQuestionOption($option);
         }
     }
@@ -239,6 +240,8 @@ final class ApiLessonSectionController extends AbstractController
         foreach ($section->getQuestionOptions() as $option) {
             $options[] = [
                 'id' => $option->getId(),
+                'lessonSectionId' => $option->getLessonSection()?->getId(),
+                'lessonId' => $option->getLesson()?->getId(),
                 'optionText' => $option->getOptionText(),
                 'position' => $option->getPosition(),
             ];
