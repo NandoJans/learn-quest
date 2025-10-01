@@ -17,9 +17,6 @@ import {InteractiveModuleLibraryComponent} from '../interactive-module-library/i
 import {ModuleHostComponent} from '../../../components/module-host/module-host.component';
 import {ModuleConfigFormComponent} from '../../../components/module-config-form/module-config-form.component';
 
-// OPTIONAL: If you have the MathPractice author component available, you can import it and show it conditionally.
-// import { MathPracticeComponent, MathPracticeConfig } from '../../widgets/math-practice/math-practice.component';
-
 type SectionType = 'text' | 'module' | 'question';
 
 interface SectionFormValue {
