@@ -27,9 +27,10 @@ interface SectionFormValue {
   widgetConfig: any; // store JSONable config
   // Question:
   questionPrompt: string;
-  answers: { text: string }[];
-  correctIndex: number | null;
-  explanation: string;
+  questionInputType: 'text' | 'number' | 'checkbox' | 'radio';
+  questionAnswers: string[];
+  questionCorrectAnswer: string;
+  questionExplanation: string;
 }
 
 @Component({
@@ -116,13 +117,10 @@ export class LessonSectionCreateComponent implements OnInit {
 
       // Question
       questionPrompt: new FormControl<string>(prefill?.questionPrompt ?? '', { nonNullable: true }),
-      answers: this.fb.array<FormGroup>(
-        (prefill?.answers?.length ? prefill.answers : [{ text: '' }, { text: '' }]).map(a =>
-          this.fb.group({ text: this.fb.control(a.text ?? '', { nonNullable: true, validators: [Validators.required] }) })
-        )
-      ),
-      correctIndex: new FormControl<number | null>(prefill?.correctIndex ?? null),
-      explanation: new FormControl<string>(prefill?.explanation ?? '', { nonNullable: true })
+      questionInputType: new FormControl<'text' | 'number' | 'checkbox' | 'radio'>(prefill?.questionInputType ?? 'radio', { nonNullable: true }),
+      questionAnswers: new FormControl<string[]>(prefill?.questionAnswers ?? ['', ''], { nonNullable: true }),
+      questionCorrectAnswer: new FormControl<string>(prefill?.questionCorrectAnswer ?? '', { nonNullable: true }),
+      questionExplanation: new FormControl<string>(prefill?.questionExplanation ?? '', { nonNullable: true })
     });
 
     // Type-driven validators
@@ -136,7 +134,7 @@ export class LessonSectionCreateComponent implements OnInit {
     // Clear all first
     group.get('content')!.clearValidators();
     group.get('questionPrompt')!.clearValidators();
-    group.get('correctIndex')!.clearValidators();
+    group.get('questionCorrectAnswer')!.clearValidators();
     group.get('widgetType')!.clearValidators();
 
     switch (type) {
@@ -151,34 +149,56 @@ export class LessonSectionCreateComponent implements OnInit {
 
       case 'question':
         group.get('questionPrompt')!.addValidators([Validators.required, Validators.minLength(3)]);
-        group.get('correctIndex')!.addValidators([Validators.required]);
+        group.get('questionCorrectAnswer')!.addValidators([Validators.required]);
         break;
     }
 
     group.get('content')!.updateValueAndValidity({ emitEvent: false });
     group.get('questionPrompt')!.updateValueAndValidity({ emitEvent: false });
-    group.get('correctIndex')!.updateValueAndValidity({ emitEvent: false });
+    group.get('questionCorrectAnswer')!.updateValueAndValidity({ emitEvent: false });
     group.get('widgetType')!.updateValueAndValidity({ emitEvent: false });
   }
 
   // --------- answers helpers ----------
-  answersArray(i: number): FormArray<FormGroup> {
-    return this.sectionAt(i).get('answers') as FormArray<FormGroup>;
+  getQuestionAnswers(i: number): string[] {
+    return this.sectionAt(i).get('questionAnswers')!.value as string[];
   }
 
   addAnswer(i: number) {
-    this.answersArray(i).push(this.fb.group({ text: this.fb.control('', { nonNullable: true, validators: [Validators.required] }) }));
+    const current = this.getQuestionAnswers(i);
+    this.sectionAt(i).patchValue({ questionAnswers: [...current, ''] });
   }
 
   removeAnswer(i: number, j: number) {
-    const arr = this.answersArray(i);
-    arr.removeAt(j);
-    // If correctIndex pointed to removed one, reset
-    const g = this.sectionAt(i);
-    const idx = g.get('correctIndex')!.value as number | null;
-    if (idx !== null && idx >= arr.length) {
-      g.patchValue({ correctIndex: null });
+    const current = this.getQuestionAnswers(i);
+    if (current.length > 1) {
+      const updated = current.filter((_, idx) => idx !== j);
+      this.sectionAt(i).patchValue({ questionAnswers: updated });
     }
+  }
+
+  updateAnswer(i: number, j: number, value: string) {
+    const current = this.getQuestionAnswers(i);
+    const updated = [...current];
+    updated[j] = value;
+    this.sectionAt(i).patchValue({ questionAnswers: updated });
+  }
+
+  toggleCheckboxAnswer(i: number, answer: string, checked: boolean) {
+    const g = this.sectionAt(i);
+    const current = g.get('questionCorrectAnswer')!.value as string;
+    const currentAnswers = current ? current.split(',').filter(a => a) : [];
+    
+    if (checked && !currentAnswers.includes(answer)) {
+      currentAnswers.push(answer);
+    } else if (!checked) {
+      const idx = currentAnswers.indexOf(answer);
+      if (idx !== -1) {
+        currentAnswers.splice(idx, 1);
+      }
+    }
+    
+    g.patchValue({ questionCorrectAnswer: currentAnswers.join(',') });
   }
 
   // --------- autosave ----------
@@ -206,28 +226,32 @@ export class LessonSectionCreateComponent implements OnInit {
   }
 
   private toPayload(v: SectionFormValue): LessonSection {
-    let content: string | null = null;
-
-    if (v.type === 'text') {
-      content = v.content;
-    } else if (v.type === 'widget') {
-      content = JSON.stringify({ widgetType: v.widgetType, config: v.widgetConfig ?? null });
-    } else if (v.type === 'question') {
-      content = JSON.stringify({
-        prompt: v.questionPrompt,
-        answers: (v.answers || []).map(a => a.text),
-        correctIndex: v.correctIndex,
-        explanation: v.explanation
-      });
-    }
-
-    return {
+    const payload: LessonSection = {
       id: v.id ?? undefined,
       lessonId: this.lessonId,
       type: v.type,
-      content: content ?? '',
-      position: v.position
+      content: '',
+      position: v.position,
+      questionPrompt: '',
+      questionInputType: 'radio',
+      questionAnswers: [],
+      questionCorrectAnswer: '',
+      questionExplanation: ''
     } as LessonSection;
+
+    if (v.type === 'text') {
+      payload.content = v.content;
+    } else if (v.type === 'widget') {
+      payload.content = JSON.stringify({ widgetType: v.widgetType, config: v.widgetConfig ?? null });
+    } else if (v.type === 'question') {
+      payload.questionPrompt = v.questionPrompt;
+      payload.questionInputType = v.questionInputType;
+      payload.questionAnswers = v.questionAnswers;
+      payload.questionCorrectAnswer = v.questionCorrectAnswer;
+      payload.questionExplanation = v.questionExplanation;
+    }
+
+    return payload;
   }
 
   private reindexPositions() {

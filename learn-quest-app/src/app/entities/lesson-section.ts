@@ -5,4 +5,9 @@ export class LessonSection extends Entity {
   type: string = '';
   content: string = '';
   position: number = 0;
+  questionPrompt: string = '';
+  questionInputType: string = 'radio';
+  questionAnswers: string[] = [];
+  questionCorrectAnswer: string = '';
+  questionExplanation: string = '';
 }

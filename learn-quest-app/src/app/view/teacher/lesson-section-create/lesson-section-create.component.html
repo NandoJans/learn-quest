@@ -78,37 +78,64 @@
             <textarea class="input" rows="3" formControlName="questionPrompt" placeholder="Ask your question..."></textarea>
           </label>
 
-          <div class="answers">
+          <label class="field">
+            <span class="label">Input Type</span>
+            <select class="input" formControlName="questionInputType">
+              <option value="radio">Radio (Single Choice)</option>
+              <option value="checkbox">Checkbox (Multiple Choice)</option>
+              <option value="text">Text Input</option>
+              <option value="number">Number Input</option>
+            </select>
+          </label>
+
+          <div class="answers" *ngIf="section.get('questionInputType')?.value === 'radio' || section.get('questionInputType')?.value === 'checkbox'">
             <div class="answers-head">
-              <span>Answers</span>
+              <span>Answer Options</span>
               <button type="button" class="btn subtle" (click)="addAnswer(i)">Add answer</button>
             </div>
 
-            <div class="answer-row" *ngFor="let ans of answersArray(i).controls; index as j" [formGroup]="ans">
+            <div class="answer-row" *ngFor="let ans of getQuestionAnswers(i); index as j">
               <input
                 class="input"
                 type="text"
-                formControlName="text"
+                [value]="ans"
+                (input)="updateAnswer(i, j, $any($event.target).value)"
                 placeholder="Answer option" />
 
-              <label class="chip">
-                <input
-                  type="radio"
-                  [value]="j"
-                  [checked]="section.get('correctIndex')?.value === j"
-                  (change)="section.patchValue({ correctIndex: j })" />
-                <span>Correct</span>
-              </label>
-
-              <button type="button" class="btn danger" (click)="removeAnswer(i, j)" *ngIf="answersArray(i).length > 1">
+              <button type="button" class="btn danger" (click)="removeAnswer(i, j)" *ngIf="getQuestionAnswers(i).length > 1">
                 Remove
               </button>
             </div>
           </div>
 
           <label class="field">
+            <span class="label">Correct Answer</span>
+            <select class="input" formControlName="questionCorrectAnswer" *ngIf="section.get('questionInputType')?.value === 'radio'">
+              <option value="">-- Select correct answer --</option>
+              <option *ngFor="let ans of getQuestionAnswers(i); index as j" [value]="ans">{{ ans || '(empty)' }}</option>
+            </select>
+            <div *ngIf="section.get('questionInputType')?.value === 'checkbox'">
+              <div *ngFor="let ans of getQuestionAnswers(i); index as j">
+                <label class="chip">
+                  <input
+                    type="checkbox"
+                    [checked]="(section.get('questionCorrectAnswer')?.value || '').split(',').includes(ans)"
+                    (change)="toggleCheckboxAnswer(i, ans, $any($event.target).checked)" />
+                  <span>{{ ans || '(empty)' }}</span>
+                </label>
+              </div>
+            </div>
+            <input
+              *ngIf="section.get('questionInputType')?.value === 'text' || section.get('questionInputType')?.value === 'number'"
+              class="input"
+              [type]="section.get('questionInputType')?.value === 'number' ? 'number' : 'text'"
+              formControlName="questionCorrectAnswer"
+              placeholder="Enter correct answer..." />
+          </label>
+
+          <label class="field">
             <span class="label">Explanation (shown after answer)</span>
-            <textarea class="input" rows="3" formControlName="explanation" placeholder="Explain the correct answer..."></textarea>
+            <textarea class="input" rows="3" formControlName="questionExplanation" placeholder="Explain the correct answer..."></textarea>
           </label>
         </section>
 
