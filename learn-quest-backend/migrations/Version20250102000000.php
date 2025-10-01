@@ -30,6 +30,52 @@ final class Version20250102000000 extends AbstractMigration
         $this->addSql('ALTER TABLE question_option ADD CONSTRAINT FK_C6F6759AD52AAAAB FOREIGN KEY (lesson_section_id) REFERENCES lesson_section (id)');
     }
 
+    public function postUp(Schema $schema): void
+    {
+        // Migrate existing JSON question data to new fields
+        $connection = $this->connection;
+        
+        // Get all question-type sections
+        $sections = $connection->fetchAllAssociative(
+            "SELECT id, content FROM lesson_section WHERE type = 'question' AND content IS NOT NULL AND content != ''"
+        );
+        
+        foreach ($sections as $section) {
+            $content = $section['content'];
+            $data = json_decode($content, true);
+            
+            if (!is_array($data)) {
+                continue;
+            }
+            
+            $sectionId = $section['id'];
+            $prompt = $data['prompt'] ?? '';
+            $explanation = $data['explanation'] ?? '';
+            $answers = $data['answers'] ?? [];
+            $correctIndex = $data['correctIndex'] ?? null;
+            
+            // Update the section with new fields
+            $connection->executeStatement(
+                'UPDATE lesson_section SET question_prompt = ?, question_type = ?, question_explanation = ?, correct_answer = ? WHERE id = ?',
+                [$prompt, 'radio', $explanation, $correctIndex !== null ? (string)$correctIndex : null, $sectionId]
+            );
+            
+            // Insert question options
+            foreach ($answers as $position => $answerText) {
+                $connection->executeStatement(
+                    'INSERT INTO question_option (lesson_section_id, option_text, position) VALUES (?, ?, ?)',
+                    [$sectionId, $answerText, $position]
+                );
+            }
+            
+            // Clear the old JSON content
+            $connection->executeStatement(
+                'UPDATE lesson_section SET content = ? WHERE id = ?',
+                ['', $sectionId]
+            );
+        }
+    }
+
     public function down(Schema $schema): void
     {
         // Drop question_option table
