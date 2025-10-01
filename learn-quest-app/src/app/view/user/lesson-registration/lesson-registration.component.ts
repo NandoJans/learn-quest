@@ -4,6 +4,7 @@ import {LessonRegistration} from '../../../entities/lesson-registration';
 import {Lesson} from '../../../entities/lesson';
 import {LessonSection} from '../../../entities/lesson-section';
 import { LessonSectionService } from '../../../services/entity/lesson-section.service';
+import { QuestionOptionService } from '../../../services/entity/question-option.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {ModuleHostComponent} from '../../../components/module-host/module-host.component';
 
@@ -23,7 +24,8 @@ export class LessonRegistrationComponent implements OnInit {
   lessonSections: LessonSection[] = [];
   constructor(
     private lessonRegistrationService: LessonRegistrationService,
-    private lessonSectionService: LessonSectionService
+    private lessonSectionService: LessonSectionService,
+    private questionOptionService: QuestionOptionService
   ) { }
 
   ngOnInit() {
@@ -33,6 +35,15 @@ export class LessonRegistrationComponent implements OnInit {
 
         this.lessonSectionService.loadSections({lesson: this.lessonRegistration.lesson.id}, (sections) => {
           this.lessonSections = (sections as LessonSection[]).sort(this.sortByPosition.bind(this));
+          
+          // Fetch question options separately for each question section
+          this.lessonSections.forEach(section => {
+            if (section.type === 'question' && section.id) {
+              this.questionOptionService.fetchQuestionOptions(section.id).subscribe(options => {
+                section.questionOptions = options;
+              });
+            }
+          });
         });
       }
     });
