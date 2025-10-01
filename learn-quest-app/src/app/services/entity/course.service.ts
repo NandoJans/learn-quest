@@ -65,8 +65,6 @@ export class CourseService {
         break;
       case "ROLE_ADMIN":
         break; // no params, get all courses
-        };
-        break;
       default:
         console.warn(`Unknown or undefined role: ${this.roleService.activeRole}`);
     }

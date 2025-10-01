@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LessonSectionService } from '../../../services/entity/lesson-section.service';
 import { LessonSectionAnswerService } from '../../../services/entity/lesson-section-answer.service';
@@ -22,7 +22,7 @@ interface SectionState {
 @Component({
   selector: 'app-lesson-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PrimaryButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, PrimaryButtonComponent],
   templateUrl: './lesson-detail.component.html',
   styleUrls: ['./lesson-detail.component.css']
 })

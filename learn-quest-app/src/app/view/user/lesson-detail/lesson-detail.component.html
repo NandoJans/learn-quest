@@ -2,7 +2,7 @@
   <div class="header">
     <button class="btn btn-secondary" (click)="goBack()">← Back to Courses</button>
     <h1>{{ lesson?.name || 'Loading...' }}</h1>
-    <p *ngIf="lesson?.description">{{ lesson.description }}</p>
+    <p *ngIf="lesson && lesson.description">{{ lesson.description }}</p>
   </div>
 
   <div *ngIf="loading" class="text-center">
