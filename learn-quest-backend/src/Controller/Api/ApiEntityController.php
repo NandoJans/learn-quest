@@ -153,4 +153,21 @@ final class ApiEntityController extends AbstractController
         return $this->json(['status' => 'ok']);
     }
 
+    #[Route('/api/{entity}/{id}', name: 'api_entity_delete', methods: ['DELETE'])]
+    public function delete(string $entity, int $id): Response
+    {
+        $class  = $this->entityService->getEntityClass($entity);
+        $em     = $this->doctrine->getManagerForClass($class);
+        $repo   = $em->getRepository($class);
+        $item   = $repo->find($id);
+        if (!$item) {
+            return $this->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $em->remove($item);
+        $em->flush();
+
+        return $this->json(['status' => 'ok', 'message' => 'Entity deleted successfully']);
+    }
+
 }
