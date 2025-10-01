@@ -9,7 +9,35 @@
       (configChange)="onWidgetConfigChange(section, $event)">
     </app-module-host>
   </div>
-  <div *ngIf="section.type === 'question'">
-    <p>Question type not implemented yet</p>
+  <div *ngIf="section.type === 'question'" class="question">
+    <div class="question-prompt">{{ section.questionPrompt }}</div>
+    
+    <div class="question-input" *ngIf="section.questionType === 'text'">
+      <input type="text" class="form-control" placeholder="Enter your answer" />
+    </div>
+    
+    <div class="question-input" *ngIf="section.questionType === 'number'">
+      <input type="number" class="form-control" placeholder="Enter your answer" />
+    </div>
+    
+    <div class="question-options" *ngIf="section.questionType === 'radio' && section.questionOptions">
+      <div *ngFor="let option of section.questionOptions; index as i" class="option">
+        <label>
+          <input type="radio" [name]="'question-' + section.id" [value]="i" />
+          {{ option.optionText }}
+        </label>
+      </div>
+    </div>
+    
+    <div class="question-options" *ngIf="section.questionType === 'checkbox' && section.questionOptions">
+      <div *ngFor="let option of section.questionOptions; index as i" class="option">
+        <label>
+          <input type="checkbox" [name]="'question-' + section.id + '-' + i" [value]="i" />
+          {{ option.optionText }}
+        </label>
+      </div>
+    </div>
+    
+    <button class="btn btn-primary mt-2">Submit Answer</button>
   </div>
 </div>

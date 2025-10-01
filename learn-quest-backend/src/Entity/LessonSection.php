@@ -36,15 +36,35 @@ class LessonSection
     #[ORM\Column(nullable: true)]
     private ?array $moduleConfig = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $questionPrompt = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $questionType = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $questionExplanation = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $correctAnswer = null;
+
     /**
      * @var Collection<int, LessonSectionAnswer>
      */
     #[ORM\OneToMany(targetEntity: LessonSectionAnswer::class, mappedBy: 'lessonSection', orphanRemoval: true)]
     private Collection $lessonSectionAnswers;
 
+    /**
+     * @var Collection<int, QuestionOption>
+     */
+    #[ORM\OneToMany(targetEntity: QuestionOption::class, mappedBy: 'lessonSection', orphanRemoval: true, cascade: ['persist', 'remove'])]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $questionOptions;
+
     public function __construct()
     {
         $this->lessonSectionAnswers = new ArrayCollection();
+        $this->questionOptions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -147,6 +167,84 @@ class LessonSection
             // set the owning side to null (unless already changed)
             if ($lessonSectionAnswer->getLessonSection() === $this) {
                 $lessonSectionAnswer->setLessonSection(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getQuestionPrompt(): ?string
+    {
+        return $this->questionPrompt;
+    }
+
+    public function setQuestionPrompt(?string $questionPrompt): static
+    {
+        $this->questionPrompt = $questionPrompt;
+
+        return $this;
+    }
+
+    public function getQuestionType(): ?string
+    {
+        return $this->questionType;
+    }
+
+    public function setQuestionType(?string $questionType): static
+    {
+        $this->questionType = $questionType;
+
+        return $this;
+    }
+
+    public function getQuestionExplanation(): ?string
+    {
+        return $this->questionExplanation;
+    }
+
+    public function setQuestionExplanation(?string $questionExplanation): static
+    {
+        $this->questionExplanation = $questionExplanation;
+
+        return $this;
+    }
+
+    public function getCorrectAnswer(): ?string
+    {
+        return $this->correctAnswer;
+    }
+
+    public function setCorrectAnswer(?string $correctAnswer): static
+    {
+        $this->correctAnswer = $correctAnswer;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QuestionOption>
+     */
+    public function getQuestionOptions(): Collection
+    {
+        return $this->questionOptions;
+    }
+
+    public function addQuestionOption(QuestionOption $questionOption): static
+    {
+        if (!$this->questionOptions->contains($questionOption)) {
+            $this->questionOptions->add($questionOption);
+            $questionOption->setLessonSection($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestionOption(QuestionOption $questionOption): static
+    {
+        if ($this->questionOptions->removeElement($questionOption)) {
+            // set the owning side to null (unless already changed)
+            if ($questionOption->getLessonSection() === $this) {
+                $questionOption->setLessonSection(null);
             }
         }
 

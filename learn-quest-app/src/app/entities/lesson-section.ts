@@ -1,5 +1,11 @@
 import {Entity} from './entity';
 
+export interface QuestionOption {
+  id?: number;
+  optionText: string;
+  position: number;
+}
+
 export class LessonSection extends Entity {
   lessonId: number = 0;
   type: string = '';
@@ -7,4 +13,9 @@ export class LessonSection extends Entity {
   position: number = 0;
   moduleSlug: string | null = null;
   moduleConfig: any = null;
+  questionPrompt: string | null = null;
+  questionType: string | null = null;
+  questionExplanation: string | null = null;
+  correctAnswer: string | null = null;
+  questionOptions: QuestionOption[] = [];
 }

@@ -33,6 +33,7 @@ interface SectionFormValue {
   moduleConfig: any;
   // Question:
   questionPrompt: string;
+  questionType: string | null;
   answers: { text: string }[];
   correctIndex: number | null;
   explanation: string;
@@ -170,6 +171,7 @@ export class LessonSectionCreateComponent implements OnInit {
       moduleSlug: null,
       moduleConfig: null,
       questionPrompt: '',
+      questionType: null,
       answers: [{ text: '' }, { text: '' }],
       correctIndex: null,
       explanation: ''
@@ -182,13 +184,30 @@ export class LessonSectionCreateComponent implements OnInit {
       base.moduleSlug = e.moduleSlug ?? null;
       base.moduleConfig = e.moduleConfig ?? null;
     } else if (e.type === 'question') {
-      try {
-        const parsed = e.content ? JSON.parse(e.content) : {};
-        base.questionPrompt = parsed?.prompt ?? '';
-        base.answers = (parsed?.answers ?? ['']).map((t: string) => ({ text: t ?? '' }));
-        base.correctIndex = Number.isInteger(parsed?.correctIndex) ? parsed.correctIndex : null;
-        base.explanation = parsed?.explanation ?? '';
-      } catch { /* keep defaults */ }
+      // Use the new dedicated fields instead of JSON
+      base.questionPrompt = e.questionPrompt ?? '';
+      base.questionType = e.questionType ?? 'radio';
+      base.explanation = e.questionExplanation ?? '';
+      
+      // Convert questionOptions to answers format
+      if (e.questionOptions && e.questionOptions.length > 0) {
+        base.answers = e.questionOptions.map(opt => ({ text: opt.optionText }));
+      } else {
+        base.answers = [{ text: '' }, { text: '' }];
+      }
+      
+      // Convert correctAnswer to correctIndex
+      if (e.correctAnswer !== null && e.correctAnswer !== undefined) {
+        // If correctAnswer is numeric, use it directly; otherwise find matching option
+        const correctIdx = parseInt(e.correctAnswer, 10);
+        if (!isNaN(correctIdx)) {
+          base.correctIndex = correctIdx;
+        } else if (e.questionOptions) {
+          // Find index of option matching correctAnswer text
+          const idx = e.questionOptions.findIndex(opt => opt.optionText === e.correctAnswer);
+          base.correctIndex = idx >= 0 ? idx : null;
+        }
+      }
     }
 
     const g = this.createSectionGroup(base.position!, base);
@@ -250,6 +269,7 @@ export class LessonSectionCreateComponent implements OnInit {
 
       // Question
       questionPrompt: new FormControl<string>(prefill?.questionPrompt ?? '', { nonNullable: true }),
+      questionType: new FormControl<string | null>(prefill?.questionType ?? 'radio'),
       answers: this.fb.array<FormGroup>(
         (prefill?.answers?.length ? prefill.answers : [{ text: '' }, { text: '' }]).map(a =>
           this.fb.group({ text: this.fb.control(a.text ?? '', { nonNullable: true, validators: [Validators.required] }) })
@@ -262,6 +282,13 @@ export class LessonSectionCreateComponent implements OnInit {
     // Type-driven validators
     g.get('type')!.valueChanges.subscribe((t: SectionType) => this.applyTypeValidators(g, t));
     this.applyTypeValidators(g, g.get('type')!.value as SectionType);
+
+    // Question type changes handler
+    g.get('questionType')!.valueChanges.subscribe((qt: string | null) => {
+      if (g.get('type')!.value === 'question') {
+        this.handleQuestionTypeChange(g, qt);
+      }
+    });
 
     return g;
   }
@@ -312,6 +339,45 @@ export class LessonSectionCreateComponent implements OnInit {
     const idx = g.get('correctIndex')!.value as number | null;
     if (idx !== null && idx >= arr.length) {
       g.patchValue({ correctIndex: null });
+    }
+  }
+
+  updateTextAnswer(i: number, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    const g = this.sectionAt(i);
+    const arr = this.answersArray(i);
+    
+    // Store the text answer in the first answer option
+    if (arr.length === 0) {
+      arr.push(this.fb.group({ text: this.fb.control(value, { nonNullable: true }) }));
+    } else {
+      arr.at(0).patchValue({ text: value });
+    }
+    
+    // Set correctIndex to 0 (the first and only answer for text/number types)
+    g.patchValue({ correctIndex: 0 });
+  }
+
+  handleQuestionTypeChange(group: FormGroup, questionType: string | null) {
+    const arr = group.get('answers') as FormArray<FormGroup>;
+    
+    // For text/number types, ensure we have exactly one answer option
+    if (questionType === 'text' || questionType === 'number') {
+      // Keep only the first answer or create one
+      while (arr.length > 1) {
+        arr.removeAt(arr.length - 1);
+      }
+      if (arr.length === 0) {
+        arr.push(this.fb.group({ text: this.fb.control('', { nonNullable: true }) }));
+      }
+      // Set correctIndex to 0 by default for text/number
+      group.patchValue({ correctIndex: 0 }, { emitEvent: false });
+    } else if (questionType === 'radio' || questionType === 'checkbox') {
+      // For radio/checkbox, ensure at least 2 options
+      while (arr.length < 2) {
+        arr.push(this.fb.group({ text: this.fb.control('', { nonNullable: true, validators: [Validators.required] }) }));
+      }
     }
   }
 
@@ -402,12 +468,8 @@ export class LessonSectionCreateComponent implements OnInit {
       // For module type, keep content empty as we use separate fields
       content = '';
     } else if (v.type === 'question') {
-      content = JSON.stringify({
-        prompt: v.questionPrompt,
-        answers: (v.answers || []).map(a => a.text),
-        correctIndex: v.correctIndex,
-        explanation: v.explanation
-      });
+      // Keep content empty - we use dedicated fields now
+      content = '';
     }
 
     const payload: any = {
@@ -422,6 +484,22 @@ export class LessonSectionCreateComponent implements OnInit {
     if (v.type === 'module') {
       payload.moduleSlug = v.moduleSlug;
       payload.moduleConfig = v.moduleConfig;
+    }
+
+    // Add question-specific fields
+    if (v.type === 'question') {
+      payload.questionPrompt = v.questionPrompt;
+      payload.questionType = v.questionType || 'radio';
+      payload.questionExplanation = v.explanation;
+      
+      // Convert answers to questionOptions
+      payload.questionOptions = (v.answers || []).map((a, idx) => ({
+        optionText: a.text,
+        position: idx
+      }));
+      
+      // Store correctIndex as correctAnswer
+      payload.correctAnswer = v.correctIndex !== null ? String(v.correctIndex) : null;
     }
 
     return payload as LessonSection;
