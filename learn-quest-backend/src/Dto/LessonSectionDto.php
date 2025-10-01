@@ -10,6 +10,11 @@ class LessonSectionDto extends Dto
         public ?string $type = null,
         public ?string $content = null,
         public ?int $position = null,
+        public ?string $questionPrompt = null,
+        public ?string $questionInputType = null,
+        public ?array $questionAnswers = null,
+        public ?string $questionCorrectAnswer = null,
+        public ?string $questionExplanation = null,
     ) {
     }
 }

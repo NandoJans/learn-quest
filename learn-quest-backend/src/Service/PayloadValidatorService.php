@@ -59,6 +59,11 @@ readonly class PayloadValidatorService
                 'type'     => [new Assert\NotBlank(), new Assert\Choice(['text', 'widget', 'question'])],
                 'content'  => [new Assert\Optional([new Assert\Type('string')])],
                 'position' => [new Assert\Optional([new Assert\Type('integer'), new Assert\GreaterThanOrEqual(0)])],
+                'questionPrompt' => [new Assert\Optional([new Assert\Type('string')])],
+                'questionInputType' => [new Assert\Optional([new Assert\Choice(['text', 'number', 'checkbox', 'radio'])])],
+                'questionAnswers' => [new Assert\Optional([new Assert\Type('array')])],
+                'questionCorrectAnswer' => [new Assert\Optional([new Assert\Type('string')])],
+                'questionExplanation' => [new Assert\Optional([new Assert\Type('string')])],
             ],
             'allowMissingFields' => true,  // position/content may be omitted
             'allowExtraFields'   => true,  // ignore unknowns to stay forward-compatible
@@ -74,6 +79,11 @@ readonly class PayloadValidatorService
                 'type'     => [new Assert\Optional([new Assert\Choice(['text', 'widget', 'question'])])],
                 'content'  => [new Assert\Optional([new Assert\Type('string')])],
                 'position' => [new Assert\Optional([new Assert\Type('integer'), new Assert\GreaterThanOrEqual(0)])],
+                'questionPrompt' => [new Assert\Optional([new Assert\Type('string')])],
+                'questionInputType' => [new Assert\Optional([new Assert\Choice(['text', 'number', 'checkbox', 'radio'])])],
+                'questionAnswers' => [new Assert\Optional([new Assert\Type('array')])],
+                'questionCorrectAnswer' => [new Assert\Optional([new Assert\Type('string')])],
+                'questionExplanation' => [new Assert\Optional([new Assert\Type('string')])],
             ],
             'allowMissingFields' => true,
             'allowExtraFields'   => true,
@@ -126,5 +136,17 @@ readonly class PayloadValidatorService
     {
         $query = $request->query->all();
         return $this->validate($query, $schema);
+    }
+
+    public function schemaLessonSectionAnswerCreate(): Assert\Collection
+    {
+        return new Assert\Collection([
+            'fields' => [
+                'lessonSectionId' => [new Assert\NotBlank(), new Assert\Type('integer'), new Assert\GreaterThan(0)],
+                'answer' => [new Assert\NotBlank(), new Assert\Type('string')],
+            ],
+            'allowMissingFields' => false,
+            'allowExtraFields' => true,
+        ]);
     }
 }

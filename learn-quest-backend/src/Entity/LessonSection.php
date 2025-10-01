@@ -28,6 +28,22 @@ class LessonSection
     #[ORM\Column]
     private int $position = 0;
 
+    // Question fields
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $questionPrompt = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $questionInputType = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $questionAnswers = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $questionCorrectAnswer = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $questionExplanation = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,6 +92,66 @@ class LessonSection
     public function setPosition(int $position): static
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    public function getQuestionPrompt(): ?string
+    {
+        return $this->questionPrompt;
+    }
+
+    public function setQuestionPrompt(?string $questionPrompt): static
+    {
+        $this->questionPrompt = $questionPrompt;
+
+        return $this;
+    }
+
+    public function getQuestionInputType(): ?string
+    {
+        return $this->questionInputType;
+    }
+
+    public function setQuestionInputType(?string $questionInputType): static
+    {
+        $this->questionInputType = $questionInputType;
+
+        return $this;
+    }
+
+    public function getQuestionAnswers(): ?array
+    {
+        return $this->questionAnswers;
+    }
+
+    public function setQuestionAnswers(?array $questionAnswers): static
+    {
+        $this->questionAnswers = $questionAnswers;
+
+        return $this;
+    }
+
+    public function getQuestionCorrectAnswer(): ?string
+    {
+        return $this->questionCorrectAnswer;
+    }
+
+    public function setQuestionCorrectAnswer(?string $questionCorrectAnswer): static
+    {
+        $this->questionCorrectAnswer = $questionCorrectAnswer;
+
+        return $this;
+    }
+
+    public function getQuestionExplanation(): ?string
+    {
+        return $this->questionExplanation;
+    }
+
+    public function setQuestionExplanation(?string $questionExplanation): static
+    {
+        $this->questionExplanation = $questionExplanation;
 
         return $this;
     }
