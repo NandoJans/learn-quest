@@ -132,7 +132,7 @@
     <button *ngIf="!isLast()" type="button" class="wf-btn primary" (click)="next()" [disabled]="linear && !canGoNext()">
       {{ nextLabel }} →
     </button>
-    <button *ngIf="isLast()" type="submit" class="wf-btn success">
+    <button *ngIf="isLast()" type="submit" class="wf-btn success" [disabled]="linear && !form.valid">
       {{ submitLabel }}
     </button>
   </div>
