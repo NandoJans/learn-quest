@@ -64,4 +64,19 @@ export class LessonSectionService {
   clearCache(): void {
     this.cacheService.clearCache(LessonSection);
   }
+
+  /** Fetch via dedicated endpoint with optional answers for a registration */
+  fetchSectionsWithAnswers(lessonId: number, lessonRegistrationId?: number): Observable<LessonSection[]> {
+    const params: any = { lessonId };
+    if (lessonRegistrationId) params.lessonRegistrationId = lessonRegistrationId;
+    return this.apiService.get<LessonSection[]>(`lesson_section/index`, params);
+  }
+
+  /** Check an answer for a section */
+  checkAnswer(sectionId: number, answer: any, lessonRegistrationId?: number): Observable<{ correct: boolean }> {
+    // Dedicated endpoint lives under snake_case path
+    const body: any = { answer };
+    if (lessonRegistrationId) body.lessonRegistrationId = lessonRegistrationId;
+    return this.apiService.post<{ correct: boolean }>(`lesson_section/${sectionId}/check_answer`, body);
+  }
 }

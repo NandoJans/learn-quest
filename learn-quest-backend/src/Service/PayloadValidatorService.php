@@ -115,6 +115,7 @@ readonly class PayloadValidatorService
         return new Assert\Collection([
             'fields' => [
                 'lessonId' => [new Assert\NotBlank(), new Assert\Type('digit')],
+                'lessonRegistrationId' => [new Assert\Optional([new Assert\Type('digit')])],
                 'orderBy'  => [new Assert\Optional([new Assert\Choice(['position', 'createdAt', 'updatedAt'])])],
                 'order'    => [new Assert\Optional([new Assert\Choice(['asc', 'desc', 'ASC', 'DESC'])])],
             ],

@@ -24,7 +24,7 @@ final class ApiEntityController extends AbstractController
     {
     }
 
-    #[Route('/api/{entity}/index', name: 'api_course_index', methods: ['GET'])]
+    #[Route('/api/{entity}/index', name: 'api_course_index', methods: ['GET'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
     public function index(string $entity, Request $request): Response
     {
         $filters = $request->query->all();
@@ -36,7 +36,7 @@ final class ApiEntityController extends AbstractController
         return $this->json($dtos);
     }
 
-    #[Route('/api/{entity}/create', name: 'api_course_create', methods: ['POST'])]
+    #[Route('/api/{entity}/create', name: 'api_course_create', methods: ['POST'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
     public function create(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -66,7 +66,7 @@ final class ApiEntityController extends AbstractController
         return $this->json(['id' => $instance->getId()], Response::HTTP_CREATED);
     }
 
-    #[Route('/api/{entity}/{id}', name: 'api_entity_update', methods: ['PUT'])]
+    #[Route('/api/{entity}/{id}', name: 'api_entity_update', methods: ['PUT'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
     public function update(string $entity, int $id, Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -97,7 +97,7 @@ final class ApiEntityController extends AbstractController
         return $this->json(['status' => 'ok']);
     }
 
-    #[Route('/api/{entity}/{id}', name: 'api_entity_delete', methods: ['DELETE'])]
+    #[Route('/api/{entity}/{id}', name: 'api_entity_delete', methods: ['DELETE'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
     public function delete(string $entity, int $id): Response
     {
         $class  = $this->entityService->getEntityClass($entity);

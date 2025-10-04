@@ -18,4 +18,9 @@ export class LessonSection extends Entity {
   questionExplanation: string | null = null;
   correctAnswer: string | null = null;
   questionOptions: QuestionOption[] = [];
+  givenAnswer?: string | null; // persisted answer for current registration (if any)
+
+  // UI-only state fields (not persisted on backend)
+  _submitting: boolean = false;
+  _answerStatus: 'correct' | 'incorrect' | null = null;
 }

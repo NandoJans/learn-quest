@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\ManagerRegistry;
 class LessonSectionDto extends Dto
 {
     public array $questionOptions = [];
+    public ?string $givenAnswer = null; // Answer of current registration (if provided via query)
 
     public function __construct(
         public ?int $id = null,

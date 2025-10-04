@@ -1,3 +1,26 @@
-div.content {
+div.content, div.question {
   padding: 1rem;
+  margin: 1rem 0;
+}
+
+div.question-prompt {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+div.question-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+div.option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+div.option label {
+  width: 100%;
 }

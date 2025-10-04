@@ -22,7 +22,8 @@ class EntityService
 
     public function getEntityClass(string $entity): string
     {
-        $class = 'App\\Entity\\' . ucfirst($entity);
+        $studly = $this->toStudly($entity);
+        $class = 'App\\Entity\\' . $studly;
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('Entity "%s" does not exist.', $entity));
         }
@@ -31,7 +32,8 @@ class EntityService
 
     public function getEntityTypeClass(string $entity): string
     {
-        $type = ucfirst($entity) . 'Type';
+        $studly = $this->toStudly($entity);
+        $type = $studly . 'Type';
         $class = 'App\\Form\\Type\\' . $type;
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('Form type "%s" does not exist.', $type));
@@ -41,7 +43,8 @@ class EntityService
 
     public function getEntityDtoClass(string $entity): string
     {
-        $dto = ucfirst($entity) . 'Dto';
+        $studly = $this->toStudly($entity);
+        $dto = $studly . 'Dto';
         $class = 'App\\Dto\\' . $dto;
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('DTO class "%s" does not exist.', $dto));
@@ -151,6 +154,18 @@ class EntityService
     }
 
     // ---------------- helpers ----------------
+
+    private function toStudly(string $name): string
+    {
+        // If contains delimiters, convert snake_case or kebab-case to StudlyCase.
+        if (preg_match('/[_-]/', $name)) {
+            $name = str_replace(['-', '_'], ' ', strtolower($name));
+            $name = str_replace(' ', '', ucwords($name));
+            return $name;
+        }
+        // Otherwise keep camelCase intact but uppercase first letter.
+        return ucfirst($name);
+    }
 
     private function readViaGuess(object $obj, string $name): mixed
     {

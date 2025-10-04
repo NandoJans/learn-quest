@@ -62,6 +62,9 @@ export class LessonSectionCreateComponent implements OnInit {
   private sectionService = inject(LessonSectionService);
   lessonId!: number;
 
+  // Persisted accordion open/close states by section key
+  private accordionState: Record<string, boolean> = {};
+
   sectionsForm = this.fb.group({
     sections: this.fb.array<FormGroup>([])
   });
@@ -90,6 +93,9 @@ export class LessonSectionCreateComponent implements OnInit {
 
   ngOnInit(): void {
     this.lessonId = Number(this.route.snapshot.paramMap.get('lessonId'));
+
+    // Load accordion state from localStorage
+    this.loadAccordionState();
 
     // Load and populate sections from backend/cache
     this.loadAndPopulateSections();
@@ -139,7 +145,7 @@ export class LessonSectionCreateComponent implements OnInit {
       console.log('Refreshing form controls for', this.sections.length, 'sections');
 
       // Process each section
-      this.sections.controls.forEach((group: AbstractControl, index: number) => {
+      this.sections.controls.forEach((group: AbstractControl) => {
         const formGroup = group as FormGroup;
 
         // 1. Re-apply content to HTML editors (if type is 'text')
@@ -151,14 +157,17 @@ export class LessonSectionCreateComponent implements OnInit {
           }
         }
 
-        // 2. Ensure Bootstrap accordions are properly expanded
+        // 2. Apply saved accordion state (handled by template [class.show])
         const sectionId = this.getSectionElementId(formGroup);
         const collapseEl = document.getElementById(sectionId);
-        if (collapseEl && !collapseEl.classList.contains('show')) {
-          collapseEl.classList.add('show');
-          console.log(`Expanded accordion for section ${index}`);
+        if (collapseEl) {
+          const open = this.isSectionOpen(formGroup);
+          collapseEl.classList.toggle('show', open);
         }
       });
+
+      // After applying, persist a normalized snapshot
+      this.saveAccordionState();
     }, 100); // Small delay to ensure DOM is ready
   }
 
@@ -188,14 +197,14 @@ export class LessonSectionCreateComponent implements OnInit {
       base.questionPrompt = e.questionPrompt ?? '';
       base.questionType = e.questionType ?? 'radio';
       base.explanation = e.questionExplanation ?? '';
-      
+
       // Convert questionOptions to answers format
       if (e.questionOptions && e.questionOptions.length > 0) {
         base.answers = e.questionOptions.map(opt => ({ text: opt.optionText }));
       } else {
         base.answers = [{ text: '' }, { text: '' }];
       }
-      
+
       // Convert correctAnswer to correctIndex
       if (e.correctAnswer !== null && e.correctAnswer !== undefined) {
         // If correctAnswer is numeric, use it directly; otherwise find matching option
@@ -347,21 +356,21 @@ export class LessonSectionCreateComponent implements OnInit {
     const value = input.value;
     const g = this.sectionAt(i);
     const arr = this.answersArray(i);
-    
+
     // Store the text answer in the first answer option
     if (arr.length === 0) {
       arr.push(this.fb.group({ text: this.fb.control(value, { nonNullable: true }) }));
     } else {
       arr.at(0).patchValue({ text: value });
     }
-    
+
     // Set correctIndex to 0 (the first and only answer for text/number types)
     g.patchValue({ correctIndex: 0 });
   }
 
   handleQuestionTypeChange(group: FormGroup, questionType: string | null) {
     const arr = group.get('answers') as FormArray<FormGroup>;
-    
+
     // For text/number types, ensure we have exactly one answer option
     if (questionType === 'text' || questionType === 'number') {
       // Keep only the first answer or create one
@@ -491,13 +500,13 @@ export class LessonSectionCreateComponent implements OnInit {
       payload.questionPrompt = v.questionPrompt;
       payload.questionType = v.questionType || 'radio';
       payload.questionExplanation = v.explanation;
-      
+
       // Convert answers to questionOptions
       payload.questionOptions = (v.answers || []).map((a, idx) => ({
         optionText: a.text,
         position: idx
       }));
-      
+
       // Store correctIndex as correctAnswer
       payload.correctAnswer = v.correctIndex !== null ? String(v.correctIndex) : null;
     }
@@ -524,6 +533,76 @@ export class LessonSectionCreateComponent implements OnInit {
 
   getAllowedTags() {
     return new Set(['p','br','strong','em','u','s','blockquote','pre','code','span','ul','ol','li','h2','h3','h4','a','mark','hint','callout']);
+  }
+
+  // -------- Accordion state persistence --------
+  private storageKey(): string { return `lessonSectionsAccordion:${this.lessonId}`; }
+
+  private loadAccordionState(): void {
+    try {
+      const raw = localStorage.getItem(this.storageKey());
+      this.accordionState = raw ? JSON.parse(raw) : {};
+    } catch {
+      this.accordionState = {};
+    }
+  }
+
+  private saveAccordionState(): void {
+    try {
+      localStorage.setItem(this.storageKey(), JSON.stringify(this.accordionState));
+    } catch {
+      // ignore
+    }
+  }
+
+  private getSectionStorageKey(g: FormGroup): string {
+    const id = g.get('id')?.value;
+    const pos = g.get('position')?.value;
+    return id ? String(id) : `new-${pos}`;
+  }
+
+  isSectionOpen(g: FormGroup): boolean {
+    const key = this.getSectionStorageKey(g);
+    const val = this.accordionState[key];
+    return val === undefined ? true : !!val; // default open
+  }
+
+  private updateAccordionStateFromDOM(): void {
+    this.sections.controls.forEach((ctrl: AbstractControl) => {
+      const g = ctrl as FormGroup;
+      const key = this.getSectionStorageKey(g);
+      const elId = this.getSectionElementId(g);
+      const el = document.getElementById(elId);
+      const open = !!el?.classList.contains('show');
+      this.accordionState[key] = open;
+    });
+    this.saveAccordionState();
+  }
+
+  toggleAllAccordions(open: boolean): void {
+    // Update state map
+    this.sections.controls.forEach((ctrl: AbstractControl) => {
+      const g = ctrl as FormGroup;
+      const key = this.getSectionStorageKey(g);
+      this.accordionState[key] = open;
+      const elId = this.getSectionElementId(g);
+      const el = document.getElementById(elId);
+      if (el) {
+        el.classList.toggle('show', open);
+      }
+    });
+    // Update header aria-expanded for buttons
+    document.querySelectorAll('.accordion-item .accordion-header .accordion-button').forEach(btn => {
+      (btn as HTMLElement).setAttribute('aria-expanded', String(open));
+    });
+    this.saveAccordionState();
+
+    // Reflow editors when opening all
+    if (open) {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 50);
+    }
   }
 
   parseJsonSafe(v: string) {
@@ -564,6 +643,9 @@ export class LessonSectionCreateComponent implements OnInit {
   setSectionOpen($event: PointerEvent) {
     // Ensure proper initialization of all accordions after toggling
     setTimeout(() => {
+      // Persist the current accordion open/close states
+      this.updateAccordionStateFromDOM();
+
       // Make sure HTML editors inside any visible sections are properly displayed
       document.querySelectorAll('.accordion-collapse.show app-html-field').forEach(editor => {
         const editorId = editor.getAttribute('id');
