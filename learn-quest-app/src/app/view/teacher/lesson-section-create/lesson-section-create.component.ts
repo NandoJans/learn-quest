@@ -163,6 +163,12 @@ export class LessonSectionCreateComponent implements OnInit {
         if (collapseEl) {
           const open = this.isSectionOpen(formGroup);
           collapseEl.classList.toggle('show', open);
+          // Sync header button attributes/classes too
+          const btn = document.querySelector(`button.accordion-button[data-bs-target="#${sectionId}"]`) as HTMLElement | null;
+          if (btn) {
+            btn.setAttribute('aria-expanded', String(open));
+            btn.classList.toggle('collapsed', !open);
+          }
         }
       });
 
@@ -591,9 +597,11 @@ export class LessonSectionCreateComponent implements OnInit {
         el.classList.toggle('show', open);
       }
     });
-    // Update header aria-expanded for buttons
+    // Update header aria-expanded for buttons and their collapsed class
     document.querySelectorAll('.accordion-item .accordion-header .accordion-button').forEach(btn => {
-      (btn as HTMLElement).setAttribute('aria-expanded', String(open));
+      const el = btn as HTMLElement;
+      el.setAttribute('aria-expanded', String(open));
+      el.classList.toggle('collapsed', !open);
     });
     this.saveAccordionState();
 
@@ -637,11 +645,14 @@ export class LessonSectionCreateComponent implements OnInit {
   }
 
   getSectionElementId(section: FormGroup): string {
-    return `lessonSectionContent-${ section.get('id')?.value ?? 'new' }`;
+    const id = section.get('id')?.value;
+    const pos = section.get('position')?.value;
+    return `lessonSectionContent-${ id ?? ('new-' + pos) }`;
   }
 
   setSectionOpen($event: PointerEvent) {
     // Ensure proper initialization of all accordions after toggling
+    // Wait for Bootstrap collapse transition (~350ms) to complete before persisting state
     setTimeout(() => {
       // Persist the current accordion open/close states
       this.updateAccordionStateFromDOM();
@@ -658,6 +669,6 @@ export class LessonSectionCreateComponent implements OnInit {
           }
         }
       });
-    }, 100);
+    }, 450);
   }
 }

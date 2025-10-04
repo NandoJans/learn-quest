@@ -28,7 +28,7 @@
             [attr.data-bs-toggle]="'collapse'"
             [attr.data-bs-target]="'#'+getSectionElementId(section)"
             [attr.aria-expanded]="isSectionOpen(section)"
-            aria-controls="panelsStayOpen-collapseOne"
+            [attr.aria-controls]="getSectionElementId(section)"
             aria-label="Open or close"
             (click)="setSectionOpen($event)"
           >
