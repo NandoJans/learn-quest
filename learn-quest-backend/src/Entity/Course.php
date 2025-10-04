@@ -42,7 +42,6 @@ class Course
     private ?string $faIcon = null;
 
     #[ORM\ManyToOne(inversedBy: 'courses')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
     public function __construct()

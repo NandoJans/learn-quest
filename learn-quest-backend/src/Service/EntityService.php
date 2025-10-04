@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Dto\Dto;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormFactoryInterface;
 
@@ -14,13 +15,15 @@ class EntityService
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly FormFactoryInterface $formFactory,
+        private readonly ManagerRegistry $doctrine,
     )
     {
     }
 
     public function getEntityClass(string $entity): string
     {
-        $class = 'App\\Entity\\' . ucfirst($entity);
+        $studly = $this->toStudly($entity);
+        $class = 'App\\Entity\\' . $studly;
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('Entity "%s" does not exist.', $entity));
         }
@@ -29,7 +32,8 @@ class EntityService
 
     public function getEntityTypeClass(string $entity): string
     {
-        $type = ucfirst($entity) . 'Type';
+        $studly = $this->toStudly($entity);
+        $type = $studly . 'Type';
         $class = 'App\\Form\\Type\\' . $type;
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('Form type "%s" does not exist.', $type));
@@ -39,7 +43,8 @@ class EntityService
 
     public function getEntityDtoClass(string $entity): string
     {
-        $dto = ucfirst($entity) . 'Dto';
+        $studly = $this->toStudly($entity);
+        $dto = $studly . 'Dto';
         $class = 'App\\Dto\\' . $dto;
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(sprintf('DTO class "%s" does not exist.', $dto));
@@ -56,6 +61,20 @@ class EntityService
      * @param array<string, string|callable> $map  dtoParam => 'path.like.this' | callable($entity): mixed
      */
     public function mapEntityToDto(object $entity, string $dtoClass, array $map = []): object
+    {
+        $dto = $this->handleMapEntityToDto($entity, $dtoClass, $map);
+        if ($dto instanceof Dto) {
+            $dto->extraData($this, $this->doctrine);
+        }
+        return $dto;
+    }
+
+    public function mapEntityArrayToDtoArray(array $entities, string $dtoClass, array $map = []): array
+    {
+        return array_map(fn($e) => $this->mapEntityToDto($e, $dtoClass, $map), $entities);
+    }
+
+    private function handleMapEntityToDto(object $entity, string $dtoClass, array $map = []): object
     {
         if (!class_exists($dtoClass)) {
             throw new \InvalidArgumentException(sprintf('DTO class "%s" does not exist.', $dtoClass));
@@ -135,6 +154,18 @@ class EntityService
     }
 
     // ---------------- helpers ----------------
+
+    private function toStudly(string $name): string
+    {
+        // If contains delimiters, convert snake_case or kebab-case to StudlyCase.
+        if (preg_match('/[_-]/', $name)) {
+            $name = str_replace(['-', '_'], ' ', strtolower($name));
+            $name = str_replace(' ', '', ucwords($name));
+            return $name;
+        }
+        // Otherwise keep camelCase intact but uppercase first letter.
+        return ucfirst($name);
+    }
 
     private function readViaGuess(object $obj, string $name): mixed
     {

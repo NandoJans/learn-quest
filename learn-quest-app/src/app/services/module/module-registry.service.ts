@@ -22,6 +22,14 @@ export class ModuleRegistryService {
       tags: ['science', 'quiz', 'chemistry'],
       loader: () => import('../../components/interactive/periodic-quiz/periodic-quiz.component')
         .then(m => m.PeriodicQuizComponent)
+    },
+    {
+      slug: 'big-bang-time-slider',
+      title: 'Big Bang – Tijdlijn',
+      description: 'Logaritmische tijdlijn met kosmische fasen',
+      tags: ['cosmology','visual','timeline'],
+      loader: () => import('../../components/interactive/big-bang-time-slider/big-bang-time-slider.component')
+        .then(m => m.BigBangTimeSliderComponent)
     }
   ];
 

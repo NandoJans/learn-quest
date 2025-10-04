@@ -1,0 +1,5 @@
+{
+  "tMin": 1e-36,
+  "tMax": 1e17,
+  "initialT": 1
+}

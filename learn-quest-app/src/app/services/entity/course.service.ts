@@ -59,9 +59,6 @@ export class CourseService {
     let params: {[key: string]: any} = {};
     switch (this.roleService.activeRole) {
       case "ROLE_USER":
-        params = {
-          'courseRegistrations.user': this.securityService.getUser()?.id,
-        };
         break;
       case "ROLE_ADMIN":
         break; // no params, get all courses

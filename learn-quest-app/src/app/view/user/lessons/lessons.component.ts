@@ -86,7 +86,6 @@ export class LessonsComponent implements OnInit {
         // Reload the enrolled courses and show a confirmation
         this.courseService.loadEnrolledCourses(true);
         this.showEnrollNotification = true;
-        console.log('Enrolled in course:', response);
       }
     });
   }

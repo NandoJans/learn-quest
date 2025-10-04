@@ -1,0 +1,29 @@
+<!-- html-field.component.html -->
+<div class="htmleditor">
+  <div class="toolbar">
+    <div class="button" (click)="format('bold')">B</div>
+    <div class="button" (click)="format('italic')"><i>I</i></div>
+    <div class="button" (click)="format('underline')"><u>U</u></div>
+    <div class="button" (click)="makeLink()">🔗</div>
+    <div class="vertical-line"></div>
+    <div class="button" (click)="setHeading('h1')">H1</div>
+    <div class="button" (click)="setHeading('h2')">H2</div>
+    <div class="button" (click)="setHeading('h3')">H3</div>
+    <div class="button" (click)="setHeading('h4')">H4</div>
+  </div>
+
+  <div
+    #ed
+    class="editable-view"
+    contenteditable="true"
+    role="textbox"
+    aria-multiline="true"
+    spellcheck="true"
+    [attr.data-disabled]="disabled || null"
+    (input)="onInput()"
+    (keydown)="onKeyDown($event)"
+    (paste)="onPaste($event)"
+    (focus)="onFocus()"
+    (blur)="onBlur()"
+  ></div>
+</div>

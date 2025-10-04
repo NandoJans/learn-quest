@@ -39,7 +39,6 @@ export class InteractiveWidgetComponent {
       // Optional: fetch config for this module (e.g. from backend or route data)
       this.configService.getConfigForSlug(this.slug).subscribe(config => {
         if (config) {
-          console.log(config)
           cmpRef.setInput('config', config); // ✅ triggers ngOnChanges
           cmpRef.setInput('mode', 'learner'); // if you also want to set mode
         }

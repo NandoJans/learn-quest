@@ -24,7 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     /**
@@ -45,10 +45,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Course::class, mappedBy: 'userId')]
     private Collection $courses;
 
+    /**
+     * @var Collection<int, LessonRegistration>
+     */
+    #[ORM\OneToMany(targetEntity: LessonRegistration::class, mappedBy: 'User')]
+    private Collection $lessonRegistrations;
+
     public function __construct()
     {
         $this->courseRegistrations = new ArrayCollection();
         $this->courses = new ArrayCollection();
+        $this->lessonRegistrations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -89,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
-        return array_unique($roles);
+        return array_values(array_unique($roles));
     }
 
     /**
@@ -97,7 +104,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
+        $this->roles = array_values(array_unique($roles));
 
         return $this;
     }
@@ -192,5 +199,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCourses(): Collection
     {
         return $this->courses;
+    }
+
+    /**
+     * @return Collection<int, LessonRegistration>
+     */
+    public function getLessonRegistrations(): Collection
+    {
+        return $this->lessonRegistrations;
+    }
+
+    public function addLessonRegistration(LessonRegistration $lessonRegistration): static
+    {
+        if (!$this->lessonRegistrations->contains($lessonRegistration)) {
+            $this->lessonRegistrations->add($lessonRegistration);
+            $lessonRegistration->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLessonRegistration(LessonRegistration $lessonRegistration): static
+    {
+        if ($this->lessonRegistrations->removeElement($lessonRegistration)) {
+            // set the owning side to null (unless already changed)
+            if ($lessonRegistration->getUser() === $this) {
+                $lessonRegistration->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

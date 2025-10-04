@@ -65,17 +65,14 @@
           return;
         }
 
+        const roles = (typeof decoded.roles === 'object') ? Object.values(decoded.roles) : decoded.roles;
+
         this.user = new User();
         this.user.id = decoded.id;
         this.user.username = decoded.username;
+        this.user.roles = roles || [];
 
-        if (typeof decoded.roles === 'object') {
-          this.user.roles = Object.values(decoded.roles);
-        } else {
-          this.user.roles = decoded.roles || [];
-        }
-
-        this.roleService.init(this.user.roles || [])
+        this.roleService.init(roles || [])
 
       } catch (e) {
         console.error('Invalid token:', e);

@@ -44,9 +44,16 @@ class Lesson
     #[ORM\OneToMany(targetEntity: LessonSection::class, mappedBy: 'lesson', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $sections;
 
+    /**
+     * @var Collection<int, LessonRegistration>
+     */
+    #[ORM\OneToMany(targetEntity: LessonRegistration::class, mappedBy: 'Lesson', orphanRemoval: true)]
+    private Collection $lessonRegistrations;
+
     public function __construct()
     {
         $this->sections = new ArrayCollection();
+        $this->lessonRegistrations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -165,6 +172,36 @@ class Lesson
         if ($this->sections->removeElement($section)) {
             if ($section->getLesson() === $this) {
                 $section->setLesson(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LessonRegistration>
+     */
+    public function getLessonRegistrations(): Collection
+    {
+        return $this->lessonRegistrations;
+    }
+
+    public function addLessonRegistration(LessonRegistration $lessonRegistration): static
+    {
+        if (!$this->lessonRegistrations->contains($lessonRegistration)) {
+            $this->lessonRegistrations->add($lessonRegistration);
+            $lessonRegistration->setLesson($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLessonRegistration(LessonRegistration $lessonRegistration): static
+    {
+        if ($this->lessonRegistrations->removeElement($lessonRegistration)) {
+            // set the owning side to null (unless already changed)
+            if ($lessonRegistration->getLesson() === $this) {
+                $lessonRegistration->setLesson(null);
             }
         }
 

@@ -12,6 +12,7 @@
   border-radius: 1rem;
   padding: 1.25rem 1.25rem 1rem;
   margin-bottom: 1.25rem;
+  border: none;
 }
 
 .sec-header {
@@ -30,7 +31,6 @@
 
 .type-row {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -61,6 +61,46 @@
 .label {
   font-size: .9rem;
   color: #555;
+}
+
+.config-form-container {
+  margin-top: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #f8f9fa;
+}
+
+.config-section-title {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.json-details {
+  margin-top: 16px;
+  border-top: 1px dashed #ddd;
+  padding-top: 16px;
+}
+
+.json-details summary {
+  cursor: pointer;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.module-preview-container {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: white;
+}
+
+.mono {
+  font-family: monospace;
+  font-size: 0.9rem;
 }
 
 .input {
@@ -112,4 +152,75 @@ textarea.input {
 .muted {
   color: #888;
   font-size: .9rem;
+}
+
+.sections-drop-list.cdk-drop-list-dragging .section-card:not(.cdk-drag-placeholder) {
+  transition: transform 180ms ease;
+}
+
+.section-card.cdk-drag-preview {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+  border-radius: 12px;
+  background: var(--bs-gray-400, #fff);
+}
+
+.section-card.cdk-drag-placeholder {
+  opacity: .2;
+}
+
+.drag-handle {
+  cursor: grab;
+  user-select: none;
+  border: 0;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-3-dark);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.sec-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  justify-content: space-between;
+}
+
+.accordion-item {
+  border: none;
+}
+
+button.accordion-button .accordion-button-body {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-3-dark);
+  margin-right: 0.5rem;
+}
+
+button.accordion-button {
+  --bs-accordion-active-bg: var(--color-3-white);
+}
+
+@media (max-width: 768px) {
+  .sections-wrapper {
+    padding: 0;
+  }
+
+  .section-card {
+    padding: 0;
+  }
+
+  .accordion-button {
+    padding: 0.5rem;
+  }
+
+  .drag-handle {
+    padding: 0rem;
+  }
 }
