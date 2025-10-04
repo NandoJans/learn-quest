@@ -102,4 +102,96 @@ describe('WizardFormComponent', () => {
     expect(submitButton).toBeTruthy();
     expect(submitButton.disabled).toBe(false);
   });
+
+  it('should not emit submitted event when form is invalid in linear mode', () => {
+    const steps: WizardStepConfig[] = [
+      {
+        key: 'step1',
+        title: 'Step 1',
+        fields: [
+          {type: 'text', name: 'field1', label: 'Field 1', validators: {required: true}}
+        ]
+      }
+    ];
+    
+    component.steps = steps;
+    component.linear = true;
+    component.initialStep = 0;
+    fixture.detectChanges();
+
+    // Set up spy to watch for submitted event
+    let emitted = false;
+    component.submitted.subscribe(() => {
+      emitted = true;
+    });
+
+    // Try to submit with invalid form
+    component.submit();
+    fixture.detectChanges();
+
+    expect(emitted).toBe(false);
+  });
+
+  it('should emit submitted event when form is valid in linear mode', () => {
+    const steps: WizardStepConfig[] = [
+      {
+        key: 'step1',
+        title: 'Step 1',
+        fields: [
+          {type: 'text', name: 'field1', label: 'Field 1', validators: {required: true}}
+        ]
+      }
+    ];
+    
+    component.steps = steps;
+    component.linear = true;
+    component.initialStep = 0;
+    fixture.detectChanges();
+
+    // Fill in the required field
+    const stepGroup = component.getStepGroup(0);
+    stepGroup?.get('field1')?.setValue('test value');
+    fixture.detectChanges();
+
+    // Set up spy to watch for submitted event
+    let emitted = false;
+    component.submitted.subscribe(() => {
+      emitted = true;
+    });
+
+    // Submit with valid form
+    component.submit();
+    fixture.detectChanges();
+
+    expect(emitted).toBe(true);
+  });
+
+  it('should emit submitted event even when form is invalid in non-linear mode', () => {
+    const steps: WizardStepConfig[] = [
+      {
+        key: 'step1',
+        title: 'Step 1',
+        fields: [
+          {type: 'text', name: 'field1', label: 'Field 1', validators: {required: true}}
+        ]
+      }
+    ];
+    
+    component.steps = steps;
+    component.linear = false;
+    component.initialStep = 0;
+    fixture.detectChanges();
+
+    // Set up spy to watch for submitted event
+    let emitted = false;
+    component.submitted.subscribe(() => {
+      emitted = true;
+    });
+
+    // Submit with invalid form in non-linear mode
+    component.submit();
+    fixture.detectChanges();
+
+    expect(emitted).toBe(true);
+  });
 });
