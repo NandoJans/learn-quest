@@ -66,6 +66,11 @@ class EntityService
         return $dto;
     }
 
+    public function mapEntityArrayToDtoArray(array $entities, string $dtoClass, array $map = []): array
+    {
+        return array_map(fn($e) => $this->mapEntityToDto($e, $dtoClass, $map), $entities);
+    }
+
     private function handleMapEntityToDto(object $entity, string $dtoClass, array $map = []): object
     {
         if (!class_exists($dtoClass)) {
