@@ -38,7 +38,13 @@ class LessonSectionDto extends Dto
 
             $this->questionOptions = $entityService->mapEntityArrayToDtoArray(
                 $questionOptions,
-                QuestionOptionDto::class
+                QuestionOptionDto::class,
+                [
+                    'lessonId' => function ($option) {
+                        // derive lesson id via the section relation to avoid needing QuestionOption->lesson FK
+                        return $option->getLessonSection()?->getLesson()?->getId();
+                    },
+                ]
             );
         }
     }

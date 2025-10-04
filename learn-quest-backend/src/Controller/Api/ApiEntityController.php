@@ -2,7 +2,8 @@
 
 namespace App\Controller\Api;
 
-use App\Dto\Dto;
+use App\Entity\LessonSection;
+use App\Entity\QuestionOption;
 use App\Service\EntityService;
 use App\Service\Api\EntityIndexService;
 use App\Util\AutoDtoMapper;
@@ -52,6 +53,11 @@ final class ApiEntityController extends AbstractController
         $dto->fromArray($data, $this->entityService, $this->doctrine);
         $instance = $this->autoDtoMapper->map($dto, $instance, true);
 
+        // Handle nested relations for specific entities
+        if ($instance instanceof LessonSection && isset($data['questionOptions']) && is_array($data['questionOptions'])) {
+            $this->syncQuestionOptions($instance, $data['questionOptions']);
+        }
+
         $em = $this->doctrine->getManagerForClass($class);
         $em->persist($instance);
         $em->flush(); // id is now set
@@ -81,6 +87,10 @@ final class ApiEntityController extends AbstractController
         $dto->fromArray($data, $this->entityService, $this->doctrine);
         $item     = $this->autoDtoMapper->map($dto, $item, false);
 
+        if ($item instanceof LessonSection && isset($data['questionOptions']) && is_array($data['questionOptions'])) {
+            $this->syncQuestionOptions($item, $data['questionOptions']);
+        }
+
         $em->persist($item);
         $em->flush();
 
@@ -104,4 +114,22 @@ final class ApiEntityController extends AbstractController
         return $this->json(['status' => 'ok', 'message' => 'Entity deleted successfully']);
     }
 
+    private function syncQuestionOptions(LessonSection $section, array $optionsData): void
+    {
+        $em = $this->doctrine->getManagerForClass(LessonSection::class);
+
+        // Remove existing
+        foreach ($section->getQuestionOptions() as $existing) {
+            $em->remove($existing);
+        }
+        $section->getQuestionOptions()->clear();
+
+        // Add new
+        foreach ($optionsData as $opt) {
+            $option = new QuestionOption();
+            $option->setOptionText($opt['optionText'] ?? '');
+            $option->setPosition(isset($opt['position']) ? (int)$opt['position'] : 0);
+            $section->addQuestionOption($option);
+        }
+    }
 }

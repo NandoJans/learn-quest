@@ -19,10 +19,6 @@ class QuestionOption
     #[ORM\JoinColumn(nullable: false)]
     private ?LessonSection $lessonSection = null;
 
-    #[ORM\ManyToOne(targetEntity: Lesson::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Lesson $lesson = null;
-
     #[ORM\Column(type: 'text')]
     private ?string $optionText = null;
 
@@ -42,18 +38,6 @@ class QuestionOption
     public function setLessonSection(?LessonSection $lessonSection): static
     {
         $this->lessonSection = $lessonSection;
-
-        return $this;
-    }
-
-    public function getLesson(): ?Lesson
-    {
-        return $this->lesson;
-    }
-
-    public function setLesson(?Lesson $lesson): static
-    {
-        $this->lesson = $lesson;
 
         return $this;
     }
