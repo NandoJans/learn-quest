@@ -1,0 +1,21 @@
+.btn {
+  padding: 10px 20px;
+  border: none;
+  background-color: var(--text-color);
+  color: white;
+  cursor: pointer;
+  height: 100%;
+  font-size: 16px;
+}
+
+.btn.left {
+  border-radius: 5px 0 0 5px;
+}
+
+.btn.right {
+  border-radius: 0 5px 5px 0;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}

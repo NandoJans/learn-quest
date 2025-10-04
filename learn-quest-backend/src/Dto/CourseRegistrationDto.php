@@ -7,7 +7,7 @@ use Symfony\Bridge\Doctrine\ManagerRegistry;
 
 class CourseRegistrationDto extends Dto
 {
-    private ?CourseDto $course = null;
+    public ?CourseDto $course = null;
 
     public function __construct(
         public ?int $id = null,

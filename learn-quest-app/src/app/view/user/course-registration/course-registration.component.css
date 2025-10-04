@@ -1,0 +1,37 @@
+div.header {
+  --primary-color: #ffc8c8;
+  background: linear-gradient(
+    225deg,
+    color-mix(in srgb, var(--primary-color) 80%, white) 0%,
+    color-mix(in srgb, var(--primary-color) 80%, black) 100%
+  );
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  padding: 3rem 0;
+}
+
+tr {
+  --primary-color: #ffc8c8;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--primary-color) 80%, white) 10%,
+    white 20%
+  );
+}
+
+td * {
+  background: none;
+}
+
+td {
+  text-align: center;
+  color: white;
+  font-size: 2rem;
+}
+
+td h3 {
+  text-align: start;
+  font-size: 1.5rem;
+  margin: 0;
+}

@@ -1,127 +1,194 @@
 <div class="sections-wrapper">
+  <div class="d-flex justify-content-end gap-2 mb-2">
+    <button type="button" class="btn btn-2" (click)="toggleAllAccordions(true)">Open all</button>
+    <button type="button" class="btn btn-1" (click)="toggleAllAccordions(false)">Close all</button>
+  </div>
   <form [formGroup]="sectionsForm" novalidate>
-    <div formArrayName="sections">
+    <div
+      formArrayName="sections"
+      cdkDropList
+      [cdkDropListData]="sections.controls"
+      cdkDropListOrientation="vertical"
+      (cdkDropListDropped)="dropSection($event)"
+      class="sections-drop-list accordion"
+    >
       <div
-        class="section-card"
-        *ngFor="let section of sections.controls; index as i; trackBy: trackByIndex"
-        [formGroupName]="i">
+        class="section-card accordion-item"
+        *ngFor="let section of sections.controls; index as i; trackBy: trackByPosition"
+        [formGroupName]="i"
+        [id]="section.get('id')?.value"
+        cdkDrag
+      >
 
-        <header class="sec-header">
-          <h2 class="section-title">Section {{ i + 1 }}</h2>
+        <header class="sec-header accordion-header">
+          <button
+            type="button"
+            class="accordion-button"
+            [class.collapsed]="!isSectionOpen(section)"
+            [attr.data-bs-toggle]="'collapse'"
+            [attr.data-bs-target]="'#'+getSectionElementId(section)"
+            [attr.aria-expanded]="isSectionOpen(section)"
+            [attr.aria-controls]="getSectionElementId(section)"
+            aria-label="Open or close"
+            (click)="setSectionOpen($event)"
+          >
+            <div class="accordion-button-body">
+              <button type="button" class="drag-handle" cdkDragHandle aria-label="Drag to reorder">⠿</button>
+              <h2 class="section-title">Section {{ i + 1 }}</h2>
 
-          <div class="type-row">
-            <label class="chip">
-              <input type="radio" formControlName="type" value="text" />
-              <span>Text</span>
-            </label>
-            <label class="chip">
-              <input type="radio" formControlName="type" value="widget" />
-              <span>Interactive</span>
-            </label>
-            <label class="chip">
-              <input type="radio" formControlName="type" value="question" />
-              <span>Question</span>
-            </label>
-          </div>
+              <div class="type-row" (click)="$event.stopPropagation()">
+                <input type="radio" class="btn-check btn-3" id="textTypeOption-{{i}}" formControlName="type" value="text" />
+                <label class="btn btn-3 btn-header" for="textTypeOption-{{i}}">Text</label>
+
+                <input type="radio" class="btn-check btn-3" id="moduleTypeOption-{{i}}" formControlName="type" value="module" />
+                <label class="btn btn-3 btn-header" for="moduleTypeOption-{{i}}">Interactive</label>
+
+                <input type="radio" class="btn-check btn-3" id="questionTypeOption-{{i}}" formControlName="type" value="question" />
+                <label class="btn btn-3 btn-header" for="questionTypeOption-{{i}}">Question</label>
+              </div>
+            </div>
+          </button>
         </header>
 
         <!-- TEXT TYPE -->
-        <section class="sec-body" *ngIf="section.get('type')?.value === 'text'">
-          <label class="field">
-            <span class="label">Explanation</span>
-            <textarea rows="5" class="input" formControlName="content" placeholder="Write your explanation..."></textarea>
-          </label>
-          <p class="hint">Supports plain text. If you use Markdown in your renderer, store raw text here.</p>
-        </section>
-
-        <!-- WIDGET TYPE -->
-        <section class="sec-body" *ngIf="section.get('type')?.value === 'widget'">
-          <div class="row">
+        <section class="accordion-collapse collapse" *ngIf="section.get('type')?.value === 'text'" [id]="getSectionElementId(section)" [class.show]="isSectionOpen(section)">
+          <div class="sec-body accordion-body">
             <label class="field">
-              <span class="label">Widget</span>
-              <select class="input" formControlName="widgetType">
-                <option [ngValue]="null" disabled>Select a widget…</option>
-                <option *ngFor="let wt of widgetTypes" [ngValue]="wt.value">{{ wt.label }}</option>
-              </select>
+              <span class="label">Explanation (HTML)</span>
+              <app-html-field
+                formControlName="content"
+                [attr.data-section-index]="i"
+                [attr.id]="'html-editor-' + i"
+              >
+              </app-html-field>
             </label>
           </div>
+        </section>
 
-          <!-- Example: embed your Math Practice author UI when chosen -->
-          <!--
-          <app-math-practice
-            *ngIf="section.get('widgetType')?.value === 'math-practice'"
-            mode="author"
-            [config]="section.get('widgetConfig')?.value"
-            (saveConfig)="section.patchValue({ widgetConfig: $event })">
-          </app-math-practice>
-          -->
+        <!-- Module TYPE -->
+        <section class="accordion-collapse collapse" *ngIf="section.get('type')?.value === 'module'" [id]="getSectionElementId(section)" [class.show]="isSectionOpen(section)">
+          <div class="sec-body accordion-body">
+            <div class="row">
+              <label class="field">
+                <span class="label">Module</span>
+  <!--              Display selected module-->
+                <div class="selected-module" *ngIf="section.get('moduleSlug')?.value;">
+                  <strong>{{ section.get('moduleSlug')?.value }}</strong>
+                </div>
+                <div class="no-module" *ngIf="!section.get('moduleSlug')?.value;">
+                  No module selected
+                </div>
+              </label>
 
-          <!-- Fallback JSON editor for widget config -->
-          <label class="field">
-            <span class="label">Widget Config (JSON)</span>
-            <textarea
-              rows="6"
-              class="input mono"
-              [ngModel]="(section.get('widgetConfig')?.value | json)"
-              (ngModelChange)="section.patchValue({ widgetConfig: ($event ? JSON.parse($event) : null )})"
-              placeholder='{"operations":["+","-"],"min":0,"max":10,"requiredQuestions":10}'>
-            </textarea>
-          </label>
+              <button type="button" class="btn btn-2" (click)="openModuleLibraryFor(i)">
+                Choose from module library
+              </button>
+            </div>
 
-          <p class="hint">Tip: If you embed an authoring widget (like Math Practice), keep this JSON in sync via its save output.</p>
+            <div class="module-preview-container mt-2">
+              <app-module-host
+                *ngIf="section.get('moduleSlug')?.value"
+                [slug]="section.get('moduleSlug')?.value"
+                [config]="section.get('moduleConfig')?.value"
+                (configChange)="section.patchValue({ moduleConfig: $event }, { emitEvent: false })">
+              </app-module-host>
+            </div>
+
+            <div class="config-form-container" *ngIf="section.get('moduleSlug')?.value">
+            <h4 class="config-section-title">Module Configuration</h4>
+            <app-module-config-form
+              [config]="section.get('moduleConfig')?.value || {}"
+              (configChange)="section.patchValue({ moduleConfig: $event }, { emitEvent: false })">
+            </app-module-config-form>
+
+            <details class="json-details">
+              <summary>Advanced: Edit JSON directly</summary>
+              <textarea
+                rows="6"
+                class="input mono"
+                [value]="section.get('moduleConfig')?.value | json"
+                (input)="section.patchValue({ moduleConfig: parseJsonSafe(getEncodedJson($event.target)) })"
+                placeholder='{"min":0,"max":10,"operations":["+","-"]}'></textarea>
+            </details>
+          </div>
+          </div>
         </section>
 
         <!-- QUESTION TYPE -->
-        <section class="sec-body" *ngIf="section.get('type')?.value === 'question'">
-          <label class="field">
-            <span class="label">Prompt</span>
-            <textarea class="input" rows="3" formControlName="questionPrompt" placeholder="Ask your question..."></textarea>
-          </label>
+        <section class="accordion-collapse collapse" *ngIf="section.get('type')?.value === 'question'" [id]="getSectionElementId(section)" [class.show]="isSectionOpen(section)">
+          <div class="sec-body accordion-body">
+            <label class="field">
+              <span class="label">Question Type</span>
+              <select class="input" formControlName="questionType">
+                <option value="text">Text Input</option>
+                <option value="number">Number Input</option>
+                <option value="checkbox">Checkbox (Multiple Choice)</option>
+                <option value="radio">Radio (Single Choice)</option>
+              </select>
+            </label>
 
-          <div class="answers">
-            <div class="answers-head">
-              <span>Answers</span>
-              <button type="button" class="btn subtle" (click)="addAnswer(i)">Add answer</button>
-            </div>
+            <label class="field">
+              <span class="label">Prompt</span>
+              <textarea class="input" rows="3" formControlName="questionPrompt" placeholder="Ask your question..."></textarea>
+            </label>
 
-            <div class="answer-row" *ngFor="let ans of answersArray(i).controls; index as j" [formGroup]="ans">
-              <input
-                class="input"
-                type="text"
-                formControlName="text"
-                placeholder="Answer option" />
+            <div class="answers" *ngIf="section.get('questionType')?.value === 'radio' || section.get('questionType')?.value === 'checkbox'">
+              <div class="answers-head">
+                <span>Answer Options</span>
+                <button type="button" class="btn subtle" (click)="addAnswer(i)">Add option</button>
+              </div>
 
-              <label class="chip">
+              <div class="answer-row" *ngFor="let ans of answersArray(i).controls; index as j" [formGroup]="ans">
                 <input
-                  type="radio"
-                  [value]="j"
-                  [checked]="section.get('correctIndex')?.value === j"
-                  (change)="section.patchValue({ correctIndex: j })" />
-                <span>Correct</span>
-              </label>
+                  class="input"
+                  type="text"
+                  formControlName="text"
+                  placeholder="Answer option" />
 
-              <button type="button" class="btn danger" (click)="removeAnswer(i, j)" *ngIf="answersArray(i).length > 1">
-                Remove
-              </button>
+                <label class="chip">
+                  <input
+                    type="radio"
+                    [value]="j"
+                    [checked]="section.get('correctIndex')?.value === j"
+                    (change)="section.patchValue({ correctIndex: j })" />
+                  <span>Correct</span>
+                </label>
+
+                <button type="button" class="btn btn-1" (click)="removeAnswer(i, j)" *ngIf="answersArray(i).length > 1">
+                  Remove
+                </button>
+              </div>
             </div>
-          </div>
 
-          <label class="field">
+            <div class="answers" *ngIf="section.get('questionType')?.value === 'text' || section.get('questionType')?.value === 'number'">
+              <label class="field">
+                <span class="label">Correct Answer</span>
+                <input
+                  class="input"
+                  [type]="section.get('questionType')?.value === 'number' ? 'number' : 'text'"
+                  [value]="section.get('correctIndex')?.value !== null ? answersArray(i).at(section.get('correctIndex')?.value || 0)?.get('text')?.value : ''"
+                  (input)="updateTextAnswer(i, $event)"
+                  placeholder="Enter the correct answer" />
+              </label>
+            </div>
+
+            <label class="field">
             <span class="label">Explanation (shown after answer)</span>
             <textarea class="input" rows="3" formControlName="explanation" placeholder="Explain the correct answer..."></textarea>
           </label>
+          </div>
         </section>
 
         <footer class="sec-footer">
-          <span class="muted">Autosaved</span>
-          <button type="button" class="btn danger" (click)="removeSection(i)">Delete section</button>
+          <span class="muted">{{ (autosaving) ? 'Autosaving' : 'Autosaved' }}</span>
+          <button type="button" class="btn btn-1" (click)="removeSection(i)">Delete section</button>
         </footer>
-
+        <hr class="divider"/>
       </div>
     </div>
   </form>
 
   <div class="text-center mt-3">
-    <app-primary-button [text]="'Add Section'" (pressed)="addSection()"></app-primary-button>
+    <button class="btn btn-2" (click)="addSection()">Add section</button>
   </div>
 </div>

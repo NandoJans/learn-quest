@@ -1,0 +1,44 @@
+<div *ngFor="let section of lessonSections" class="section">
+  <div *ngIf="section.type === 'text'" class="content">
+    <div [innerHtml]="section.content"></div>
+  </div>
+  <div *ngIf="section.type === 'module'" class="module">
+    <app-module-host *ngIf="section.moduleSlug"
+      [slug]="section.moduleSlug"
+      [config]="section.moduleConfig"
+      (configChange)="onWidgetConfigChange(section, $event)">
+    </app-module-host>
+  </div>
+  <div *ngIf="section.type === 'question'" class="question">
+    <div class="question-prompt">{{ section.questionPrompt }}</div>
+
+    <div class="question-input" *ngIf="section.questionType === 'text'">
+      <input [id]="'question-input-' + section.id" type="text" class="form-control" placeholder="Enter your answer" />
+    </div>
+
+    <div class="question-input" *ngIf="section.questionType === 'number'">
+      <input [id]="'question-input-' + section.id" type="number" class="form-control" placeholder="Enter your answer" />
+    </div>
+
+    <div class="question-options" *ngIf="section.questionType === 'radio' && section.questionOptions">
+      <div *ngFor="let option of section.questionOptions; index as i" class="option">
+        <input class="btn-check" type="radio" [name]="'question-' + section.id" [id]="'question-' + section.id + '-' + i" [value]="i" />
+        <label [class]="'btn '+ getButtonType(section) + ' btn-radio'" [for]="'question-' + section.id + '-' + i">{{ option.optionText }}</label>
+      </div>
+    </div>
+
+    <div class="question-options" *ngIf="section.questionType === 'checkbox' && section.questionOptions">
+      <div *ngFor="let option of section.questionOptions; index as i" class="option">
+        <input type="checkbox" [name]="'question-' + section.id + '-' + i" [id]="'question-' + section.id + '-' + i" [value]="i" />
+        <label [class]="'btn '+ getButtonType(section) + ' btn-radio'" [for]="'question-' + section.id + '-' + i">{{ option.optionText }}</label>
+      </div>
+    </div>
+
+    <button [class]="'btn '+ getButtonType(section) + ' submit-button'" [disabled]="section._submitting" (click)="submitAnswer(section)">
+      {{ getSubmitButtonText(section) }}
+    </button>
+    <div class="answer-feedback" *ngIf="section._answerStatus">
+      {{ section._answerStatus === 'correct' ? 'Je antwoord is juist.' : 'Je antwoord is onjuist.' }}
+    </div>
+  </div>
+</div>

@@ -1,6 +1,20 @@
-<app-math-basic
-  mode="learner"
-  [config]="mathBasicConfig"
-  (completed)="onCompleted($event)"
->
-</app-math-basic>
+
+  <div class="header" [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+    <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
+    <h1>{{ getCourse().name }}</h1>
+  </div>
+  <table class="table table-striped">
+    <tr *ngFor="let lessonRegistration of lessonRegistrations" [style]="'--primary-color: ' + getCourse().primaryColor">
+      <td [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+        <app-icon [faIcon]="lessonRegistration.lesson.faIcon" [color]="'white'"></app-icon>
+      </td>
+      <td>
+        <h3>{{ lessonRegistration.lesson.name }}</h3>
+      </td>
+      <app-side-button
+        [icon]="faArrowRight"
+        [btnClass]="'right'"
+        (click)="navigateToLesson(lessonRegistration.id)"
+      ></app-side-button>
+    </tr>
+  </table>

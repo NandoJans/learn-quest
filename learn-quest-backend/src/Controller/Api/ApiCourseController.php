@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Dto\CourseDto;
 use App\Entity\Course;
 use App\Entity\CourseRegistration;
+use App\Entity\LessonRegistration;
 use App\Entity\User;
 use App\Service\EntityService;
 use Doctrine\Persistence\ManagerRegistry;
@@ -77,6 +78,16 @@ final class ApiCourseController extends AbstractController
 
         $em = $this->doctrine->getManager();
         $em->persist($courseRegister);
+
+        // create lesson registrations for the user
+        foreach ($course->getLessons() as $lesson) {
+            $lessonRegistration = new LessonRegistration();
+            $lessonRegistration->setLesson($lesson);
+            $lessonRegistration->setUser($user);
+            $lessonRegistration->setCourseRegistration($courseRegister);
+            $em->persist($lessonRegistration);
+        }
+
         $em->flush();
 
         return $this->json(

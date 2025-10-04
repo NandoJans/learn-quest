@@ -15,4 +15,10 @@ class LessonSectionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, LessonSection::class);
     }
+
+    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
+    {
+        $orderBy['position'] = 'ASC';
+        return parent::findBy($criteria, $orderBy, $limit, $offset);
+    }
 }

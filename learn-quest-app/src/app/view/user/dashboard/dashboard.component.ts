@@ -27,6 +27,6 @@ export class DashboardComponent implements OnInit {
   }
 
   getCourseRoute() {
-    return '/user/courseRegistration/';
+    return 'courseRegistration';
   }
 }

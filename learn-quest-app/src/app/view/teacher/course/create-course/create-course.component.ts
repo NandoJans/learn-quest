@@ -58,7 +58,6 @@ export class CreateCourseComponent {
     this.courseService.createCourse(course).subscribe({
       next: (response) => {
         this.routeService.navigateTo(`courses`);
-        console.log('Course created', response);
       }
     });
   }

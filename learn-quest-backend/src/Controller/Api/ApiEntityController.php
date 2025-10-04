@@ -2,8 +2,10 @@
 
 namespace App\Controller\Api;
 
-use App\Dto\Dto;
+use App\Entity\LessonSection;
+use App\Entity\QuestionOption;
 use App\Service\EntityService;
+use App\Service\Api\EntityIndexService;
 use App\Util\AutoDtoMapper;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,115 +19,117 @@ final class ApiEntityController extends AbstractController
         private ManagerRegistry $doctrine,
         private EntityService $entityService,
         private AutoDtoMapper $autoDtoMapper,
+        private EntityIndexService $entityIndexService,
     )
     {
     }
 
-    #[Route('/api/{entity}/index', name: 'api_course_index', methods: ['GET'])]
+    #[Route('/api/{entity}/index', name: 'api_course_index', methods: ['GET'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
     public function index(string $entity, Request $request): Response
     {
-        $class     = $this->entityService->getEntityClass($entity);
-        $filters   = $request->query->all();  // e.g. ['registrations.user' => 42]
-        $em        = $this->doctrine->getManagerForClass($class);
-        $repo      = $em->getRepository($class);
-        $rootMeta      = $em->getClassMetadata($class);
-        $currentMeta = $rootMeta;
-        $qb        = $repo->createQueryBuilder('e');
-        $aliasIdx  = 0;
-        $aliases   = ['' => 'e']; // track which alias corresponds to which path
+        $filters = $request->query->all();
+        $items = $this->entityIndexService->fetch($entity, $filters);
 
-        foreach ($filters as $key => $value) {
-            $parts = explode('_', $key);
-            $parentAlias = 'e';
-            $path        = [];
-
-            foreach ($parts as $i => $part) {
-                // allow case-insensitive filter keys by normalising the
-                // segment to match the property name convention used in the
-                // entities (camelCase with a lowercase first letter)
-                $part = lcfirst($part);
-
-                $isLast = $i === count($parts) - 1;
-                $path[] = $part;
-                $pathKey = implode('_', $path);
-
-                // determine metadata for this level
-                if ($i === 0) {
-                    // first segment, $meta already holds metadata for $class
-                    $currentMeta = $rootMeta;
-                } else {
-                    // get the target class name of the previous association
-                    $targetClass = $currentMeta->getAssociationTargetClass($parts[$i-1]);
-                    // now fetch metadata for that class
-                    $currentMeta = $em->getClassMetadata($targetClass);
-                }
-
-                if ($isLast) {
-                    if ($currentMeta->hasField($part)) {
-                        // scalar field on $parentAlias
-                        $qb->andWhere(sprintf('%s.%s = :f_%s', $parentAlias, $part, $i))
-                            ->setParameter("f_$i", $value);
-                    } elseif ($currentMeta->hasAssociation($part)) {
-                        // association on last segment ⇒ join then filter its id
-                        $alias = 'a' . (++$aliasIdx);
-                        $qb->leftJoin("$parentAlias.$part", $alias);
-                        $qb->andWhere("$alias.id = :f_$i")
-                            ->setParameter("f_$i", $value);
-                    } else {
-                        throw $this->createNotFoundException("Unknown filter \"$key\"");
-                    }
-                } else {
-                    // non-last ⇒ must be an association
-                    if (!$currentMeta->hasAssociation($part)) {
-                        throw $this->createNotFoundException("Cannot join non-association \"$part\" in \"$key\"");
-                    }
-                    // only join once per pathKey
-                    if (!isset($aliases[$pathKey])) {
-                        $aliases[$pathKey] = 'a' . (++$aliasIdx);
-                        $qb->leftJoin(
-                            sprintf('%s.%s', $parentAlias, $part),
-                            $aliases[$pathKey]
-                        );
-                    }
-                    $parentAlias = $aliases[$pathKey];
-                }
-            }
-        }
-
-        $items = $qb->getQuery()->getResult();
-
-        // map to DTOs as before…
         $dtoClass = $this->entityService->getEntityDtoClass($entity);
-        $dtos     = array_map(fn($item) => $this->entityService->mapEntityToDto($item, $dtoClass), $items);
+        $dtos = array_map(fn($item) => $this->entityService->mapEntityToDto($item, $dtoClass), $items);
 
         return $this->json($dtos);
     }
 
-    #[Route('/api/{entity}/create', name: 'api_course_create', methods: ['POST'])]
+    #[Route('/api/{entity}/create', name: 'api_course_create', methods: ['POST'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
     public function create(Request $request): Response
     {
-        $body = $request->getContent();
-        $data = json_decode($body, true);
+        $data = json_decode($request->getContent(), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return $this->json(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
         $entity = $request->attributes->get('entity');
-        $class = $this->entityService->getEntityClass($entity);
+        $class  = $this->entityService->getEntityClass($entity);
 
         $instance = new $class();
         $dtoClass = $this->entityService->getEntityDtoClass($entity);
-        $dto = new $dtoClass();
+        $dto      = new $dtoClass();
         $dto->fromArray($data, $this->entityService, $this->doctrine);
         $instance = $this->autoDtoMapper->map($dto, $instance, true);
 
+        // Handle nested relations for specific entities
+        if ($instance instanceof LessonSection && isset($data['questionOptions']) && is_array($data['questionOptions'])) {
+            $this->syncQuestionOptions($instance, $data['questionOptions']);
+        }
+
         $em = $this->doctrine->getManagerForClass($class);
         $em->persist($instance);
-        $em->flush();
+        $em->flush(); // id is now set
 
-        return $this->json(['status' => 'Entity created successfully', 'data' => [
-            'entity' => $entity,
-        ]], Response::HTTP_CREATED);
+        // Return only what the frontend needs to switch to "update" mode:
+        return $this->json(['id' => $instance->getId()], Response::HTTP_CREATED);
     }
 
+    #[Route('/api/{entity}/{id}', name: 'api_entity_update', methods: ['PUT'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
+    public function update(string $entity, int $id, Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $class  = $this->entityService->getEntityClass($entity);
+        $em     = $this->doctrine->getManagerForClass($class);
+        $repo   = $em->getRepository($class);
+        $item   = $repo->find($id);
+        if (!$item) {
+            return $this->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $dtoClass = $this->entityService->getEntityDtoClass($entity);
+        $dto      = new $dtoClass();
+        $dto->fromArray($data, $this->entityService, $this->doctrine);
+        $item     = $this->autoDtoMapper->map($dto, $item, false);
+
+        if ($item instanceof LessonSection && isset($data['questionOptions']) && is_array($data['questionOptions'])) {
+            $this->syncQuestionOptions($item, $data['questionOptions']);
+        }
+
+        $em->persist($item);
+        $em->flush();
+
+        return $this->json(['status' => 'ok']);
+    }
+
+    #[Route('/api/{entity}/{id}', name: 'api_entity_delete', methods: ['DELETE'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
+    public function delete(string $entity, int $id): Response
+    {
+        $class  = $this->entityService->getEntityClass($entity);
+        $em     = $this->doctrine->getManagerForClass($class);
+        $repo   = $em->getRepository($class);
+        $item   = $repo->find($id);
+        if (!$item) {
+            return $this->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $em->remove($item);
+        $em->flush();
+
+        return $this->json(['status' => 'ok', 'message' => 'Entity deleted successfully']);
+    }
+
+    private function syncQuestionOptions(LessonSection $section, array $optionsData): void
+    {
+        $em = $this->doctrine->getManagerForClass(LessonSection::class);
+
+        // Remove existing
+        foreach ($section->getQuestionOptions() as $existing) {
+            $em->remove($existing);
+        }
+        $section->getQuestionOptions()->clear();
+
+        // Add new
+        foreach ($optionsData as $opt) {
+            $option = new QuestionOption();
+            $option->setOptionText($opt['optionText'] ?? '');
+            $option->setPosition(isset($opt['position']) ? (int)$opt['position'] : 0);
+            $section->addQuestionOption($option);
+        }
+    }
 }

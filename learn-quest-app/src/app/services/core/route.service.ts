@@ -29,11 +29,14 @@ export class RouteService {
     return this.roleRouteBases[this.role] || '';
   }
 
-  navigateToModule(slug: string) {
-    this.router.navigate([this.getRoleRouteBase(), 'module', slug]);
+  navigateToModule(slug: string, params: {[key: string]: any} = {}) {
+    this.router.navigate([this.getRoleRouteBase(), 'module', slug, params]);
   }
 
-  navigateTo(path: string) {
-    this.router.navigate([this.getRoleRouteBase(), path]);
+  navigateTo(path: string|string[], params: {[key: string]: any} = {}) {
+    if (typeof path === 'string') {
+      path = [path];
+    }
+    this.router.navigate([this.getRoleRouteBase(), ...path, params]);
   }
 }

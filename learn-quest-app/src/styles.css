@@ -1,3 +1,5 @@
+@import "easymde/dist/easymde.min.css";
+
 /* You can add global styles to this file, and also import other style files */
 :root {
   --background-color: #f4f4f4;
@@ -7,10 +9,14 @@
   --color-1: #ed7d7d;
   --color-1-light: #f5baba;
   --color-1-dark: #e25353;
+  --color-1-white: #f9e9e9;
+  --color-1-black: #26292a;
 
   --color-2: #63cb63;
   --color-2-light: #8ae98a;
   --color-2-dark: #4aa94a;
+  --color-2-white: #e9f9e9;
+  --color-2-black: #26292a;
 
   --color-3: #70c1d5;
   --color-3-light: #8ed9e5;
@@ -21,14 +27,20 @@
   --color-4: #fcef76;
   --color-4-light: #fffdaa;
   --color-4-dark: #cece3e;
+  --color-4-white: #fff9e9;
+  --color-4-black: #26292a;
 
   --color-5: #f1b471;
   --color-5-light: #f8d3a1;
   --color-5-dark: #c2823b;
+  --color-5-white: #fff9e9;
+  --color-5-black: #26292a;
 
   --color-6: #c385fb;
   --color-6-light: #d8aefc;
   --color-6-dark: #9e54e3;
+  --color-6-white: #f9e9ff;
+  --color-6-black: #26292a;
 }
 
 body, html {
@@ -121,6 +133,11 @@ body, html {
 
 .btn-1 {
   background-color: var(--color-1);
+  --color: var(--color-1);
+  --color-dark: var(--color-1-dark);
+  --color-light: var(--color-1-light);
+  --color-white: var(--color-1-white);
+  --color-black: var(--color-1-black);
   color: white;
 }
 
@@ -130,6 +147,11 @@ body, html {
 
 .btn-2 {
   background-color: var(--color-2);
+  --color: var(--color-2);
+  --color-dark: var(--color-2-dark);
+  --color-light: var(--color-2-light);
+  --color-white: var(--color-2-white);
+  --color-black: var(--color-2-black);
   color: white;
 }
 
@@ -139,6 +161,11 @@ body, html {
 
 .btn-3 {
   background-color: var(--color-3);
+  --color: var(--color-3);
+  --color-dark: var(--color-3-dark);
+  --color-light: var(--color-3-light);
+  --color-white: var(--color-3-white);
+  --color-black: var(--color-3-black);
   color: white;
 }
 
@@ -148,6 +175,11 @@ body, html {
 
 .btn-4 {
   background-color: var(--color-4);
+  --color: var(--color-4);
+  --color-dark: var(--color-4-dark);
+  --color-light: var(--color-4-light);
+  --color-white: var(--color-4-white);
+  --color-black: var(--color-4-black);
   color: white;
 }
 
@@ -180,4 +212,21 @@ body, html {
 
 .btn-link:hover {
   color: white;
+}
+
+.btn-header {
+  height: 100%;
+  background-color: unset;
+  color: var(--color-dark);
+  --bs-btn-active-bg: var(--color);
+  --bs-btn-active-color: var(--bs-white);
+  border: none;
+  border-radius: 0;
+}
+
+.btn-radio {
+  --bs-btn-active-bg: var(--color);
+  --bs-btn-active-color: var(--bs-white);
+  background-color: var(--color-white);
+  color: var(--text-color);
 }

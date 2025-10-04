@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CourseRegistrationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\UX\Turbo\Attribute\Broadcast;
 
@@ -28,6 +30,17 @@ class CourseRegistration
 
     #[ORM\Column(nullable: true)]
     private ?int $userId = null;
+
+    /**
+     * @var Collection<int, LessonRegistration>
+     */
+    #[ORM\OneToMany(targetEntity: LessonRegistration::class, mappedBy: 'CourseRegistration', orphanRemoval: true)]
+    private Collection $lessonRegistrations;
+
+    public function __construct()
+    {
+        $this->lessonRegistrations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -78,6 +91,36 @@ class CourseRegistration
     public function setUserId(?int $userId): static
     {
         $this->userId = $userId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LessonRegistration>
+     */
+    public function getLessonRegistrations(): Collection
+    {
+        return $this->lessonRegistrations;
+    }
+
+    public function addLessonRegistration(LessonRegistration $lessonRegistration): static
+    {
+        if (!$this->lessonRegistrations->contains($lessonRegistration)) {
+            $this->lessonRegistrations->add($lessonRegistration);
+            $lessonRegistration->setCourseRegistration($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLessonRegistration(LessonRegistration $lessonRegistration): static
+    {
+        if ($this->lessonRegistrations->removeElement($lessonRegistration)) {
+            // set the owning side to null (unless already changed)
+            if ($lessonRegistration->getCourseRegistration() === $this) {
+                $lessonRegistration->setCourseRegistration(null);
+            }
+        }
 
         return $this;
     }
