@@ -31,7 +31,7 @@ class LessonSectionDto extends Dto
     {
         if (
             $this->type === 'question' &&
-            $this->questionType === 'radio' || 'checkbox'
+            ($this->questionType === 'radio' || $this->questionType === 'checkbox')
         ) {
             $questionOptions = $doctrine->getRepository(QuestionOption::class)->findBy([
                 'lessonSection' => $this->id
