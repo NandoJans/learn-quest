@@ -1,0 +1,7 @@
+<div class="edit-row">
+  <input class="w-90 mx-auto text-center glass" type="color" [value]="lesson?.primaryColor" (blur)="onColorBlur($event)" />
+  <app-icon-selector class="w-90 mx-auto" [value]="lesson?.faIcon" (valueChange)="onIconChange($event)" [btnClass]="'glass'" [showLabel]="false"></app-icon-selector>
+  <input class="w-90 mx-auto text-center glass" [value]="lesson?.name" (blur)="onNameBlur($event)" placeholder="Lesson name" />
+  <input class="w-90 mx-auto text-center glass" [value]="lesson?.code" (blur)="onCodeBlur($event)" placeholder="Lesson code" />
+  <textarea class="w-90 mx-auto text-center glass" (blur)="onDescriptionBlur($event)" placeholder="Lesson description">{{ lesson?.description }}</textarea>
+</div>

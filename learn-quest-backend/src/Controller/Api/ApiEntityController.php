@@ -16,9 +16,9 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ApiEntityController extends AbstractController
 {
     public function __construct(
-        private ManagerRegistry $doctrine,
-        private EntityService $entityService,
-        private AutoDtoMapper $autoDtoMapper,
+        private ManagerRegistry    $doctrine,
+        private EntityService      $entityService,
+        private AutoDtoMapper      $autoDtoMapper,
         private EntityIndexService $entityIndexService,
     )
     {
@@ -45,11 +45,11 @@ final class ApiEntityController extends AbstractController
         }
 
         $entity = $request->attributes->get('entity');
-        $class  = $this->entityService->getEntityClass($entity);
+        $class = $this->entityService->getEntityClass($entity);
 
         $instance = new $class();
         $dtoClass = $this->entityService->getEntityDtoClass($entity);
-        $dto      = new $dtoClass();
+        $dto = new $dtoClass();
         $dto->fromArray($data, $this->entityService, $this->doctrine);
         $instance = $this->autoDtoMapper->map($dto, $instance, true);
 
@@ -74,18 +74,18 @@ final class ApiEntityController extends AbstractController
             return $this->json(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
-        $class  = $this->entityService->getEntityClass($entity);
-        $em     = $this->doctrine->getManagerForClass($class);
-        $repo   = $em->getRepository($class);
-        $item   = $repo->find($id);
+        $class = $this->entityService->getEntityClass($entity);
+        $em = $this->doctrine->getManagerForClass($class);
+        $repo = $em->getRepository($class);
+        $item = $repo->find($id);
         if (!$item) {
             return $this->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
         }
 
         $dtoClass = $this->entityService->getEntityDtoClass($entity);
-        $dto      = new $dtoClass();
+        $dto = new $dtoClass();
         $dto->fromArray($data, $this->entityService, $this->doctrine);
-        $item     = $this->autoDtoMapper->map($dto, $item, false);
+        $item = $this->autoDtoMapper->map($dto, $item, false);
 
         if ($item instanceof LessonSection && isset($data['questionOptions']) && is_array($data['questionOptions'])) {
             $this->syncQuestionOptions($item, $data['questionOptions']);
@@ -100,10 +100,10 @@ final class ApiEntityController extends AbstractController
     #[Route('/api/{entity}/{id}', name: 'api_entity_delete', methods: ['DELETE'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
     public function delete(string $entity, int $id): Response
     {
-        $class  = $this->entityService->getEntityClass($entity);
-        $em     = $this->doctrine->getManagerForClass($class);
-        $repo   = $em->getRepository($class);
-        $item   = $repo->find($id);
+        $class = $this->entityService->getEntityClass($entity);
+        $em = $this->doctrine->getManagerForClass($class);
+        $repo = $em->getRepository($class);
+        $item = $repo->find($id);
         if (!$item) {
             return $this->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
         }

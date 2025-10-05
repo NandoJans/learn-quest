@@ -7,13 +7,20 @@ import { LessonSectionService } from '../../../services/entity/lesson-section.se
 import { QuestionOptionService } from '../../../services/entity/question-option.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {ModuleHostComponent} from '../../../components/module-host/module-host.component';
+import { RoleService } from '../../../services/security/role.service';
+import { CourseService } from '../../../services/entity/course.service';
+import { Course } from '../../../entities/course';
+import { CourseEditBarComponent } from '../../../components/course/course-edit-bar/course-edit-bar.component';
+import { IconComponent } from '../../../components/icon/icon.component';
 
 @Component({
   selector: 'app-lesson-registration',
   imports: [
     NgForOf,
     NgIf,
-    ModuleHostComponent
+    ModuleHostComponent,
+    CourseEditBarComponent,
+    IconComponent
   ],
   templateUrl: './lesson-registration.component.html',
   styleUrl: './lesson-registration.component.css'
@@ -22,16 +29,25 @@ export class LessonRegistrationComponent implements OnInit {
   @Input() lessonRegistrationId: number = 0;
   lessonRegistration: LessonRegistration = new LessonRegistration();
   lessonSections: LessonSection[] = [];
+
   constructor(
     private lessonRegistrationService: LessonRegistrationService,
     private lessonSectionService: LessonSectionService,
-    private questionOptionService: QuestionOptionService
+    private questionOptionService: QuestionOptionService,
+    private roleService: RoleService,
+    private courseService: CourseService
   ) { }
 
   ngOnInit() {
     this.lessonRegistrationService.loadSections({id: this.lessonRegistrationId}, (registrations) => {
       if (registrations.length > 0) {
         this.lessonRegistration = registrations[0] as LessonRegistration;
+
+        // Preload the parent course so edit bar can work immediately
+        try {
+          const courseId = this.lessonRegistration?.lesson?.courseId;
+          if (courseId) this.courseService.loadCourses({ id: courseId });
+        } catch (_e) {}
 
         // Load sections via dedicated endpoint, including any saved answers for this registration
         this.lessonSectionService.fetchSectionsWithAnswers(this.lessonRegistration.lesson.id, this.lessonRegistrationId)
@@ -44,6 +60,22 @@ export class LessonRegistrationComponent implements OnInit {
           });
       }
     });
+  }
+
+  isTeacher(): boolean {
+    return this.roleService.activeRole === 'ROLE_TEACHER';
+  }
+
+  getCourse(): Course {
+    try {
+      const lesson: Lesson | undefined = this.lessonRegistration?.lesson as Lesson;
+      const id = lesson?.courseId;
+      if (!id) return new Course();
+      const arr = this.courseService.getCourses({ id });
+      return arr.length > 0 ? arr[0] : new Course();
+    } catch (_e) {
+      return new Course();
+    }
   }
 
   private sortByPosition(a: LessonSection, b: LessonSection): number {

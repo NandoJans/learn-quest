@@ -1,0 +1,47 @@
+.edit-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Ensure reasonable sizing and readability */
+.edit-row > * {
+  flex: 1 1 auto;
+  min-width: 160px;
+}
+
+/* Make the color input compact and not stretch */
+.edit-row input[type="color"] {
+  width: 3rem;
+  height: 2rem;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+/* Normalize font sizes and ensure text is readable */
+.edit-row input,
+.edit-row textarea,
+.edit-row .glass {
+  font-size: 1rem; /* match normal app text size */
+  color: #212529;  /* readable dark text */
+}
+
+/* Fix white-on-white issue coming from .glass and add clear input affordances */
+.edit-row input.glass,
+.edit-row textarea.glass,
+.edit-row .glass {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.375rem; /* match Bootstrap form controls */
+}
+
+/* Focus styles to clearly indicate editability */
+.edit-row input.glass:focus,
+.edit-row textarea.glass:focus,
+.edit-row .glass:focus {
+  outline: none;
+  border-color: var(--primary-color, #0d6efd);
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+}

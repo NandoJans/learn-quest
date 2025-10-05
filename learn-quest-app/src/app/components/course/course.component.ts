@@ -5,7 +5,7 @@ import {Router} from '@angular/router';
 import {IconComponent} from '../icon/icon.component';
 import {RouteService} from '../../services/core/route.service';
 import {NgIf} from '@angular/common';
-import {faArrowRight, faBars} from '@fortawesome/free-solid-svg-icons';
+import {faArrowRight, faBars, faPencil} from '@fortawesome/free-solid-svg-icons';
 import {SideButtonComponent} from '../buttons/side-button/side-button.component';
 
 @Component({
@@ -48,4 +48,5 @@ export class CourseComponent {
 
   protected readonly faBars = faBars;
   protected readonly faArrowRight = faArrowRight;
+  protected readonly faPencil = faPencil;
 }

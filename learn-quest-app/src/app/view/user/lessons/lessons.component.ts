@@ -11,6 +11,10 @@ import {RoleService} from '../../../services/security/role.service';
 import {RouteService} from '../../../services/core/route.service';
 import {SideButtonComponent} from '../../../components/buttons/side-button/side-button.component';
 import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
+import { CourseEditBarComponent } from '../../../components/course/course-edit-bar/course-edit-bar.component';
+import { LessonEditBarComponent } from '../../../components/lesson/lesson-edit-bar/lesson-edit-bar.component';
+import {ModalService} from '../../../services/modal/modal.service';
+import {Confirm} from '../../../components/form/confirm/confirm';
 
 @Component({
   selector: 'app-lessons',
@@ -20,7 +24,9 @@ import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
     NgForOf,
     RouterLink,
     NgIf,
-    SideButtonComponent
+    SideButtonComponent,
+    CourseEditBarComponent,
+    LessonEditBarComponent
   ],
   templateUrl: './lessons.component.html',
   styleUrl: './lessons.component.css'
@@ -28,13 +34,15 @@ import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
 export class LessonsComponent implements OnInit {
   @Input() courseId: number = 0;
   showEnrollNotification = false;
+  editing: boolean = false;
 
   constructor(
     private courseService: CourseService,
     private lessonService: LessonService,
     private roleService: RoleService,
     private routeService: RouteService,
-    private router: Router
+    private router: Router,
+    private modal: ModalService
   ) {}
 
   getCourse(): Course {
@@ -98,5 +106,34 @@ export class LessonsComponent implements OnInit {
 
   navigateToLesson(id: number) {
     this.routeService.navigateTo(['lesson', 'sections'], {lessonId: id});
+  }
+
+  isEditing(): boolean {
+    return this.editing && this.isTeacher();
+  }
+
+  toggleEditing(): void {
+    this.editing = !this.editing;
+  }
+
+
+  confirmDelete() {
+    this.modal.open(Confirm).then(async (result) => {
+      if (result === true) {
+        this.courseService.deleteCourse(this.courseId).subscribe(() => {
+          this.routeService.navigateTo(['courses']);
+        });
+      }
+    })
+  }
+
+  confirmDeleteLesson(lessonId: number) {
+    this.modal.open(Confirm).then(async (result) => {
+      if (result === true) {
+        this.lessonService.deleteLesson(lessonId).subscribe(() => {
+          this.lessonService.loadLessons({ courseId: this.courseId }, true);
+        });
+      }
+    });
   }
 }

@@ -1,0 +1,15 @@
+<div class="icon-selector-field {{ class }}">
+  @if (showLabel) {
+    <label class="form-label">{{ label }}</label>
+  }
+  <div class="selector-row">
+    <input type="hidden" [name]="name" [value]="value || ''" />
+    <button type="button" class="btn {{ btnClass }} preview" (click)="openPicker()">
+      @if (value) {
+        <app-icon [faIcon]="value" [color]="'#333'"></app-icon>
+      } @else {
+        <span class="placeholder">Pick icon</span>
+      }
+    </button>
+  </div>
+</div>

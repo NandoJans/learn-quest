@@ -13,6 +13,7 @@ import {faQuestion} from '@fortawesome/free-solid-svg-icons';
 export class IconComponent {
   @Input() faIcon: string = '';
   @Input() color: string = '#000000';
+  @Input() class: string = '';
 
   constructor(
     public iconLibrary: FaIconLibrary,
