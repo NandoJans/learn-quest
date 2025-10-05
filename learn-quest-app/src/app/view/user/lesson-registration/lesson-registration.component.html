@@ -1,3 +1,12 @@
+<div class="header position-relative" [style]="'--primary-color: ' + (getLesson()?.primaryColor || getCourse().primaryColor) + ';'">
+  @if (isTeacher()) {
+    <app-course-edit-bar [courseId]="getLesson()?.courseId ?? 0" [course]="getCourse()"></app-course-edit-bar>
+  } @else {
+    <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
+    <h1>{{ getCourse().name }}</h1>
+  }
+</div>
+
 <div *ngFor="let section of lessonSections" class="section">
   <div *ngIf="section.type === 'text'" class="content">
     <div [innerHtml]="section.content"></div>

@@ -31,4 +31,13 @@ export class LessonService {
     lesson.courseId = course.id;
     return this.apiService.post<Lesson>('lesson/create', lesson);
   }
+
+  updateLesson(lessonId: number, data: { [key: string]: any }): Observable<Lesson> {
+    // Backend expects payload wrapped under the "Lesson" key
+    return this.apiService.put<Lesson>(`lesson/${lessonId}`, { Lesson: data });
+  }
+
+  deleteLesson(lessonId: number) {
+    return this.apiService.delete<void>(`lesson/${lessonId}`);
+  }
 }

@@ -1,20 +1,42 @@
-<div class="header" [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
-  <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
-  <h1>{{ getCourse().name }}</h1>
+<div class="header position-relative" [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+  @if (isTeacher()) {
+    <button class="btn btn-icon position-absolute top-0 start-0" (click)="toggleEditing()">
+      <app-icon [faIcon]="'pencil'" [color]="'white'"></app-icon>
+    </button>
+  }
+  @if (isEditing()) {
+    <button class="btn btn-icon position-absolute top-0 end-0" (click)="confirmDelete()">
+      <app-icon [faIcon]="'trash'" [class]="'text-color-1'"></app-icon>
+    </button>
+    <app-course-edit-bar class="w-100" [courseId]="courseId" [course]="getCourse()"></app-course-edit-bar>
+  } @else {
+    <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
+    <h1>{{ getCourse().name }}</h1>
+  }
 </div>
 <table class="table table-striped">
-  <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + getCourse().primaryColor">
-    <td [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
-      <app-icon [faIcon]="lesson.faIcon" [color]="'white'"></app-icon>
+  <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + (lesson.primaryColor || getCourse().primaryColor)">
+    <td *ngIf="isEditing(); else viewRow" colspan="3">
+      <div class="d-flex justify-content-end mb-2">
+        <button class="btn btn-icon" (click)="confirmDeleteLesson(lesson.id)">
+          <app-icon [faIcon]="'trash'" [class]="'text-color-1'"></app-icon>
+        </button>
+      </div>
+      <app-lesson-edit-bar [lessonId]="lesson.id" [lesson]="lesson"></app-lesson-edit-bar>
     </td>
-    <td>
-      <h3>{{ lesson.name }}</h3>
-    </td>
-    <app-side-button
-      [icon]="faArrowRight"
-      [btnClass]="'right'"
-      (click)="navigateToLesson(lesson.id)"
-    ></app-side-button>
+    <ng-template #viewRow>
+      <td [style]="'--primary-color: ' + (lesson.primaryColor || getCourse().primaryColor) + ';'">
+        <app-icon [faIcon]="lesson.faIcon" [color]="'white'"></app-icon>
+      </td>
+      <td>
+        <h3>{{ lesson.name }}</h3>
+      </td>
+      <app-side-button
+        [icon]="faArrowRight"
+        [btnClass]="'right'"
+        (click)="navigateToLesson(lesson.id)"
+      ></app-side-button>
+    </ng-template>
   </tr>
 </table>
 <div *ngIf="showEnrollNotification" class="alert alert-success mt-3">

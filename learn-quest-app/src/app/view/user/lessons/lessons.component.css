@@ -1,5 +1,5 @@
 div.header {
-  --primary-color: #ffc8c8;
+  --primary-color: #de4242;
   background: linear-gradient(
     225deg,
     color-mix(in srgb, var(--primary-color) 80%, white) 0%,

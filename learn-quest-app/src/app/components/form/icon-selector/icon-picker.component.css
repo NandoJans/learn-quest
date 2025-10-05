@@ -1,0 +1,8 @@
+.icon-picker { max-width: 800px; }
+.header { display: flex; align-items: center; gap: 16px; }
+.header h3 { margin: 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 16px 0; max-height: 60vh; overflow: auto; }
+.icon-btn { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--gray-300, #ddd); border-radius: 6px; background: #fff; cursor: pointer; }
+.icon-btn.selected { background: var(--primary-color, #0d6efd); color: #fff; }
+.icon-name { font-size: 12px; color: #666; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
