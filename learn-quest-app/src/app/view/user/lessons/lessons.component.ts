@@ -11,7 +11,8 @@ import {RoleService} from '../../../services/security/role.service';
 import {RouteService} from '../../../services/core/route.service';
 import {SideButtonComponent} from '../../../components/buttons/side-button/side-button.component';
 import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
-import {IconSelectorComponent} from '../../../components/form/icon-selector/icon-selector';
+import { CourseEditBarComponent } from '../../../components/course/course-edit-bar/course-edit-bar.component';
+import { LessonEditBarComponent } from '../../../components/lesson/lesson-edit-bar/lesson-edit-bar.component';
 import {ModalService} from '../../../services/modal/modal.service';
 import {Confirm} from '../../../components/form/confirm/confirm';
 
@@ -24,7 +25,8 @@ import {Confirm} from '../../../components/form/confirm/confirm';
     RouterLink,
     NgIf,
     SideButtonComponent,
-    IconSelectorComponent
+    CourseEditBarComponent,
+    LessonEditBarComponent
   ],
   templateUrl: './lessons.component.html',
   styleUrl: './lessons.component.css'
@@ -114,22 +116,6 @@ export class LessonsComponent implements OnInit {
     this.editing = !this.editing;
   }
 
-  saveCourseName($event: FocusEvent) {
-    const target = $event.target as HTMLInputElement;
-    this.courseService.updateCourse(this.courseId, { name: target.value })
-      .subscribe(() => this.courseService.loadCourses({id: this.courseId}, true));
-  }
-
-  saveCourseIcon(icon: string) {
-    this.courseService.updateCourse(this.courseId, { faIcon: icon })
-      .subscribe(() => this.courseService.loadCourses({id: this.courseId}, true));
-  }
-
-  saveCourseColor($event: FocusEvent) {
-    const target = $event.target as HTMLInputElement;
-    this.courseService.updateCourse(this.courseId, { primaryColor: target.value })
-      .subscribe(() => this.courseService.loadCourses({id: this.courseId}, true));
-  }
 
   confirmDelete() {
     this.modal.open(Confirm).then(async (result) => {
@@ -139,5 +125,15 @@ export class LessonsComponent implements OnInit {
         });
       }
     })
+  }
+
+  confirmDeleteLesson(lessonId: number) {
+    this.modal.open(Confirm).then(async (result) => {
+      if (result === true) {
+        this.lessonService.deleteLesson(lessonId).subscribe(() => {
+          this.lessonService.loadLessons({ courseId: this.courseId }, true);
+        });
+      }
+    });
   }
 }
