@@ -79,4 +79,12 @@ export class CourseService {
     course.userId = this.securityService.getUser()?.id ?? 0;
     return this.apiService.post<Course>('course/create', course);
   }
+
+  updateCourse(courseId: number, param: {[key: string]: any} = {}): Observable<Course> {
+    return this.apiService.put<Course>(`course/${courseId}`, param);
+  }
+
+  deleteCourse(courseId: number) {
+    return this.apiService.delete<void>(`course/${courseId}`);
+  }
 }

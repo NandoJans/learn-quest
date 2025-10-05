@@ -1,6 +1,22 @@
-<div class="header" [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
-  <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
-  <h1>{{ getCourse().name }}</h1>
+<div class="header position-relative" [style]="'--primary-color: ' + getCourse().primaryColor + ';'">
+  @if (isTeacher()) {
+    <button class="btn btn-icon position-absolute top-0 start-0" (click)="toggleEditing()">
+      <app-icon [faIcon]="'pencil'" [color]="'white'"></app-icon>
+    </button>
+  }
+  @if (isEditing()) {
+    <button class="btn btn-icon position-absolute top-0 end-0" (click)="confirmDelete()">
+      <app-icon [faIcon]="'trash'" [class]="'text-color-1'"></app-icon>
+    </button>
+    <div class="edit-row">
+      <input class="w-90 mx-auto text-center glass" (blur)="saveCourseColor($event)" [value]="getCourse().primaryColor" type="color" />
+      <app-icon-selector class="w-90 mx-auto" [value]="getCourse().faIcon" (valueChange)="saveCourseIcon($event)" [btnClass]="'glass'" [showLabel]="false"></app-icon-selector>
+      <input class="w-90 mx-auto text-center glass" (blur)="saveCourseName($event)" [value]="getCourse().name" />
+    </div>
+  } @else {
+    <app-icon [faIcon]="getCourse().faIcon" [color]="'white'"></app-icon>
+    <h1>{{ getCourse().name }}</h1>
+  }
 </div>
 <table class="table table-striped">
   <tr *ngFor="let lesson of getLessons()" [style]="'--primary-color: ' + getCourse().primaryColor">

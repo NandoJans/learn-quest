@@ -11,6 +11,9 @@ import {RoleService} from '../../../services/security/role.service';
 import {RouteService} from '../../../services/core/route.service';
 import {SideButtonComponent} from '../../../components/buttons/side-button/side-button.component';
 import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
+import {IconSelectorComponent} from '../../../components/form/icon-selector/icon-selector';
+import {ModalService} from '../../../services/modal/modal.service';
+import {Confirm} from '../../../components/form/confirm/confirm';
 
 @Component({
   selector: 'app-lessons',
@@ -20,7 +23,8 @@ import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
     NgForOf,
     RouterLink,
     NgIf,
-    SideButtonComponent
+    SideButtonComponent,
+    IconSelectorComponent
   ],
   templateUrl: './lessons.component.html',
   styleUrl: './lessons.component.css'
@@ -28,13 +32,15 @@ import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
 export class LessonsComponent implements OnInit {
   @Input() courseId: number = 0;
   showEnrollNotification = false;
+  editing: boolean = false;
 
   constructor(
     private courseService: CourseService,
     private lessonService: LessonService,
     private roleService: RoleService,
     private routeService: RouteService,
-    private router: Router
+    private router: Router,
+    private modal: ModalService
   ) {}
 
   getCourse(): Course {
@@ -98,5 +104,40 @@ export class LessonsComponent implements OnInit {
 
   navigateToLesson(id: number) {
     this.routeService.navigateTo(['lesson', 'sections'], {lessonId: id});
+  }
+
+  isEditing(): boolean {
+    return this.editing && this.isTeacher();
+  }
+
+  toggleEditing(): void {
+    this.editing = !this.editing;
+  }
+
+  saveCourseName($event: FocusEvent) {
+    const target = $event.target as HTMLInputElement;
+    this.courseService.updateCourse(this.courseId, { name: target.value })
+      .subscribe(() => this.courseService.loadCourses({id: this.courseId}, true));
+  }
+
+  saveCourseIcon(icon: string) {
+    this.courseService.updateCourse(this.courseId, { faIcon: icon })
+      .subscribe(() => this.courseService.loadCourses({id: this.courseId}, true));
+  }
+
+  saveCourseColor($event: FocusEvent) {
+    const target = $event.target as HTMLInputElement;
+    this.courseService.updateCourse(this.courseId, { primaryColor: target.value })
+      .subscribe(() => this.courseService.loadCourses({id: this.courseId}, true));
+  }
+
+  confirmDelete() {
+    this.modal.open(Confirm).then(async (result) => {
+      if (result === true) {
+        this.courseService.deleteCourse(this.courseId).subscribe(() => {
+          this.routeService.navigateTo(['courses']);
+        });
+      }
+    })
   }
 }

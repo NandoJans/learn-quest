@@ -1,0 +1,22 @@
+<div class="icon-picker">
+  <div class="header">
+    <h3>Select an icon</h3>
+    <input type="text" class="form-control" placeholder="Search icons" [(ngModel)]="query" (input)="applyFilter()" />
+  </div>
+
+  <div class="grid">
+    <button type="button"
+            class="icon-btn"
+            *ngFor="let it of filtered"
+            [class.selected]="selected === it.name"
+            (click)="pick(it.name)">
+      <app-icon [faIcon]="it.name" [color]="selected === it.name ? '#fff' : '#333'"></app-icon>
+      <span class="icon-name">{{ it.name }}</span>
+    </button>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-secondary" type="button" (click)="cancel()">Cancel</button>
+    <button class="btn btn-primary" type="button" [disabled]="!selected" (click)="confirm()">Use icon</button>
+  </div>
+</div>
