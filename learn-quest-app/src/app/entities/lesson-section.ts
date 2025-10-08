@@ -1,10 +1,5 @@
 import {Entity} from './entity';
-
-export interface QuestionOption {
-  id?: number;
-  optionText: string;
-  position: number;
-}
+import {QuestionOption} from './question-option';
 
 export class LessonSection extends Entity {
   lessonId: number = 0;
@@ -18,9 +13,8 @@ export class LessonSection extends Entity {
   questionExplanation: string | null = null;
   correctAnswer: string | null = null;
   questionOptions: QuestionOption[] = [];
-  givenAnswer?: string | null; // persisted answer for current registration (if any)
+  givenAnswer?: string | null;
 
-  // UI-only state fields (not persisted on backend)
   _submitting: boolean = false;
   _answerStatus: 'correct' | 'incorrect' | null = null;
 }

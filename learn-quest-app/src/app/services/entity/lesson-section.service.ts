@@ -3,6 +3,7 @@ import {EntityCacheService} from './entity-cache.service';
 import {LessonSection} from '../../entities/lesson-section';
 import {ApiService} from '../api/api.service';
 import {Observable} from 'rxjs';
+import {LessonSectionAnswer} from '../../entities/lesson-section-answer';
 
 @Injectable({
   providedIn: 'root'
@@ -66,10 +67,9 @@ export class LessonSectionService {
   }
 
   /** Fetch via dedicated endpoint with optional answers for a registration */
-  fetchSectionsWithAnswers(lessonId: number, lessonRegistrationId?: number): Observable<LessonSection[]> {
-    const params: any = { lessonId };
-    if (lessonRegistrationId) params.lessonRegistrationId = lessonRegistrationId;
-    return this.apiService.get<LessonSection[]>(`lesson_section/index`, params);
+  fetchLessonSectionAnswers(lessonRegistrationId: number): Observable<LessonSectionAnswer[]> {
+    const params: any = {lessonRegistration: lessonRegistrationId};
+    return this.apiService.get<LessonSectionAnswer[]>(`lessonSectionAnswer/index`, params);
   }
 
   /** Check an answer for a section */
