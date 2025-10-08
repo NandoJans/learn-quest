@@ -83,7 +83,7 @@ class LessonSectionAnswer
         return $this->initialCorrect;
     }
 
-    public function setInitialCorrect(bool $initialCorrect): static
+    public function setInitialCorrect(?bool $initialCorrect): static
     {
         $this->initialCorrect = $initialCorrect;
 
