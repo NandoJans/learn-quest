@@ -1,3 +1,12 @@
-<button (click)="emit()"
-        [disabled]="disabled"
-        [class]="'card-footer btn w-100 ' + btnClass">{{ text }}</button>
+<div #wrap class="btn-glow-wrap">
+  <button
+    (click)="emit($event)"
+    [disabled]="disabled"
+    [ngClass]="['btn','w-100','card-footer', btnClass]">
+    @if (icon) {
+      <fa-icon [icon]="icon" class="me-2"></fa-icon>
+    } @else {
+      {{ text }}
+    }
+  </button>
+</div>
