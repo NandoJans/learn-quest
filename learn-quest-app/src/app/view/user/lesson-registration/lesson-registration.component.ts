@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, forwardRef, Input, OnInit} from '@angular/core';
 import {LessonRegistrationService} from '../../../services/entity/lesson-registration.service';
 import {LessonRegistration} from '../../../entities/lesson-registration';
 import {Lesson} from '../../../entities/lesson';
@@ -12,6 +12,7 @@ import { CourseService } from '../../../services/entity/course.service';
 import { Course } from '../../../entities/course';
 import { CourseEditBarComponent } from '../../../components/course/course-edit-bar/course-edit-bar.component';
 import { IconComponent } from '../../../components/icon/icon.component';
+import {LessonSectionAnswer} from '../../../entities/lesson-section-answer';
 
 @Component({
   selector: 'app-lesson-registration',
@@ -29,6 +30,7 @@ export class LessonRegistrationComponent implements OnInit {
   @Input() lessonRegistrationId: number = 0;
   lessonRegistration: LessonRegistration = new LessonRegistration();
   lessonSections: LessonSection[] = [];
+  lessonSectionAnswers: LessonSectionAnswer[] = [];
 
   constructor(
     private lessonRegistrationService: LessonRegistrationService,
@@ -49,17 +51,40 @@ export class LessonRegistrationComponent implements OnInit {
           if (courseId) this.courseService.loadCourses({ id: courseId });
         } catch (_e) {}
 
-        // Load sections via dedicated endpoint, including any saved answers for this registration
-        this.lessonSectionService.fetchSectionsWithAnswers(this.lessonRegistration.lesson.id, this.lessonRegistrationId)
-          .subscribe((sections) => {
-            this.lessonSections = (sections as LessonSection[]).sort(this.sortByPosition.bind(this));
-            // Apply any previously saved answers to the UI controls
-            this.lessonSections.forEach((section) => {
-              this.applyGivenAnswerToDom(section);
-            });
-          });
+        this.loadLessonSections(this.lessonRegistration.lessonId);
       }
     });
+  }
+
+  private loadLessonSections(lessonId: number): void {
+    this.lessonSectionService.loadSections({lesson: lessonId}, (sections) => {
+      this.lessonSections = (sections as LessonSection[]).sort(this.sortByPosition.bind(this));
+      this.loadLessonSectionAnswers()
+    })
+  }
+
+  private loadLessonSectionAnswers(): void {
+    this.lessonSectionService.fetchLessonSectionAnswers(this.lessonRegistrationId)
+      .subscribe((sectionAnswers) => {
+        this.matchLessonSectionAndAnswers(sectionAnswers);
+        this.applyAnswersToDom();
+      });
+  }
+
+  private matchLessonSectionAndAnswers(sectionAnswers: LessonSectionAnswer[]): void {
+    const sectionIdDict: {[key: number]: LessonSection} = {};
+    this.lessonSections.forEach((section: LessonSection) => {
+      sectionIdDict[section.id] = section;
+      // Reset any previous state
+      (section as any)._answerStatus = null;
+      (section as any)._submitting = false;
+    });
+
+    for (const sectionAnswer of sectionAnswers) {
+      sectionIdDict[sectionAnswer.lessonSectionId].lessonSectionAnswer = sectionAnswer;
+      sectionIdDict[sectionAnswer.lessonSectionId].lessonSectionAnswers.push(sectionAnswer);
+      sectionIdDict[sectionAnswer.lessonSectionId].update();
+    }
   }
 
   isTeacher(): boolean {
@@ -140,9 +165,11 @@ export class LessonRegistrationComponent implements OnInit {
 
     const sectionId = (section as any).id ?? section['id'];
     this.lessonSectionService.checkAnswer(sectionId, answer, this.lessonRegistrationId).subscribe({
-      next: (res: { correct: boolean }) => {
+      next: (res: { correct: boolean, initialCorrect: boolean }) => {
         anySection._answerStatus = res.correct ? 'correct' : 'incorrect';
-        // Update local givenAnswer so a reload-less UI reflects persistence
+        anySection.lessonSectionAnswer.isCorrect = res.correct;
+        anySection.lessonSectionAnswer.initialCorrect = res.initialCorrect;
+
         try {
           (section as any).givenAnswer = Array.isArray(answer) ? JSON.stringify(answer) : String(answer);
         } catch (_e) {
@@ -155,6 +182,12 @@ export class LessonRegistrationComponent implements OnInit {
       complete: () => {
         anySection._submitting = false;
       }
+    });
+  }
+
+  private applyAnswersToDom() {
+    this.lessonSections.forEach(section => {
+      this.applyGivenAnswerToDom(section);
     });
   }
 
