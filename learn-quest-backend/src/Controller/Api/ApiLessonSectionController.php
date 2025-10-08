@@ -227,6 +227,7 @@ final class ApiLessonSectionController extends AbstractController
     #[Route('/{id}/check_answer', name: 'app_api_lesson_section_check_answer', methods: ['POST'])]
     public function checkAnswer(int $id, Request $request): Response
     {
+        // Require an authenticated user via any of these roles
         $this->denyAccessUnlessGrantedAny(['ROLE_ADMIN','ROLE_TEACHER','ROLE_STUDENT']);
 
         $section = $this->doctrine->getRepository(LessonSection::class)->find($id);
