@@ -129,13 +129,13 @@ export class LessonSectionCreateComponent implements OnInit {
       .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
       .forEach(s => this.sections.push(this.createSectionGroupFromEntity(s)));
 
+    // Register autosave for each group (after creation)
+    this.sections.controls.forEach(g => this.registerAutosave(g as FormGroup));
+
     // If no sections were received, add one empty section
     if (this.sections.length === 0) {
       this.addSection();
     }
-
-    // Register autosave for each group (after creation)
-    this.sections.controls.forEach(g => this.registerAutosave(g as FormGroup));
 
     // Manually update form controls to ensure HTML editors receive their values
     this.refreshFormControls();
