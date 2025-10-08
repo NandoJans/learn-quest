@@ -227,6 +227,7 @@ final class ApiLessonSectionController extends AbstractController
     #[Route('/{id}/check_answer', name: 'app_api_lesson_section_check_answer', methods: ['POST'])]
     public function checkAnswer(int $id, Request $request): Response
     {
+        // Require an authenticated user via any of these roles
         $this->denyAccessUnlessGrantedAny(['ROLE_ADMIN','ROLE_TEACHER','ROLE_STUDENT']);
 
         $section = $this->doctrine->getRepository(LessonSection::class)->find($id);
@@ -265,11 +266,20 @@ final class ApiLessonSectionController extends AbstractController
 
             if ($existing) {
                 $existing->setAnswer($toStore);
+                // set initial correct if not already set
+                if ($existing->isInitialCorrect() === null) {
+                    $existing->setInitialCorrect($isCorrect);
+                }
+                $existing->setIsCorrect($isCorrect);
+
             } else {
-                $lsa = new LessonSectionAnswer();
-                $lsa->setLessonRegistration($registration);
-                $lsa->setLessonSection($section);
-                $lsa->setAnswer($toStore);
+                $lsa = (new LessonSectionAnswer())
+                    ->setLessonRegistration($registration)
+                    ->setLessonSection($section)
+                    ->setAnswer($toStore)
+                    ->setInitialCorrect($isCorrect)
+                    ->setIsCorrect($isCorrect);
+
                 $em->persist($lsa);
             }
             $em->flush();

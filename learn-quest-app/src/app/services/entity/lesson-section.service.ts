@@ -3,6 +3,7 @@ import {EntityCacheService} from './entity-cache.service';
 import {LessonSection} from '../../entities/lesson-section';
 import {ApiService} from '../api/api.service';
 import {Observable} from 'rxjs';
+import {LessonSectionAnswer} from '../../entities/lesson-section-answer';
 
 @Injectable({
   providedIn: 'root'
@@ -66,17 +67,16 @@ export class LessonSectionService {
   }
 
   /** Fetch via dedicated endpoint with optional answers for a registration */
-  fetchSectionsWithAnswers(lessonId: number, lessonRegistrationId?: number): Observable<LessonSection[]> {
-    const params: any = { lessonId };
-    if (lessonRegistrationId) params.lessonRegistrationId = lessonRegistrationId;
-    return this.apiService.get<LessonSection[]>(`lesson_section/index`, params);
+  fetchLessonSectionAnswers(lessonRegistrationId: number): Observable<LessonSectionAnswer[]> {
+    const params: any = {lessonRegistration: lessonRegistrationId};
+    return this.apiService.get<LessonSectionAnswer[]>(`lessonSectionAnswer/index`, params);
   }
 
   /** Check an answer for a section */
-  checkAnswer(sectionId: number, answer: any, lessonRegistrationId?: number): Observable<{ correct: boolean }> {
+  checkAnswer(sectionId: number, answer: any, lessonRegistrationId?: number): Observable<{ correct: boolean, initialCorrect: boolean }> {
     // Dedicated endpoint lives under snake_case path
     const body: any = { answer };
     if (lessonRegistrationId) body.lessonRegistrationId = lessonRegistrationId;
-    return this.apiService.post<{ correct: boolean }>(`lesson_section/${sectionId}/check_answer`, body);
+    return this.apiService.post<{ correct: boolean, initialCorrect: boolean }>(`lesson_section/${sectionId}/check_answer`, body);
   }
 }

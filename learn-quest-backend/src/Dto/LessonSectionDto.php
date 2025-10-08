@@ -4,7 +4,6 @@ namespace App\Dto;
 
 use App\Entity\QuestionOption;
 use App\Service\EntityService;
-use Doctrine\ORM\PersistentCollection;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 
 class LessonSectionDto extends Dto
@@ -23,7 +22,6 @@ class LessonSectionDto extends Dto
         public ?string $questionPrompt = null,
         public ?string $questionType = null,
         public ?string $questionExplanation = null,
-        public ?string $correctAnswer = null,
     ) {
     }
 
