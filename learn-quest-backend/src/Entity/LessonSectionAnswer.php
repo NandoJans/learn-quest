@@ -26,6 +26,12 @@ class LessonSectionAnswer
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $answer = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $initialCorrect = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isCorrect = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -63,6 +69,40 @@ class LessonSectionAnswer
     public function setAnswer(?string $answer): static
     {
         $this->answer = $answer;
+
+        return $this;
+    }
+
+    public function isInitialCorrect(): ?bool
+    {
+        return $this->initialCorrect;
+    }
+
+    public function getInitialCorrect(): ?bool
+    {
+        return $this->initialCorrect;
+    }
+
+    public function setInitialCorrect(bool $initialCorrect): static
+    {
+        $this->initialCorrect = $initialCorrect;
+
+        return $this;
+    }
+
+    public function isCorrect(): ?bool
+    {
+        return $this->isCorrect;
+    }
+
+    public function getIsCorrect(): ?bool
+    {
+        return $this->isCorrect;
+    }
+
+    public function setIsCorrect(?bool $isCorrect): static
+    {
+        $this->isCorrect = $isCorrect;
 
         return $this;
     }

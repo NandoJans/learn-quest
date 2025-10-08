@@ -7,5 +7,7 @@ export class LessonSectionAnswer extends Entity {
   questionOptionId: number | null = null;
   lessonSection?: LessonSection = undefined;
   questionOption?: QuestionOption = undefined;
-  givenAnswer: string = '';
+  answer: string = '';
+  initialCorrect: boolean | null = null;
+  isCorrect: boolean | null = null;
 }

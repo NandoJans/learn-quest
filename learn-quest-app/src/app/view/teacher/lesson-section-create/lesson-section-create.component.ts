@@ -1,14 +1,20 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {
   AbstractControl,
-  FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import {catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, tap} from 'rxjs/operators';
+import {ActivatedRoute} from '@angular/router';
+import {catchError, debounceTime, distinctUntilChanged, finalize, switchMap, tap} from 'rxjs/operators';
 
-import { LessonSectionService } from '../../../services/entity/lesson-section.service';
-import { LessonSection } from '../../../entities/lesson-section';
+import {LessonSectionService} from '../../../services/entity/lesson-section.service';
+import {LessonSection} from '../../../entities/lesson-section';
 import {ModuleRegistryService} from '../../../services/module/module-registry.service';
 import {ModuleDefinition} from '../../../interfaces/interactive/module-meta';
 import {EMPTY, map} from 'rxjs';
@@ -17,7 +23,7 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {InteractiveModuleLibraryComponent} from '../interactive-module-library/interactive-module-library.component';
 import {ModuleHostComponent} from '../../../components/module-host/module-host.component';
 import {ModuleConfigFormComponent} from '../../../components/module-config-form/module-config-form.component';
-import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, DragDropModule} from '@angular/cdk/drag-drop';
+import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList} from '@angular/cdk/drag-drop';
 
 type SectionType = 'text' | 'module' | 'question';
 
@@ -211,22 +217,9 @@ export class LessonSectionCreateComponent implements OnInit {
         base.answers = [{ text: '' }, { text: '' }];
       }
 
-      // Convert correctAnswer to correctIndex
-      if (e.correctAnswer !== null && e.correctAnswer !== undefined) {
-        // If correctAnswer is numeric, use it directly; otherwise find matching option
-        const correctIdx = parseInt(e.correctAnswer, 10);
-        if (!isNaN(correctIdx)) {
-          base.correctIndex = correctIdx;
-        } else if (e.questionOptions) {
-          // Find index of option matching correctAnswer text
-          const idx = e.questionOptions.findIndex(opt => opt.optionText === e.correctAnswer);
-          base.correctIndex = idx >= 0 ? idx : null;
-        }
-      }
     }
 
-    const g = this.createSectionGroup(base.position!, base);
-    return g;
+    return this.createSectionGroup(base.position!, base);
   }
 
 

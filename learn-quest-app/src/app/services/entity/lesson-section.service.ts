@@ -73,10 +73,10 @@ export class LessonSectionService {
   }
 
   /** Check an answer for a section */
-  checkAnswer(sectionId: number, answer: any, lessonRegistrationId?: number): Observable<{ correct: boolean }> {
+  checkAnswer(sectionId: number, answer: any, lessonRegistrationId?: number): Observable<{ correct: boolean, initialCorrect: boolean }> {
     // Dedicated endpoint lives under snake_case path
     const body: any = { answer };
     if (lessonRegistrationId) body.lessonRegistrationId = lessonRegistrationId;
-    return this.apiService.post<{ correct: boolean }>(`lesson_section/${sectionId}/check_answer`, body);
+    return this.apiService.post<{ correct: boolean, initialCorrect: boolean }>(`lesson_section/${sectionId}/check_answer`, body);
   }
 }

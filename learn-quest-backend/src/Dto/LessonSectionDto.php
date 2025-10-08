@@ -4,7 +4,6 @@ namespace App\Dto;
 
 use App\Entity\QuestionOption;
 use App\Service\EntityService;
-use Doctrine\ORM\PersistentCollection;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 
 class LessonSectionDto extends Dto

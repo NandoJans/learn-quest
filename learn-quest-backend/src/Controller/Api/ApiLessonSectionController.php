@@ -266,11 +266,20 @@ final class ApiLessonSectionController extends AbstractController
 
             if ($existing) {
                 $existing->setAnswer($toStore);
+                // set initial correct if not already set
+                if ($existing->isInitialCorrect() === null) {
+                    $existing->setInitialCorrect($isCorrect);
+                }
+                $existing->setIsCorrect($isCorrect);
+
             } else {
-                $lsa = new LessonSectionAnswer();
-                $lsa->setLessonRegistration($registration);
-                $lsa->setLessonSection($section);
-                $lsa->setAnswer($toStore);
+                $lsa = (new LessonSectionAnswer())
+                    ->setLessonRegistration($registration)
+                    ->setLessonSection($section)
+                    ->setAnswer($toStore)
+                    ->setInitialCorrect($isCorrect)
+                    ->setIsCorrect($isCorrect);
+
                 $em->persist($lsa);
             }
             $em->flush();

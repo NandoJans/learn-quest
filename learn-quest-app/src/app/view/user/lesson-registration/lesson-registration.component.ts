@@ -82,7 +82,9 @@ export class LessonRegistrationComponent implements OnInit {
     });
 
     for (const sectionAnswer of sectionAnswers) {
-      sectionIdDict[sectionAnswer.lessonSectionId].givenAnswer = sectionAnswer.givenAnswer;
+      sectionIdDict[sectionAnswer.lessonSectionId].lessonSectionAnswer = sectionAnswer;
+      sectionIdDict[sectionAnswer.lessonSectionId].lessonSectionAnswers.push(sectionAnswer);
+      sectionIdDict[sectionAnswer.lessonSectionId].update();
     }
   }
 
@@ -164,9 +166,11 @@ export class LessonRegistrationComponent implements OnInit {
 
     const sectionId = (section as any).id ?? section['id'];
     this.lessonSectionService.checkAnswer(sectionId, answer, this.lessonRegistrationId).subscribe({
-      next: (res: { correct: boolean }) => {
+      next: (res: { correct: boolean, initialCorrect: boolean }) => {
         anySection._answerStatus = res.correct ? 'correct' : 'incorrect';
-        // Update local givenAnswer so a reload-less UI reflects persistence
+        anySection.lessonSectionAnswer.isCorrect = res.correct;
+        anySection.lessonSectionAnswer.initialCorrect = res.initialCorrect;
+
         try {
           (section as any).givenAnswer = Array.isArray(answer) ? JSON.stringify(answer) : String(answer);
         } catch (_e) {

@@ -37,7 +37,25 @@ class LessonSectionAnswerType extends AbstractType
                 'choice_label' => 'id',
                 'label' => 'Lesson Registration',
                 'required' => true,
-            ]);
+            ])
+            ->add('answer', TextType::class, [
+                'label' => 'Answer',
+            ])
+            ->add('initialCorrect', ChoiceType::class, [
+                'label' => 'Initial Correct',
+                'choices' => [
+                    'Yes' => true,
+                    'No' => false,
+                ]
+            ])
+            ->add('isCorrect', ChoiceType::class, [
+                'label' => 'Is Correct',
+                'choices' => [
+                    'Yes' => true,
+                    'No' => false,
+                ]
+            ])
+        ;
 
         $builder->addEventSubscriber($this->subscriber);
     }

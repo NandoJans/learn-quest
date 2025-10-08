@@ -12,8 +12,9 @@ class LessonSectionAnswerDto extends Dto
     public function __construct(
         public ?int $id = null,
         public ?int $lessonSectionId = null,
-        public ?int $questionOptionId = null,
-        public ?string $givenAnswer = null,
+        public ?string $answer = null,
+        public ?bool $initialCorrect = null,
+        public ?bool $isCorrect = null,
     ) {
     }
 }
