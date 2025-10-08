@@ -73,9 +73,8 @@ export class LessonRegistrationComponent implements OnInit {
 
   private matchLessonSectionAndAnswers(sectionAnswers: LessonSectionAnswer[]): void {
     const sectionIdDict: {[key: number]: LessonSection} = {};
-    this.lessonSections.forEach(section => {
-      const id = (section as any).id ?? (section as any).lessonSectionId ?? section['id'];
-      sectionIdDict[id] = section;
+    this.lessonSections.forEach((section: LessonSection) => {
+      sectionIdDict[section.id] = section;
       // Reset any previous state
       (section as any)._answerStatus = null;
       (section as any)._submitting = false;
