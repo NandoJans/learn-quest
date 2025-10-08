@@ -2,16 +2,13 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Lesson;
 use App\Entity\LessonRegistration;
 use App\Entity\LessonSection;
+use App\Entity\LessonSectionAnswer;
 use App\Subscriber\HashPasswordSubscriber;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -63,7 +60,7 @@ class LessonSectionAnswerType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => LessonSection::class,
+            'data_class' => LessonSectionAnswer::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
             'csrf_token_id' => 'lesson_section_item',
