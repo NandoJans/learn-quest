@@ -35,6 +35,9 @@ class LessonRegistration
     #[ORM\OneToMany(targetEntity: LessonSectionAnswer::class, mappedBy: 'lessonRegistration', orphanRemoval: true)]
     private Collection $lessonSectionAnswers;
 
+    #[ORM\ManyToOne]
+    private ?LessonSection $currentLessonSection = null;
+
     public function __construct()
     {
         $this->lessonSectionAnswers = new ArrayCollection();
@@ -119,5 +122,17 @@ class LessonRegistration
     public function __toString(): string
     {
         return (string)($this->id ?? '');
+    }
+
+    public function getCurrentLessonSection(): ?LessonSection
+    {
+        return $this->currentLessonSection;
+    }
+
+    public function setCurrentLessonSection(?LessonSection $currentLessonSection): static
+    {
+        $this->currentLessonSection = $currentLessonSection;
+
+        return $this;
     }
 }
