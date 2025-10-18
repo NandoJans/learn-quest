@@ -71,7 +71,7 @@ export class SideButtonComponent implements AfterViewInit, OnDestroy {
       wrap.addEventListener('pointermove', this.onMove, { passive: true });
       wrap.addEventListener('pointerleave', this.onLeave, { passive: true });
       btn?.addEventListener('pointerleave', this.onLeave, { passive: true });
-      // extra vangnet
+      // extra safety net
       wrap.addEventListener('pointercancel', this.onLeave, { passive: true });
     });
   }
