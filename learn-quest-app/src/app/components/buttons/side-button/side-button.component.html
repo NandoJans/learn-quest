@@ -1,3 +1,9 @@
-<button (click)="emit($event)"
-        [disabled]="disabled"
-        [class]="'btn w-100 btn-1 ' + btnClass"><fa-icon *ngIf="isIcon()" [icon]="getIcon()"></fa-icon>{{ text }}</button>
+<div #wrap class="btn-glow-wrap">
+  <button
+    (click)="emit($event)"
+    [disabled]="disabled"
+    [ngClass]="['btn','w-100', btnClass]">
+    <fa-icon *ngIf="isIcon()" [icon]="getIcon()" class="me-2"></fa-icon>
+    {{ text }}
+  </button>
+</div>

@@ -6,13 +6,15 @@ import {Course} from '../../../entities/course';
 import {Button} from '../../../interfaces/button';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {RouteService} from '../../../services/core/route.service';
+import {FooterButtonComponent} from '../../buttons/footer-button/footer-button.component';
 
 @Component({
   selector: 'app-courses-dashboard-section',
   imports: [
     CourseComponent,
     NgForOf,
-    FaIconComponent
+    FaIconComponent,
+    FooterButtonComponent
   ],
   templateUrl: './courses-dashboard-section.component.html',
   styleUrl: './courses-dashboard-section.component.css'
