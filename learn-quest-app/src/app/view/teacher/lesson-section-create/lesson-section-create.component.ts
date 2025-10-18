@@ -67,6 +67,7 @@ export class LessonSectionCreateComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private sectionService = inject(LessonSectionService);
   lessonId!: number;
+  private lessonSections: LessonSection[] = [];
 
   // Persisted accordion open/close states by section key
   private accordionState: Record<string, boolean> = {};
@@ -112,6 +113,7 @@ export class LessonSectionCreateComponent implements OnInit {
     this.sectionService.loadSections(
       { lesson: this.lessonId },
       sections => {
+        this.lessonSections = sections;
         this.populateSectionsFromData(sections);
       },
       true // force reload from API

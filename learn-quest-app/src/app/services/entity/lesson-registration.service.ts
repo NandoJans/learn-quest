@@ -46,7 +46,10 @@ export class LessonRegistrationService {
 
   /** Update via API */
   updateSection(section: LessonRegistration): Observable<LessonRegistration> {
-    return this.apiService.put<LessonRegistration>(`LessonRegistration/${section.id}`, section);
+    let sendSection = {...section};
+    // Remove unwanted fields such as lesson;
+    delete (sendSection as any).lesson;
+    return this.apiService.put<LessonRegistration>(`LessonRegistration/${section.id}`, sendSection);
   }
 
   /** Delete via API */
