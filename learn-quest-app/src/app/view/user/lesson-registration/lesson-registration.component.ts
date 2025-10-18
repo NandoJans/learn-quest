@@ -13,6 +13,7 @@ import { Course } from '../../../entities/course';
 import { CourseEditBarComponent } from '../../../components/course/course-edit-bar/course-edit-bar.component';
 import { IconComponent } from '../../../components/icon/icon.component';
 import {LessonSectionAnswer} from '../../../entities/lesson-section-answer';
+import {FooterButtonComponent} from '../../../components/buttons/footer-button/footer-button.component';
 
 @Component({
   selector: 'app-lesson-registration',
@@ -21,7 +22,8 @@ import {LessonSectionAnswer} from '../../../entities/lesson-section-answer';
     NgIf,
     ModuleHostComponent,
     CourseEditBarComponent,
-    IconComponent
+    IconComponent,
+    FooterButtonComponent
   ],
   templateUrl: './lesson-registration.component.html',
   styleUrl: './lesson-registration.component.css'
@@ -60,6 +62,10 @@ export class LessonRegistrationComponent implements OnInit {
     this.lessonSectionService.loadSections({lesson: lessonId}, (sections) => {
       this.lessonSections = (sections as LessonSection[]).sort(this.sortByPosition.bind(this));
       this.loadLessonSectionAnswers()
+
+      if (this.lessonSections.length > 0 && this.lessonRegistration.currentLessonSectionId === null) {
+        this.setCurrentLessonSection(this.lessonSections[0])
+      }
     })
   }
 
@@ -240,5 +246,65 @@ export class LessonRegistrationComponent implements OnInit {
       return 'Incorrect!';
     }
     return 'Submit';
+  }
+
+  getVisibleSections(): LessonSection[] {
+    const visible: LessonSection[] = [];
+    const currentLessonSectionId = this.lessonRegistration.currentLessonSectionId;
+
+    for (const lessonSection of this.lessonSections) {
+      visible.push(lessonSection);
+
+      if (lessonSection.id === currentLessonSectionId || currentLessonSectionId === null) {
+        break;
+      }
+    }
+
+    return visible;
+  }
+
+  setCurrentLessonSection(lessonSection: LessonSection) {
+    this.lessonRegistration.currentLessonSectionId = lessonSection.id;
+    this.lessonRegistrationService.updateSection(this.lessonRegistration).subscribe({
+      next: (res: any) => {
+
+      },
+      error: (_err) => {
+        console.log('error', _err);
+      },
+    });
+  }
+
+  showNextButton(): boolean {
+    // Do not show the button if the last section has been opened
+    const lastIndex = this.lessonSections.length - 1;
+
+    if (!this.lessonSections[lastIndex] || this.lessonRegistration.currentLessonSectionId === this.lessonSections[lastIndex].id) {
+      return false;
+    }
+
+    // Show the next button if the current section is text or interactive
+    const curSecId = this.lessonRegistration.currentLessonSectionId;
+    const curSection = this.lessonSections.find(section => section.id === curSecId);
+
+    return curSecId !== null && curSection?.type !== 'question' && curSection?.type !== 'interactive';
+  }
+
+  timeout: boolean = false;
+
+  showNextSection(): void {
+    if (this.timeout) return;
+    setTimeout(() => {
+      this.timeout = false;
+    }, 100)
+    this.timeout = true;
+    // Find the index of the current section
+    const currentIndex = this.lessonSections.findIndex(section => section.id === this.lessonRegistration.currentLessonSectionId);
+    if (currentIndex === -1 || currentIndex + 1 >= this.lessonSections.length) {
+      return;
+    }
+
+    const nextSection = this.lessonSections[currentIndex + 1];
+    this.setCurrentLessonSection(nextSection);
   }
 }

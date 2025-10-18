@@ -7,7 +7,7 @@
   }
 </div>
 
-<div *ngFor="let section of lessonSections" class="section">
+<div *ngFor="let section of getVisibleSections()" class="section">
   <div *ngIf="section.type === 'text'" class="content">
     <div [innerHtml]="section.content"></div>
   </div>
@@ -51,3 +51,8 @@
     </div>
   </div>
 </div>
+@if (showNextButton()) {
+  <app-footer-button [text]="'Next section'"
+                     [btnClass]="'btn-primary btn-3'"
+                     (click)="showNextSection()"></app-footer-button>
+}

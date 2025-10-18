@@ -15,6 +15,7 @@ export class ApiService {
   }
 
   put<T>(path: string, body: object): Observable<T> {
+    console.log(this.API_URL + this.parsePath(path));
     return this.http.put<T>(this.API_URL + this.parsePath(path), body);
   }
 

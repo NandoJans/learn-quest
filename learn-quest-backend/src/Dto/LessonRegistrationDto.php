@@ -14,6 +14,7 @@ class LessonRegistrationDto extends Dto
         public ?int $id = null,
         public ?int $lessonId = null,
         public ?int $courseRegistrationId = null,
+        public ?int $currentLessonSectionId = null,
         public ?int $userId = null,
     )
     {
