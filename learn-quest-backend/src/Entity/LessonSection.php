@@ -17,6 +17,8 @@ class LessonSection
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column]
+    private ?int $lessonId = null;
     #[ORM\ManyToOne(targetEntity: Lesson::class, inversedBy: 'sections')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Lesson $lesson = null;
@@ -70,6 +72,16 @@ class LessonSection
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getLessonId(): ?int
+    {
+        return $this->lessonId;
+    }
+
+    public function setLessonId(?int $lessonId): void
+    {
+        $this->lessonId = $lessonId;
     }
 
     public function getLesson(): ?Lesson
