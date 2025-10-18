@@ -36,7 +36,7 @@ final class ApiEntityController extends AbstractController
         return $this->json($dtos);
     }
 
-    #[Route('/api/{entity}/create', name: 'api_course_create', methods: ['POST'], requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'])]
+    #[Route('/api/{entity}/create', name: 'api_course_create', requirements: ['entity' => '[A-Za-z][A-Za-z0-9]*'], methods: ['POST'])]
     public function create(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
