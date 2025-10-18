@@ -72,4 +72,8 @@ export class CustomDashboardSectionComponent implements OnChanges {
       (cmpRef as any).setInput?.(k, v) ?? ((cmpRef.instance as any)[k] = v);
     }
   }
+
+  getStyleColor() {
+    return 'style-color-' + (this.config.styleColor ?? '1');
+  }
 }

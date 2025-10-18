@@ -11,37 +11,41 @@
   --color-1-light: #f5baba;
   --color-1-dark: #e25353;
   --color-1-white: #f9e9e9;
-  --color-1-black: #26292a;
+  --color-1-black: #2c2525;
 
   --color-2: #63cb63;
   --color-2-light: #8ae98a;
   --color-2-dark: #4aa94a;
   --color-2-white: #e9f9e9;
-  --color-2-black: #26292a;
+  --color-2-black: #272c25;
 
   --color-3: #70c1d5;
   --color-3-light: #8ed9e5;
   --color-3-dark: #4e9aae;
   --color-3-white: #dff6fa;
-  --color-3-black: #26292a;
+  --color-3-black: #232728;
 
   --color-4: #fcef76;
   --color-4-light: #fffdaa;
   --color-4-dark: #cece3e;
   --color-4-white: #fff9e9;
-  --color-4-black: #26292a;
+  --color-4-black: #2c2c24;
 
   --color-5: #f1b471;
   --color-5-light: #f8d3a1;
   --color-5-dark: #c2823b;
   --color-5-white: #fff9e9;
-  --color-5-black: #26292a;
+  --color-5-black: #2c2824;
 
   --color-6: #c385fb;
   --color-6-light: #d8aefc;
   --color-6-dark: #9e54e3;
   --color-6-white: #f9e9ff;
-  --color-6-black: #26292a;
+  --color-6-black: #26222a;
+
+  --color-white: #f9f9f9;
+  --color-black: #2c2c2c;
+  --color-gray: #988f9d;
 }
 
 body, html {
@@ -51,6 +55,61 @@ body, html {
 .card-header {
   border: none;
   background-color: unset;
+}
+
+.style-color-1 {
+  --color: var(--color-1);
+  --color-dark: var(--color-1-dark);
+  --color-light: var(--color-1-light);
+  --color-white: var(--color-1-white);
+  --color-black: var(--color-1-black);
+  --color-gray: var(--color-gray);
+  --text-color: var(--text-color);
+}
+
+.style-color-2 {
+  --color: var(--color-2);
+  --color-dark: var(--color-2-dark);
+  --color-light: var(--color-2-light);
+  --color-white: var(--color-2-white);
+  --color-black: var(--color-2-black);
+  --color-gray: var(--color-gray);
+}
+
+.style-color-3 {
+  --color: var(--color-3);
+  --color-dark: var(--color-3-dark);
+  --color-light: var(--color-3-light);
+  --color-white: var(--color-3-white);
+  --color-black: var(--color-3-black);
+  --color-gray: var(--color-gray);
+}
+
+.style-color-4 {
+  --color: var(--color-4);
+  --color-dark: var(--color-4-dark);
+  --color-light: var(--color-4-light);
+  --color-white: var(--color-4-white);
+  --color-black: var(--color-4-black);
+  --color-gray: var(--color-gray);
+}
+
+.style-color-5 {
+  --color: var(--color-5);
+  --color-dark: var(--color-5-dark);
+  --color-light: var(--color-5-light);
+  --color-white: var(--color-5-white);
+  --color-black: var(--color-5-black);
+  --color-gray: var(--color-gray);
+}
+
+.style-color-6 {
+  --color: var(--color-6);
+  --color-dark: var(--color-6-dark);
+  --color-light: var(--color-6-light);
+  --color-white: var(--color-6-white);
+  --color-black: var(--color-6-black);
+  --color-gray: var(--color-gray);
 }
 
 .border-color-1 {
@@ -254,3 +313,15 @@ body, html {
 .w-90 {
   width: 90%;
 }
+
+.btn-black {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  --bs-btn-active-bg: var(--color);
+  --bs-btn-active-color: var(--color-black);
+}
+
+.btn-black:hover {
+  background-color: var(--color-black);
+}
+

@@ -31,18 +31,19 @@ export class TeacherDashboardComponent {
         type: 'courses',
         component: CoursesDashboardSectionComponent,
         color: '#4CAF50',
+        styleColor: '3',
         inputs: {
           courseRouterLink: 'course',
           bottomButtons: [
             {
               icon: faBars,
               routerLink: ['courses'],
-              buttonClass: 'btn-3'
+              buttonClass: 'btn-black'
             },
             {
               icon: faPlus,
               routerLink: ['course', 'create'],
-              buttonClass: 'btn-2',
+              buttonClass: 'btn-black',
             }
           ]
         }
@@ -54,6 +55,7 @@ export class TeacherDashboardComponent {
         type: 'students',
         component: StudentsDashboardSectionComponent,
         color: '#2196F3',
+        styleColor: '3',
       }
     };
   }

@@ -1,10 +1,10 @@
-<div class="card">
+<div [class]="'card '+getStyleColor()">
   <div class="card-header">
     <div class="card-title">
-      <fa-icon [icon]="getIcon()" [style]="'color: ' + getColor()" aria-hidden="true"></fa-icon>
-      <h2>{{ getTitle() }}</h2>
+      <fa-icon [icon]="getIcon()" style="color: var(--color)" aria-hidden="true"></fa-icon>
+      <h2 style="color: var(--color-black)">{{ getTitle() }}</h2>
     </div>
-    <p>{{ getDescription() }}</p>
+    <p class="mx-3" style="color: var(--color-gray)">{{ getDescription() }}</p>
   </div>
   <ng-container class="card-body" #host></ng-container>
 </div>

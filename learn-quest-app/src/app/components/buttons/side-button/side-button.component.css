@@ -1,21 +1,98 @@
+/* component-scoped defaults */
+:host {
+  --glow-x: 0px;
+  --glow-y: 0px;
+  --g-top: 0;
+  --g-right: 0;
+  --g-bottom: 0;
+  --g-left: 0;
+}
+
+/* 1) padded wrapper paints the big cursor light */
+.btn-glow-wrap {
+  height: 96%;
+  margin: 2%;
+  padding: 2px;
+  border-radius: 12px;
+  position: relative;
+  isolation: isolate;
+  background: var(--color-black);
+  transition: background 0.15s ease;
+}
+
+.btn-glow-wrap:hover {
+  background:
+    radial-gradient(
+      420px 420px at var(--glow-x, 0px) var(--glow-y, 0px),
+        /* was rgba(--color-black, 0.32 / 0.18) */
+      color-mix(in srgb, var(--color-black) 32%, transparent) 0%,
+      color-mix(in srgb, var(--color-black) 18%, transparent) 35%,
+      transparent 70%
+    ),
+      /* was rgba(--color-white, calc(var(--g-*) * 0.35)) */
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-white) calc(var(--g-top,0) * 35%), transparent), transparent),
+    linear-gradient(to left,   color-mix(in srgb, var(--color-white) calc(var(--g-right,0) * 35%), transparent), transparent),
+    linear-gradient(to top,    color-mix(in srgb, var(--color-white) calc(var(--g-bottom,0) * 35%), transparent), transparent),
+    linear-gradient(to right,  color-mix(in srgb, var(--color-white) calc(var(--g-left,0) * 35%), transparent), transparent);
+}
+
+/* 2) Button with gradient BORDER (no masks) + inset edge glow */
 .btn {
-  padding: 10px 20px;
-  border: none;
-  background-color: var(--text-color);
-  color: white;
-  cursor: pointer;
+  color: var(--color-white);
+  position: relative;
+  width: 100%;
   height: 100%;
-  font-size: 16px;
+  border-radius: 10px;
+
+  /* transparent border so the second background layer can show there */
+  border: none;
+
+  /* Layer 1: fills the inside. Layer 2: paints the BORDER area only. */
+  background:
+    linear-gradient(var(--color-black), var(--color-black)) padding-box,
+    radial-gradient(
+      220px 220px at var(--glow-x, 0px) var(--glow-y, 0px),
+        /* was rgba(--color-white, 0.85 / 0.35 / 0.125) */
+      color-mix(in srgb, var(--color-white) 85%, transparent) 0%,
+      color-mix(in srgb, var(--color-white) 35%, transparent) 30%,
+      color-mix(in srgb, var(--color-white) 12.5%, transparent) 55%,
+      transparent 65%
+    ) border-box;
+
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  /* was rgba(--color-white, 0.18) */
+  box-shadow: 0 0 30px 8px color-mix(in srgb, var(--color-white) 18%, transparent);
+  overflow: hidden;
 }
 
-.btn.left {
-  border-radius: 5px 0 0 5px;
+/* brighter nearest-edge border using 4 inset washes */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
+  box-shadow:
+    inset 0    12px 18px -10px color-mix(in srgb, var(--color-white) calc(var(--g-top,0)    * 90%), transparent),
+    inset -12px 0   18px -10px color-mix(in srgb, var(--color-white) calc(var(--g-right,0)  * 90%), transparent),
+    inset 0   -12px 18px -10px color-mix(in srgb, var(--color-white) calc(var(--g-bottom,0) * 90%), transparent),
+    inset 12px  0   18px -10px color-mix(in srgb, var(--color-white) calc(var(--g-left,0)   * 90%), transparent);
 }
 
-.btn.right {
-  border-radius: 0 5px 5px 0;
-}
-
+/* hover */
 .btn:hover {
-  opacity: 0.8;
+  box-shadow: 0 0 55px 14px color-mix(in srgb, var(--color-white) 32%, transparent);
+}
+
+.btn:active {
+  transform: scale(0.98);
+  background: color-mix(in srgb, var(--color-black) 10%, transparent);
+}
+
+/* disabled */
+button[disabled] {
+  opacity: 0.7;
+  transform: none !important;
+  box-shadow: none !important;
 }

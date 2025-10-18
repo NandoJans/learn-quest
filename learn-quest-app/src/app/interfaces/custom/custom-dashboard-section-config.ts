@@ -10,6 +10,7 @@ export interface CustomDashboardSectionConfig<T = unknown> {
   component: Type<any>,
   inputs?: Record<string, unknown>,
   context?: unknown;
+  styleColor?: string;
 }
 
 export const SECTION_CONTEXT = new InjectionToken<unknown>('SECTION_CONTEXT');
