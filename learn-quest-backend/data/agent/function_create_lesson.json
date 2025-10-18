@@ -1,0 +1,108 @@
+{
+  "name": "create_lesson",
+  "description": "Create a new lesson with specified lesson sections",
+  "strict": true,
+  "parameters": {
+    "type": "object",
+    "required": [
+      "code",
+      "name",
+      "sections",
+      "description",
+      "faIcon",
+      "primaryColor"
+    ],
+    "properties": {
+      "primaryColor": {
+        "type": "string",
+        "description": "The primary color of the lesson given in hexadecimal."
+      },
+      "faIcon": {
+        "type": "string",
+        "description": "The icon to display, this should be without the fa-prefix, so to choose the icon faBook, book needs to be given."
+      },
+      "description": {
+        "type": "string",
+        "description": "The description of the lesson"
+      },
+      "code": {
+        "type": "string",
+        "description": "The lesson code, to organize lessons of a course."
+      },
+      "name": {
+        "type": "string",
+        "description": "The title of the lesson"
+      },
+      "sections": {
+        "type": "array",
+        "description": "List of sections in the lesson, each of type html, interactive module, or question",
+        "items": {
+          "type": "object",
+          "required": [
+            "type",
+            "content",
+            "position",
+            "questionPrompt",
+            "questionType",
+            "questionExplanation",
+            "correctAnswer"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Type of the lesson section",
+              "enum": [
+                "html",
+                "interactive_module",
+                "question"
+              ]
+            },
+            "content": {
+              "type": "string",
+              "description": "Content for an HTML section; required if type is html"
+            },
+            "position": {
+              "type": "int",
+              "description": "The position of the lesson section"
+            },
+            "questionPrompt": {
+              "type": "string",
+              "description": "Question text; required if type is question"
+            },
+            "questionType": {
+              "type": "array",
+              "description": "Possible answers for the question; required if type is question",
+              "items": {
+                "type": "object",
+                "required": [
+                  "optionText",
+                  "position"
+                ],
+                "properties": {
+                  "optionText": {
+                    "type": "string",
+                    "description": "The option text to be displayed as option"
+                  },
+                  "position": {
+                    "type": "int",
+                    "description": "The position of the option relative to the other options."
+                  }
+                }
+              }
+            },
+            "questionExplanation": {
+              "type": "string",
+              "description": "The text that displays after a given answer to further explain the right answer."
+            },
+            "correct_answer": {
+              "type": "string",
+              "description": "Correct answer for the question; required if type is question"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}
