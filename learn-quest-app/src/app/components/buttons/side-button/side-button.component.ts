@@ -58,7 +58,7 @@ export class SideButtonComponent implements AfterViewInit, OnDestroy {
 
       this.onLeave = () => {
         if (this.raf) { cancelAnimationFrame(this.raf); this.raf = 0; }
-        // zet alles hard naar nul
+        // set all values hard to zero
         wrap.style.setProperty('--g-top', '0');
         wrap.style.setProperty('--g-right', '0');
         wrap.style.setProperty('--g-bottom', '0');
