@@ -158,6 +158,10 @@ export class WizardFormComponent {
     if (this.linear) {
       Object.values(this.form.controls).forEach((g: AbstractControl) => g.markAllAsTouched());
     }
+    // prevent submission if form is invalid in linear mode
+    if (this.linear && !this.form.valid) {
+      return;
+    }
     this.submitted.emit({
       value: this.flattenValue(),
       rawValue: this.form.getRawValue(),
